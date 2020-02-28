@@ -1,0 +1,6 @@
+if(USE_GRAPHICS MATCHES "^SDL*")
+    set(USE_WIDGETS_SDL TRUE)
+    mark_as_advanced(USE_WIDGETS_SDL)
+    set(USE_WIDGETS_GENERIC TRUE)
+    mark_as_advanced(USE_WIDGETS_GENERIC)
+endif(USE_GRAPHICS MATCHES "^SDL*")

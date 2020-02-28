@@ -1,0 +1,5 @@
+BCLocalizedNumberICU.h LocalizedNumberICU.h
+BCLocaleICU.h LocaleICU.h
+BCTextCodecICU.h TextCodecICU.h
+BCTextBreakIteratorInternalICU.h TextBreakIteratorInternalICU.h
+BCLineBreakIteratorPoolICU.h LineBreakIteratorPoolICU.h

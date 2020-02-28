@@ -1,0 +1,4 @@
+BCOpenTypeVerticalDataWK.h OpenTypeVerticalData.h
+BCOpenTypeSanitizerWK.h	   OpenTypeSanitizer.h
+BCOpenTypeTypesWK.h	   OpenTypeTypes.h
+BCOpenTypeUtilitiesWK.h	   OpenTypeUtilities.h

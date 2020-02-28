@@ -1,0 +1,43 @@
+html body {
+	background-color:#fff; /*BG1*/
+	color:#5a5a5a; /*T1*/
+}
+body, p, li, ul, ol, dl, dt, dd, acronym, h1, h2, h3, h4, h5, h6 {
+	background-color:transparent;
+}
+h1, h2, h3, h4, h5, h6 {
+	color:#000; /*T5*/
+}
+
+h1 {
+	text-align: center;
+  font-size: 200%;
+  font-style: bold;
+}
+
+h2 {
+  font-size: 170%;
+  font-style: bold;
+	border-width:0 0 1px 0;
+	border-style:solid;
+	background-color: #000;
+	color: #fff;
+	border-color:#E2DCC8; /*BO4*/
+}
+h3 {
+  font-size: 135%;
+}
+
+*:link, *:visited {
+border-bottom:0px dotted #BBBBBB;
+color:#9E5600;
+text-decoration:none;
+}
+*:link:hover, *:visited:hover {
+background-color:#EEEEEE;
+color:#555555;
+}
+h1 *:link, h1 *:visited, h2 *:link, h2 *:visited, h3 *:link, h3 *:visited, h4 *:link, h4 *:visited, h5 *:link, h5 *:visited, h6 *:link, h6 *:visited {
+color:inherit;
+}
+

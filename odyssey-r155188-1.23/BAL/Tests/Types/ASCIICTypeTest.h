@@ -1,0 +1,163 @@
+#ifndef ASCIICTypeTest_h_CPPUNIT
+#define ASCIICTypeTest_h_CPPUNIT
+
+#include <cppunit/extensions/HelperMacros.h>
+#include <Platform.h>
+//FIXME stub the missing ASSERT in order to make it compile
+#define ASSERT(things)
+#include "BCASCIICType.h"
+class ASCIICTypeTestTest : public CppUnit::TestFixture
+{
+    CPPUNIT_TEST_SUITE( ASCIICTypeTestTest );
+//register each method:
+
+    CPPUNIT_TEST(isASCIIAlpha);
+    CPPUNIT_TEST(isASCIIAlphaUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIIAlphaWC);
+#endif
+    CPPUNIT_TEST(isASCIIAlphaI);
+
+    CPPUNIT_TEST(isASCIIAlphanumeric);
+    CPPUNIT_TEST(isASCIIAlphanumericUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIIAlphanumericWC);
+#endif
+    CPPUNIT_TEST(isASCIIAlphanumericI);
+
+    CPPUNIT_TEST(isASCIIDigit);
+    CPPUNIT_TEST(isASCIIDigitUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIIDigitWC);
+#endif
+    CPPUNIT_TEST(isASCIIDigitI);
+
+    CPPUNIT_TEST(isASCIIHexDigit);
+    CPPUNIT_TEST(isASCIIHexDigitUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIIHexDigitWC);
+#endif
+    CPPUNIT_TEST(isASCIIHexDigitI);
+
+    CPPUNIT_TEST(isASCIILower);
+    CPPUNIT_TEST(isASCIILowerUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIILowerWC);
+#endif
+    CPPUNIT_TEST(isASCIILowerI);
+
+    CPPUNIT_TEST(isASCIIUpper);
+    CPPUNIT_TEST(isASCIIUpperUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIIUpperWC);
+#endif
+    CPPUNIT_TEST(isASCIIUpperI);
+
+    CPPUNIT_TEST(isASCIISpace);
+    CPPUNIT_TEST(isASCIISpaceUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(isASCIISpaceWC);
+#endif
+    CPPUNIT_TEST(isASCIISpaceI);
+
+    CPPUNIT_TEST(toASCIILower);
+    CPPUNIT_TEST(toASCIILowerUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(toASCIILowerWC);
+#endif
+    CPPUNIT_TEST(toASCIILowerI);
+
+    CPPUNIT_TEST(toASCIIUpper);
+    CPPUNIT_TEST(toASCIIUpperUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(toASCIIUpperWC);
+#endif
+    CPPUNIT_TEST(toASCIIUpperI);
+
+    CPPUNIT_TEST(toASCIIHexValue);
+    CPPUNIT_TEST(toASCIIHexValueUS);
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    CPPUNIT_TEST(toASCIIHexValueWC);
+#endif
+    CPPUNIT_TEST(toASCIIHexValueI);
+
+
+    CPPUNIT_TEST_SUITE_END();
+
+
+
+
+    void isASCIIAlpha() CPPU_NOT_IMPLEMENTED
+    void isASCIIAlphaUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIIAlphaWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIIAlphaI() CPPU_NOT_IMPLEMENTED
+
+    void isASCIIAlphanumeric() CPPU_NOT_IMPLEMENTED
+    void isASCIIAlphanumericUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIIAlphanumericWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIIAlphanumericI() CPPU_NOT_IMPLEMENTED
+
+    void isASCIIDigit() CPPU_NOT_IMPLEMENTED
+    void isASCIIDigitUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIIDigitWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIIDigitI() CPPU_NOT_IMPLEMENTED
+
+    void isASCIIHexDigit() CPPU_NOT_IMPLEMENTED
+    void isASCIIHexDigitUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIIHexDigitWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIIHexDigitI() CPPU_NOT_IMPLEMENTED
+
+    void isASCIILower() CPPU_NOT_IMPLEMENTED
+    void isASCIILowerUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIILowerWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIILowerI() CPPU_NOT_IMPLEMENTED
+
+    void isASCIIUpper() CPPU_NOT_IMPLEMENTED
+    void isASCIIUpperUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIIUpperWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIIUpperI() CPPU_NOT_IMPLEMENTED
+
+    void isASCIISpace() CPPU_NOT_IMPLEMENTED
+    void isASCIISpaceUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void isASCIISpaceWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void isASCIISpaceI() CPPU_NOT_IMPLEMENTED
+
+    void toASCIILower() CPPU_NOT_IMPLEMENTED
+    void toASCIILowerUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void toASCIILowerWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void toASCIILowerI() CPPU_NOT_IMPLEMENTED
+
+    void toASCIIUpper() CPPU_NOT_IMPLEMENTED
+    void toASCIIUpperUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void toASCIIUpperWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void toASCIIUpperI() CPPU_NOT_IMPLEMENTED
+
+    void toASCIIHexValue() CPPU_NOT_IMPLEMENTED
+    void toASCIIHexValueUS() CPPU_NOT_IMPLEMENTED
+#if !COMPILER(MSVC) || defined(_NATIVE_WCHAR_T_DEFINED)
+    void toASCIIHexValueWC() CPPU_NOT_IMPLEMENTED
+#endif
+    void toASCIIHexValueI() CPPU_NOT_IMPLEMENTED
+
+};
+
+#endif
+

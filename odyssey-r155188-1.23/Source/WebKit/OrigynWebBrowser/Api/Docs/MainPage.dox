@@ -1,0 +1,106 @@
+/*!
+@mainpage OrigynWebBrowser
+@anchor OrigynWebBrowser
+
+Origyn Web Browser is an adaptation of Apple's WebCore on an abstraction layer,
+
+@subpage howtoIntegrate "How to integration OWB into your framework"
+
+*/
+
+/*!
+@page howtoIntegrate How to integration OWB into your framework
+
+The first step to launch OWB is to create a \a WebView. A web view will host the web page.
+The webview will need to be properly initialized for the browser to render itself properly.
+Here is the code to do so on SDL that we will use as an example:
+
+@code
+#include <WebKit.h>
+
+int main() {
+    // Platform initialization.
+    if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+        fprintf(stderr, "Unable to init SDL: %s", SDL_GetError());
+        exit(1);
+    }
+
+    WebView* view = WebView::createInstance();
+    // Ask the view about its prefered size.
+    SDL_Rect viewRect = view->frameRect();
+    if (!viewRect.w || !viewRect.h) {
+        // Just default to 800 x 600 if the provided size if wrong.
+        viewRect.w = 800;
+        viewRect.h = 600;
+    }
+    SDL_Surface nativeSurface = createSDLWindow(rect.w, rect.h);
+
+    // The frame and group name are optional.
+    webView->setViewWindow(nativeSurface);
+	webView->initWithFrame(viewRect, "MyFrame", "MyGroup");
+
+    // Maybe register some delegate to get notified by the browser about some events.
+    // See the \a WebView or \a WebFrame documentation about those.
+
+    // Open an URL.
+    webView->mainFrame()->loadURL("http://www.pleyo.com");
+
+    // Enter the event loop.
+    waitForEvent();
+
+    // Platform quit operations.
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+    SDL_Quit();
+
+    // Clear our objects.
+    delete webView;
+@endcode
+
+As shown in the previous example, there are 4 steps:
+- initializing the graphics subsystem (may not be required depending on your platform).
+- creating and properly initializing the WebView. This requires to give it a native surface to draw upon as well as its size.
+- Entering the event loop: OWB does not have its event loop and depends on the application to give it the proper events. We will detail this operation in the next section.
+- quitting: cleaning up.
+
+@section MainEventLoop Main even loop
+
+The main event loop just waits for events to be received and give them to the WebView for processing by OWB. For SDL, the code would look like:
+@code
+void waitEvent()
+{
+    SDL_Event event;
+    SDL_GetEventFilter();
+
+    while (true) {
+        if (!SDL_PollEvent(&event) {
+            // We have an event so determine which event is it and give it to the WebView.
+            switch (event.type) {
+            case SDL_KEYDOWN:
+                webView->onKeyDown(event.key);
+                break;
+            case SDL_KEYUP:
+                webView->onKeyUp(event.key);
+                break;
+            case SDL_MOUSEMOTION:
+                webView->onMouseMotion(event.motion);                                                                                                                                       
+                break;
+            case SDL_VIDEOEXPOSE:
+                // Expose or repaint event forces the brower to repaint a part of its surface.
+                webView->onExpose(event.expose);
+            // ... treatment for other events.
+            case SDL_QUIT:
+                return;
+            }
+        } else {
+            // We have timed out so just call fireWebKitEvents in case a timer timed out and needs to be dealt with.
+            webView->fireWebKitEvents();
+        }
+    }
+}
+@endcode
+
+The application can thus do some processing prior or after the event is given to OWB.
+
+
+@p With those 2 bricks and the @a WebView documentation you should be ready to integrate OWB into your environment. The code taken here comes from our main which can be found in the source tree at WebKitTools/OWBLauncher/[YourPlatform for example SDL, gtk, qt]/main.cpp so feel free to have a look at it.
+*/

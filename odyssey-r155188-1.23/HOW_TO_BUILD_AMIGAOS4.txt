@@ -1,0 +1,178 @@
+
+=== No release-forks please !
+
+Please _NO_ other-browser release-forks!
+
+You can't just change a few bits there, and release another "some_browser". By doing this you kill all motivation to continue working on.
+WebKit is free, but all Amiga (GUI and stuff) specific code there are hard work of some peoples (Fab, Joerg, DeadWood, Daniel_onyxsoft & Kas1e), who do not want situations when a source is taken, some things changed,
+and released like some other browser with some other name. So please respect that even if you didn't like.
+
+If you wish to fix and improve things there, all should be put back to that repo, so later another version of Odyssey can be released.
+
+All help appreciated, be it pull-request, patches, forum topics or whatever, but please no release-forks of Odyssey, calling it "somename_Odyssey" or "some_other_browser". If you wish your own
+browser and control how things should be done, just take WebKit source code and do whatever you want with taking those amiga-specific parts from Odyssey as reference.
+
+And of course, it is absolutely not allowed to take that code, and making commercial releases of all sorts, be it Enhancer, OS4, or whatever else.
+
+Probably there weren't big needs to explain an obvious, but just in case someone will find the idea of taking it all, changing a name, few bits with build date and made another "browser" as something worthy. So please NO. Thanks!
+
+=== You need cross-compiler
+
+You need a cross-compiler setup. Point is to be able to use CMake, Perl, Bison and all that stuff which natively on OS4 not works as expected or not present at all.
+
+Recommended is Linux because of proper fork() realization, which CMake and its build process (scanning dependencies) are based on.
+
+Of course, you can use Cygwin (as I do), or whatever you want. Just be aware when you use Cygwin, it didn't have fork() as it has done on Linux. Each process is starting from scratch and has to load and
+init the Cygwin DLL, LibC, etc that a fork-and-go system already has loaded. Because of that when Cmake starts to scan dependencies it may take a while. For example, it takes about 15-20 minutes on scanning WebCore dependencies
+on fast enough PC with Cygwin. On Linux, everything will be faster. I still build everything on Cygwin on fast enough PC because of my own reasons, but it's still not _that fast_ and take about 1 hour to build the whole
+thing. On the same machine but on Linux cross-compiler it will take for about 20-30 minutes. Choose what you wish, there no restrictions in terms of cross-compiling.
+
+For building Odyssey you better to have Odyssey-only setup of cross-compiler as 3d party includes and libraries need it for building Odyssey, will overwrite your newer and up2date includes and libs you have in your SDK
+(such as png, Cairo, FreeType, OpenSSL, Curl, and many others).
+
+Many tutorials present about how to setup cross-compiler. If you want to use it over Cygwin, there is one:
+
+http://os4coding.net/blog/kas1e/how-build-amigaos4-cross-compiler-binutils-2232-gcc-830-cygwin
+
+For Linux, it will be twice easier to set up, as you don't need the "install Cygwin" part.
+
+You should have Adtool's GCC 8.2.0 or 8.3.0 and Hyperion's SDK_53.30 as a minimum.
+
+You can compile it with GCC 4.4.3 with very minimal changes, but this source code are and will be based on the latest GCC.
+
+
+=== Install Odyssey's 3d party includes and libs
+
+Download SDK from https://github.com/kas1e/Odyssey/odyssey-r155188-1.23_SDK/
+
+Everything placed already where should be, just unpack the whole thing to your already installed AmigaOS4 SDK directory. Your original amigaos4 installed SDK should be already in 
+/usr/local/amiga/ppc-amigaos/SDK/ , so unpack Odyssey's SDK there.
+
+Some of the 3d party libraries are pure ./configure; make (like XML, Expat, Png12, Jpeg), but some are not: For example Fontconfig has some specific callback added, Curl modified quite heavy to have threading works.
+ICU libs changed as well. 
+
+You also can't just use up2date versions of those 3d party libs (some can, some not). It needs changes in the Odyssey's code too then. Every changed library or another one of another version can cause all sorts of new issues. 
+
+So in meanwhile use those ones which come in SDK. Once things improve, they also will be changed.
+
+
+=== Download Odyssey's code.
+
+Create in the root of your cross-compiler "amiga" directory (if you didn't). I.e. "mkdir /amiga".
+
+Go inside, and just "git clone https://github.com/kas1e/Odyssey/odyssey-r155188-1.23"
+
+You should end up with odysseys code being in /amiga/odyssey-r155188-1.23/
+
+=== Compiling.
+
+To build Odyssey you will need to build those parts:
+
+libwtf.a          - commonly used functions all over the whole WebKit
+libjsc.a          - JavaScript
+libwebcore.a      - the core of WebKit. The bigger of all parts which take almost 80% of the whole build process.
+libwebkit-owb.a   - that our native Amiga code, with all the MUI-GUI code and related parts.
+main.cpp          - that our main launcher file.
+
+and then link it all together. 
+
+Currently, I clean it all as much as possible to make it all automatic process, but still at end you need to do manual steps: compile main.cpp and link it all together.
+
+You can, of course, put it later to some script if you wish until things not fixed better.
+
+So, firstly we generate via Cmake all the makefiles need it for the build process, by issuing this big-fat command (being in the root of the downloaded repo):
+
+
+cmake \
+    -DCMAKE_CROSSCOMPILING=ON \
+    -DCMAKE_TOOLCHAIN_FILE=./amigaos4.cmake \
+    -DCMAKE_MODULE_PATH=../cmake \
+    -DUSE_GRAPHICS="MORPHOS" \
+    -DUSE_FONTS="FREETYPE" \
+    -DUSE_TIMER="MORPHOS" \
+    -DBUILD_SHARED_LIBS="NO" \
+    -DUSE_THREADS="MORPHOS" \
+    -DWITH_OWB_CONFIG_DIR="PROGDIR:owb.conf" \
+    -DENABLE_MULTIPLE_THREADS=OFF \
+    -DENABLE_ACCESSIBILITY:BOOL=ON \
+    -DENABLE_BLOB:BOOL=ON \
+    -DENABLE_ACCESSIBILITY:BOOL=ON \
+    -DENABLE_BLOB:BOOL=ON \
+    -DENABLE_DATALIST:BOOL=ON \
+    -DENABLE_DOM_STORAGE:BOOL=ON \
+    -DENABLE_EVENTSOURCE:BOOL=ON \
+    -DENABLE_FILE_SYSTEM:BOOL=ON \
+    -DENABLE_FILTERS:BOOL=ON \
+    -DENABLE_ICONDATABASE:BOOL=ON \
+    -DENABLE_INSPECTOR:BOOL=ON \
+    -DENABLE_JIT_JSC:BOOL=OFF \
+    -DENABLE_MATHML:BOOL=ON \
+    -DENABLE_MEDIA_STATISTICS:BOOL=ON \
+    -DENABLE_METER_TAG:BOOL=ON \
+    -DENABLE_NOTIFICATIONS:BOOL=ON \
+    -DENABLE_NPAPI:BOOL=ON \
+    -DENABLE_OFFLINE_DYNAMIC_ENTRIES:BOOL=ON \
+    -DENABLE_OFFLINE_WEB_APPLICATIONS:BOOL=ON \
+    -DENABLE_PROGRESS_TAG:BOOL=ON \
+    -DENABLE_REQUEST_ANIMATION_FRAME:BOOL=ON \
+    -DENABLE_RUBY:BOOL=ON \
+    -DENABLE_SANDBOX:BOOL=ON \
+    -DENABLE_SQL_DATABASE:BOOL=ON \
+    -DENABLE_SVG:BOOL=ON \
+    -DENABLE_SVG_ANIMATION:BOOL=ON \
+    -DENABLE_SVG_AS_IMAGE:BOOL=ON \
+    -DENABLE_SVG_FONTS:BOOL=ON \
+    -DENABLE_SVG_FOREIGN_OBJECT:BOOL=ON \
+    -DENABLE_SVG_USE_ELEMENT:BOOL=ON \
+    -DENABLE_WEB_SOCKETS:BOOL=ON \
+    -DENABLE_WEB_TIMING:BOOL=ON \
+    -DENABLE_XPATH:BOOL=ON \
+    -DENABLE_XSLT:BOOL=ON \
+    -DENABLE_TESTS:BOOL=OFF \
+    -DENABLE_TESTS_CPPUNIT:BOOL=OFF \
+    -DENABLE_YARR:BOOL=ON
+
+
+
+Then we just do "make -f Makefile owb -j4"
+
+-j4 is to use 4 cores to speed the compilation process.
+
+If all will go fine, everything will build till the end, and fail to build main.cpp with words "wtf/Compiler.h" not found.
+
+So you build our main.cpp manually:
+
+cd /amiga/odyssey-r155188-1.23/Tools/OWBLauncher/MorphOS
+
+ppc-amigaos-g++.exe -mlongcall -D__MORPHOS__ -D__USE_INLINE__ -std=gnu++0x -Wno-expansion-to-defined -Wall -W  -Wno-parentheses -fno-exceptions \
+-I/usr/local/amiga/ppc-amigaos/SDK/local/common/include/cairo \
+-I/amiga/odyssey-r155188-1.23/Base \
+-I/amiga/odyssey-r155188-1.23/Base/wtf \
+-I/amiga/odyssey-r155188-1.23/Source/WebKit/OrigynWebBrowser/Api/MorphOS \
+-I/amiga/odyssey-r155188-1.23/Source/JavaScriptCore \
+-I/amiga/odyssey-r155188-1.23/Source/WTF \
+-I/amiga/odyssey-r155188-1.23/Source/WebCore/platform \
+-I/amiga/odyssey-r155188-1.23/Source/JavaScriptCore/runtime/ \
+-c main.cpp -O2 -o ../CMakeFiles/owb.dir/MorphOS/main.cpp.obj
+
+=== Linking.
+
+And then just link everything:
+
+cd /amiga/odyssey-r155188-1.23/
+
+ppc-amigaos-gcc -athread=single -static Tools/OWBLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj -o Odyssey \
+-Llib lib/libwebkit-owb.a -lwebcore -ljsc -lwtf -lcairo -lpixman-1 -lfontconfig_our_working -lfreetype -lcurl_7.28.1 \
+-lrtmp -ljpeg -lpng12 -lsqlite3 -lxslt -lavdevice -lavformat -lavcodec -lavutil -lswscale -lswresample -lxml2 -lexpat \
+-lbz2 -lssl -lcrypto -licui18n -licuuc -licudata -lpthread -ldebug -laos4deps -lauto -lz -lstdc++
+
+
+Done! Your "Odyssey" binary placed in the root folder of your Odyssey's repo. Take a release archive from os4depot, and replace binary with a new one to do tests.
+
+=== Q/A
+
+Q: Where is MorphOS and AmigaOS4 specific code ?
+A: It's placed all over the code (search for "amigaos4" in all .cpp and .h files, as well as for "MORPHOS". Also do check for all file names contains "morphos" in the name, some files just taken as it from MorphOS).
+A little bit of changes in the "WTF" part , then massive amount of work over GUI in the "webkit-owb" part, and a very little changes in "webcore". Also "main.cpp".
+Almost all GUI based code placed in the Source/WebKit/OrigynWebBrowser/API/
+

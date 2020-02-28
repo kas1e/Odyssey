@@ -1,0 +1,11 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libwebkit-owb
+Description: Web rendering library based on webkit.
+Version: 2.0
+Requires: 
+Libs: -L${libdir} -lwebkit-owb
+Cflags: -DWTF_PLATFORM_MORPHOS    -DENABLE_SQL_DATABASE -DENABLE_ICONDATABASE -I${includedir}/webkit-owb

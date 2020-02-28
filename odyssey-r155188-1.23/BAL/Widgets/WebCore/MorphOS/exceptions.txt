@@ -1,0 +1,7 @@
+BCClipboardMorphOS.h ClipboardMorphOS.h
+BCRenderThemeMorphOS.h RenderThemeMorphOS.h
+BCScrollbarThemeMorphOS.h ScrollbarThemeMorphOS.h
+CursorMorphOS.h
+PasteboardHelperMorphOS.h PasteboardHelperMorphOS.h
+BCPopupMenuMorphOS.h PopupMenuMorphOS.h
+BCSearchPopupMenuMorphOS.h SearchPopupMenuMorphOS.h

@@ -1,0 +1,181 @@
+Source/JavaScriptCore/parser/Lexer.cpp
+Source/WTF/wtf/Assertions.h BAL/Types/WTF/BCAssertionsWTF.h
+Source/WTF/wtf/Assertions.cpp BAL/Types/WTF/BCAssertionsWTF.cpp
+Source/WTF/wtf/CurrentTime.cpp BAL/Types/WTF/BCCurrentTimeWTF.cpp
+Source/WTF/wtf/CurrentTime.h BAL/Types/WTF/BCCurrentTimeWTF.h
+Source/WTF/wtf/DateMath.cpp	 BAL/Types/WTF/BCDateMathWTF.cpp
+Source/WTF/wtf/FastMalloc.cpp BAL/Memory/WTF/BCFastMallocWTF.cpp
+Source/WTF/wtf/FastMalloc.h BAL/Memory/WTF/BCFastMallocWTF.h
+Source/WTF/wtf/MathExtras.h BAL/Types/WTF/BCMathExtrasWTF.h
+Source/WTF/wtf/Platform.h Base/wtf/Platform.h
+Source/WTF/wtf/TCSpinLock.h BAL/Types/WTF/BCTCSpinLockWTF.h
+Source/WTF/wtf/TCSystemAlloc.cpp BAL/Memory/WTF/BCTCSystemAllocWTF.cpp
+Source/WTF/wtf/ThreadSpecific.h BAL/Types/WTF/BCThreadSpecificWTF.h
+Source/WTF/wtf/MainThread.cpp BAL/Types/WTF/BCMainThreadWTF.cpp
+Source/WTF/wtf/MainThread.h BAL/Types/WTF/BCMainThreadWTF.h
+Source/WTF/wtf/OSRandomSource.cpp BAL/Facilities/WTF/BCOSRandomSourceWTF.cpp
+Source/WTF/wtf/PageReservation.h BAL/Types/WTF/BCPageReservationWTF.h
+Source/WTF/wtf/PageAllocation.h BAL/Types/WTF/BCPageAllocationWTF.h
+Source/WTF/wtf/PageBlock.cpp BAL/Types/WTF/BCPageBlockWTF.cpp
+Source/WTF/wtf/PageAllocationAligned.cpp BAL/Types/WTF/BCPageAllocationAlignedWTF.cpp
+Source/WTF/wtf/RAMSize.cpp BAL/Types/WTF/BCRAMSizeWTF.cpp
+Source/WTF/wtf/StackBounds.cpp BAL/Types/WTF/BCStackBoundsWTF.cpp
+Source/WTF/wtf/unicode/Collator.h BAL/Internationalization/WTF/BCCollatorWTF.h
+Source/WTF/wtf/unicode/CollatorDefault.cpp BAL/Internationalization/WTF/BCCollatorDefaultWTF.cpp
+Source/WTF/wtf/unicode/icu/CollatorICU.cpp BAL/Internationalization/WTF/ICU/BCCollatorICU.cpp
+Source/WTF/wtf/unicode/icu/UnicodeIcu.h BAL/Internationalization/WTF/ICU/BCUnicodeICU.h
+Source/WebCore/accessibility/AccessibilityObject.h
+Source/WebCore/bindings/js/JSCustomXPathNSResolver.cpp
+Source/WebCore/bindings/js/JSDOMWindowBase.cpp
+Source/WebCore/bindings/js/JSDOMWindowCustom.cpp
+Source/WebCore/bindings/js/JSEventCustom.cpp
+Source/WebCore/bindings/js/JSEventListener.cpp
+Source/WebCore/bindings/js/JSHTMLObjectElementCustom.cpp
+Source/WebCore/bindings/js/JSInjectedScriptHostCustom.cpp
+Source/WebCore/bindings/js/JSInspectorFrontendHostCustom.cpp
+Source/WebCore/bindings/js/JSPluginElementFunctions.cpp
+Source/WebCore/bindings/js/JSPluginElementFunctions.h
+Source/WebCore/bindings/js/JSWorkerContextBase.cpp
+Source/WebCore/bindings/js/ScriptController.cpp
+Source/WebCore/bridge/c/c_instance.cpp
+Source/WebCore/bridge/jsc/BridgeJSC.cpp
+Source/WebCore/css/CSSParser.cpp
+Source/WebCore/css/CSSParser.h
+Source/WebCore/dom/ActiveDOMObject.cpp
+Source/WebCore/dom/Clipboard.h
+Source/WebCore/dom/Document.cpp
+Source/WebCore/dom/Document.h
+Source/WebCore/dom/Element.cpp
+Source/WebCore/dom/Event.h
+Source/WebCore/dom/EventNames.h
+Source/WebCore/dom/KeyboardEvent.cpp
+Source/WebCore/dom/KeyboardEvent.h
+Source/WebCore/dom/KeyboardEvent.idl
+Source/WebCore/dom/ScriptExecutionContext.cpp
+Source/WebCore/dom/make_names.pl
+Source/WebCore/dom/ViewportArguments.cpp
+Source/WebCore/editing/Editor.cpp
+Source/WebCore/editing/TextIterator.cpp
+Source/WebCore/editing/EditingBehavior.h
+Source/WebCore/html/HTMLDocument.cpp
+Source/WebCore/html/HTMLFormElement.cpp
+Source/WebCore/html/HTMLInputElement.cpp
+Source/WebCore/html/HTMLMediaElement.cpp
+Source/WebCore/html/HTMLObjectElement.cpp
+Source/WebCore/html/HTMLObjectElement.idl
+Source/WebCore/html/HTMLSelectElement.cpp
+Source/WebCore/loader/cache/CachedImage.h
+Source/WebCore/loader/cache/CachedImage.cpp
+Source/WebCore/loader/cache/CachedResourceLoader.cpp
+Source/WebCore/loader/CrossOriginAccessControl.cpp
+Source/WebCore/loader/EmptyClients.h
+Source/WebCore/loader/FrameLoader.cpp
+Source/WebCore/loader/FrameLoader.h
+Source/WebCore/loader/FrameLoaderClient.h
+Source/WebCore/loader/ResourceLoadNotifier.cpp
+Source/WebCore/loader/ThreadableLoader.cpp
+Source/WebCore/loader/ResourceLoader.cpp
+Source/WebCore/loader/ResourceLoader.h
+Source/WebCore/loader/icon/IconDatabase.cpp
+Source/WebCore/page/Chrome.cpp
+Source/WebCore/page/Chrome.h
+Source/WebCore/page/Console.cpp
+Source/WebCore/page/ContextMenuController.h
+Source/WebCore/page/ContextMenuController.cpp
+Source/WebCore/page/DOMTimer.cpp
+Source/WebCore/page/DOMWindow.cpp
+Source/WebCore/page/DOMWindow.h
+Source/WebCore/page/DOMWindow.idl
+Source/WebCore/page/EventHandler.cpp
+Source/WebCore/page/FocusController.cpp
+Source/WebCore/page/FrameView.cpp
+Source/WebCore/page/Navigator.cpp
+Source/WebCore/page/Page.cpp
+Source/WebCore/page/Settings.cpp
+Source/WebCore/platform/Arena.h BAL/Memory/WebCore/WK/BCArenaWK.h
+Source/WebCore/platform/AsyncFileSystem.cpp BAL/Filesystem/WebCore/WK/BCAsyncFileSystemWK.cpp
+Source/WebCore/platform/ContextMenu.h  BAL/Widgets/WebCore/WK/BCContextMenuWK.h
+Source/WebCore/platform/ContextMenu.cpp BAL/Widgets/WebCore/WK/BCContextMenuWK.cpp
+Source/WebCore/platform/DragData.h BAL/Graphics/WebCore/WK/BCDragDataWK.h
+Source/WebCore/platform/DragImage.h BAL/Graphics/WebCore/WK/BCDragImageWK.h
+Source/WebCore/platform/DragImage.cpp BAL/Graphics/WebCore/WK/BCDragImageWK.cpp
+Source/WebCore/platform/KURL.cpp BAL/Types/WebCore/WK/BCKURLWK.cpp
+Source/WebCore/platform/LocalizedStrings.h BAL/Internationalization/WebCore/WK/BCLocalizedStringsWK.h
+Source/WebCore/platform/Logging.cpp BAL/Facilities/WebCore/WK/BCLoggingWK.cpp
+Source/WebCore/platform/Logging.h BAL/Facilities/WebCore/WK/BCLoggingWK.h
+Source/WebCore/platform/MIMETypeRegistry.h BAL/Facilities/WebCore/WK/BCMIMETypeRegistryWK.h
+Source/WebCore/platform/MIMETypeRegistry.cpp BAL/Facilities/WebCore/WK/BCMIMETypeRegistryWK.cpp
+Source/WebCore/platform/NotImplemented.h Base/NotImplemented.h
+Source/WebCore/platform/PopupMenuClient.h BAL/Widgets/WebCore/WK/BCPopupMenuClientWK.h
+Source/WebCore/platform/PurgeableBuffer.h BAL/Types/WebCore/WK/BCPurgeableBufferWK.h
+Source/WebCore/platform/Scrollbar.cpp    BAL/Widgets/WebCore/WK/BCScrollbarWK.cpp
+Source/WebCore/platform/ScrollView.cpp BAL/Widgets/WebCore/WK/BCScrollViewWK.cpp
+Source/WebCore/platform/Widget.h BAL/Widgets/WebCore/WK/BCWidgetWK.h
+Source/WebCore/platform/graphics/freetype/FontCacheFreeType.cpp BAL/Fonts/WebCore/Freetype/BCFontCacheFreeTypeFreeType.cpp
+Source/WebCore/platform/graphics/freetype/FontPlatformDataFreeType.cpp BAL/Fonts/WebCore/Freetype/BCFontPlatformDataFreeTypeFreeType.cpp
+Source/WebCore/platform/graphics/BitmapImage.cpp BAL/Graphics/WebCore/WK/BCBitmapImageWK.cpp
+Source/WebCore/platform/graphics/cairo/FontCairo.cpp BAL/Fonts/WebCore/Cairo/BCFontCairo.cpp
+Source/WebCore/platform/graphics/GraphicsContext.h BAL/Graphics/WebCore/WK/BCGraphicsContextWK.h
+Source/WebCore/platform/graphics/GraphicsContext.cpp BAL/Graphics/WebCore/WK/BCGraphicsContextWK.cpp
+Source/WebCore/platform/graphics/IntRect.h BAL/Graphics/WebCore/WK/BCIntRectWK.h
+Source/WebCore/platform/graphics/MediaPlayer.cpp BAL/Media/WebCore/WK/BCMediaPlayerWK.cpp
+Source/WebCore/platform/graphics/MediaPlayer.h BAL/Media/WebCore/WK/BCMediaPlayerWK.h
+Source/WebCore/platform/graphics/MediaPlayerPrivate.h BAL/Media/WebCore/WK/BCMediaPlayerPrivateWK.h
+Source/WebCore/platform/graphics/WidthIterator.cpp BAL/Fonts/WebCore/WK/BCWidthIteratorWK.cpp
+Source/WebCore/platform/graphics/FontPlatformData.h BAL/Fonts/WebCore/WK/BCFontPlatformDataWK.h
+Source/WebCore/platform/graphics/cairo/GraphicsContextCairo.cpp BAL/Graphics/WebCore/Cairo/BCGraphicsContextCairo.cpp
+Source/WebCore/platform/graphics/gstreamer/ImageGStreamer.h BAL/Media/WebCore/GStreamer/BCImageGStreamer.h
+Source/WebCore/platform/graphics/gstreamer/ImageGStreamerCairo.cpp BAL/Media/WebCore/GStreamer/BCImageGStreamerCairoGStreamer.cpp
+Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp BAL/Media/WebCore/GStreamer/BCMediaPlayerPrivateGStreamer.cpp
+Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.h BAL/Media/WebCore/GStreamer/BCMediaPlayerPrivateGStreamer.h
+Source/WebCore/platform/graphics/gstreamer/WebKitWebSourceGStreamer.cpp BAL/Media/WebCore/GStreamer/BCWebKitWebSourceGStreamer.cpp
+Source/WebCore/platform/graphics/TiledBackingStoreClient.h BAL/Graphics/WebCore/WK/BCTiledBackingStoreClientWK.h
+Source/WebCore/platform/image-decoders/ImageDecoder.cpp BAL/ImageDecoder/WebCore/WK/BCImageDecoderWK.cpp
+Source/WebCore/platform/image-decoders/jpeg/JPEGImageDecoder.h BAL/ImageDecoder/WebCore/JPEG/WK/BCJPEGImageDecoderWK.h
+Source/WebCore/platform/image-decoders/jpeg/JPEGImageDecoder.cpp BAL/ImageDecoder/WebCore/JPEG/WK/BCJPEGImageDecoderWK.cpp
+Source/WebCore/platform/image-decoders/png/PNGImageDecoder.cpp BAL/ImageDecoder/WebCore/PNG/WK/BCPNGImageDecoderWK.cpp
+Source/WebCore/platform/WindowsKeyboardCodes.h BAL/Events/WebCore/WK/BCWindowsKeyboardCodesWK.h
+Source/WebCore/platform/network/DataURL.cpp BAL/Network/WebCore/WK/BCDataURLWK.cpp
+Source/WebCore/platform/network/ResourceHandle.h BAL/Network/WebCore/WK/BCResourceHandleWK.h
+Source/WebCore/platform/network/ResourceHandleClient.h BAL/Network/WebCore/WK/BCResourceHandleClientWK.h
+Source/WebCore/platform/network/ResourceHandleInternal.h BAL/Network/WebCore/WK/BCResourceHandleInternalWK.h
+Source/WebCore/platform/network/SocketStreamHandleBase.cpp BAL/Network/WebCore/WK/BCSocketStreamHandleBaseWK.cpp
+Source/WebCore/platform/network/curl/AuthenticationChallenge.h BAL/Network/WebCore/Curl/BCAuthenticationChallengeCurl.h
+Source/WebCore/platform/network/curl/CookieJarCurl.cpp BAL/Network/WebCore/Curl/BCCookieJarCurl.cpp
+Source/WebCore/platform/network/curl/ResourceHandleCurl.cpp BAL/Network/WebCore/Curl/BCResourceHandleCurl.cpp
+Source/WebCore/platform/network/curl/ResourceHandleManager.cpp BAL/Network/WebCore/Curl/BCResourceHandleManagerCurl.cpp
+Source/WebCore/platform/network/curl/ResourceHandleManager.h BAL/Network/WebCore/Curl/BCResourceHandleManagerCurl.h
+Source/WebCore/platform/network/curl/SocketStreamHandleCurl.cpp BAL/Network/WebCore/Curl/BCSocketStreamHandleCurl.cpp
+Source/WebCore/platform/network/curl/SocketStreamHandle.h BAL/Network/WebCore/Curl/BCSocketStreamHandleCurl.h
+Source/WebCore/platform/posix/FileSystemPOSIX.cpp BAL/Filesystem/WebCore/Posix/BCFileSystemPosix.cpp
+Source/WebCore/platform/sql/SQLiteDatabase.cpp BAL/Database/WebCore/SQLite/BCSQLiteDatabaseSQLite.cpp
+Source/WebCore/platform/sql/SQLiteFileSystem.cpp BAL/Database/WebCore/SQLite/BCSQLiteFileSystemSQLite.cpp
+Source/WebCore/platform/text/TextEncoding.cpp BAL/Internationalization/WebCore/WK/BCTextEncodingWK.cpp
+Source/WebCore/platform/text/TextEncodingDetectorICU.cpp BAL/Internationalization/WebCore/ICU/BCTextEncodingDetectorICU.cpp
+Source/WebCore/plugins/PluginView.cpp
+Source/WebCore/plugins/PluginView.h
+Source/WebCore/plugins/PluginViewNone.cpp
+Source/WebCore/rendering/RenderLayerCompositor.h
+Source/WebCore/rendering/RenderListBox.cpp
+Source/WebCore/rendering/RenderMenuList.cpp
+Source/WebCore/rendering/RenderMenuList.h
+Source/WebCore/rendering/RenderObject.cpp
+Source/WebCore/rendering/RenderObjectChildList.cpp
+Source/WebCore/rendering/RenderTableRow.cpp
+Source/WebCore/rendering/RenderText.cpp
+Source/WebCore/rendering/RenderTextControl.cpp
+Source/WebCore/rendering/RenderTextControlSingleLine.h
+Source/WebCore/rendering/RenderWidget.cpp
+Source/WebCore/storage/StorageNamespace.cpp
+Source/WebCore/svg/SVGDocumentExtensions.cpp
+Source/WebCore/svg/graphics/SVGImage.cpp
+Source/WebCore/workers/AbstractWorker.cpp
+Source/WebCore/workers/Worker.cpp
+Source/WebCore/workers/WorkerContext.cpp
+Source/WebCore/workers/WorkerContext.h
+Source/WebCore/workers/WorkerMessagingProxy.cpp
+Source/WebCore/workers/WorkerThread.cpp
+Source/WebCore/xml/XMLHttpRequest.cpp
+Source/WebCore/xml/XSLStyleSheetLibxslt.cpp
+Source/WebCore/xml/XSLTProcessorLibxslt.cpp
+Tools/Scripts/svn-apply

@@ -1,0 +1,4 @@
+BCMediaPlayerPrivateGStreamer.h MediaPlayerPrivateGStreamer.h
+BCDataSourceGStreamer.h DataSourceGStreamer.h
+BCWebKitWebSourceGStreamer.h WebKitWebSourceGStreamer.h
+BCImageGStreamer.h ImageGStreamer.h

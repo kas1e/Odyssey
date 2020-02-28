@@ -1,0 +1,10 @@
+BCbignum-dtoadtoa.h		bignum-dtoa.h
+BCbignumdtoa.h			bignum.h
+BCcached-powersdtoa.h		cached-powers.h
+BCdiy-fpdtoa.h			diy-fp.h
+BCdouble-conversiondtoa.h	double-conversion.h
+BCdoubledtoa.h			double.h
+BCfast-dtoadtoa.h		fast-dtoa.h
+BCfixed-dtoadtoa.h		fixed-dtoa.h
+BCstrtoddtoa.h			strtod.h
+BCutilsdtoa.h			utils.h

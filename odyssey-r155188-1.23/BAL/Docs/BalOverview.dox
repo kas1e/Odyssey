@@ -1,0 +1,50 @@
+/*!
+@page BalOverview BAL Overview
+
+<div class="header">
+<center>\< @ref QuickStart | @ref OrigynWebBrowser | @ref Contents \></center>
+<hr>
+</div>
+
+@section Introduction
+
+BAL stands for Browser Abstraction Layer. Its purpose is to make port to another platform easy and quick.
+In the next section @Principles is detailled principles that conduct BAL abstraction.
+The chapter @BalModules details interfaces and behaviour specification, module per module.
+
+@section Principles
+
+@subsection Skeletons
+
+BAL abstraction is based on skeletons. Skeletons are BAL classes descriptions. 
+the skeletons are generated from platform and wtf directories.
+These classes contains all methods and doxygen descriptions. No default implementation is tolerated.
+All classes in concretizations are generated from skeletons.
+As a convention, interfaces are part of the namespace OWBAL/WKAL, and are named .t .
+
+@subsection Concretisation
+
+Concretisation are construc by the skeletons, with the implementation of the given methods.
+It is sometimes referred to as a component. The convention is to place such class in the OWBAL/WKAL namespace, to prefix it with a BC and to suffix by the concretization name ( SDL/GTK/Linux...) .
+
+
+@subsection OWBAL/WKAL
+
+BAL is splitted in two namespaces, OWBAL and WKAL. WKAL can be have dependance in WebCore but OWBAL no. OWBAL is only platform dependant.
+
+@section BalModules BAL modules
+
+ - @ref Database
+ - @ref Events
+ - @ref Facilities
+ - @ref Fonts 
+ - @ref Graphics
+ - @ref ImageDecoders
+ - @ref Internationalization
+ - @ref Media 
+ - @ref Memory
+ - @ref Network
+ - @ref Types (to be completed)
+ - @ref Widgets
+
+*/

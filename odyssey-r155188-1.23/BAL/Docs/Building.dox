@@ -1,0 +1,43 @@
+/*!
+@page Building Building
+
+<div class="header">
+<center>\< @ref QuickStart | @ref OrigynWebBrowser | @ref Contents \></center>
+<hr>
+</div>
+
+How to build.
+
+@section Requirements
+
+One may use a gentoo base SDK environment, or a simple svn checkout.
+
+See http://www.sand-labs.org/owb/wiki
+
+@section QuickBuild Quick Build
+
+In a gentoo environment:
+@verbatim
+$ emerge owb
+@endverbatim
+
+After a checkout:
+@verbatim
+$ cd builddir
+$ ccmake srcdir
+$ make
+@endverbatim
+
+@section BuildingDocumentation Building Documentation
+
+If you have Doxygen available, you can
+build this documentation from the source code:
+
+@verbatim
+$ cd BAL/Docs
+$ doxygen
+@endverbatim
+
+The documentation will be generated into the html directory.
+
+*/

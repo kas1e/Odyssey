@@ -1,0 +1,14 @@
+Please _NO_ other-browser release-forks!
+
+You can't just change a few bits there, and release another "some_browser". By doing this you kill all motivation to continue working on.
+WebKit is free, but all Amiga (GUI and stuff) specific code there are hard work of some peoples (Fab, Joerg, DeadWood, Daniel_onyxsoft & Kas1e), who do not want situations when a source is taken, some things changed,
+and released like some other browser with some other name. So please respect that even if you didn't like.
+
+If you wish to fix and improve things there, all should be put back to that repo, so later another version of Odyssey can be released.
+
+All help appreciated, be it pull-request, patches, forum topics or whatever, but please no release-forks of Odyssey, calling it "somename_Odyssey" or "some_other_browser". If you wish your own
+browser and control how things should be done, just take WebKit source code and do whatever you want with taking those amiga-specific parts from Odyssey as reference.
+
+And of course, it is absolutely not allowed to take that code, and making commercial releases of all sorts, be it Enhancer, OS4, or whatever else.
+
+Probably there weren't big needs to explain an obvious, but just in case someone will find the idea of taking it all, changing a name, few bits with build date and made another "browser" as something worthy. So please NO. Thanks!

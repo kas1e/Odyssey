@@ -1,0 +1,98 @@
+list(APPEND WEBCORE_SRC
+    html/canvas/CanvasContextAttributes.cpp
+    html/canvas/CanvasGradient.cpp
+    html/canvas/CanvasPathMethods.cpp
+    html/canvas/CanvasPattern.cpp
+    html/canvas/CanvasProxy.cpp   
+    html/canvas/CanvasRenderingContext.cpp
+    html/canvas/CanvasRenderingContext2D.cpp
+    html/canvas/CanvasStyle.cpp
+) 
+
+list(APPEND IDL_SRC
+    html/canvas/CanvasGradient.idl
+    html/canvas/CanvasPattern.idl
+    html/canvas/CanvasProxy.idl
+    html/canvas/CanvasRenderingContext2D.idl
+    html/canvas/CanvasRenderingContext.idl
+    html/canvas/DOMPath.idl 
+    html/canvas/OESStandardDerivatives.idl
+    html/canvas/WebGLRenderingContext.idl
+    html/canvas/WebGLContextAttributes.idl
+    html/canvas/WebGLDebugRendererInfo.idl 
+    html/canvas/WebGLDebugShaders.idl
+    html/canvas/WebGLFramebuffer.idl
+    html/canvas/WebGLProgram.idl
+    html/canvas/WebGLRenderbuffer.idl
+    html/canvas/WebGLShader.idl
+    html/canvas/WebGLShaderPrecisionFormat.idl
+    html/canvas/WebGLTexture.idl
+    html/canvas/EXTTextureFilterAnisotropic.idl
+)
+
+if(ENABLE_3D_CANVAS)
+    list(APPEND WEBCORE_SRC
+        html/canvas/EXTDrawBuffers.cpp
+        html/canvas/EXTTextureFilterAnisotropic.cpp
+    	html/canvas/OESStandardDerivatives.cpp
+   	html/canvas/OESTextureFloat.cpp
+	html/canvas/OESTextureHalfFloat.cpp
+    	html/canvas/OESVertexArrayObject.cpp
+	html/canvas/OESElementIndexUint.cpp
+    	html/canvas/WebGLBuffer.cpp
+	html/canvas/WebGLCompressedTextureATC.cpp
+	html/canvas/WebGLCompressedTexturePVRTC.cpp    
+    	html/canvas/WebGLCompressedTextureS3TC.cpp
+    	html/canvas/WebGLContextAttributes.cpp
+    	html/canvas/WebGLContextEvent.cpp
+    	html/canvas/WebGLContextGroup.cpp
+    	html/canvas/WebGLContextObject.cpp
+    	html/canvas/WebGLDebugRendererInfo.cpp
+    	html/canvas/WebGLDebugShaders.cpp
+	html/canvas/WebGLDepthTexture.cpp
+    	html/canvas/WebGLExtension.cpp
+    	html/canvas/WebGLFramebuffer.cpp
+	html/canvas/WebGLGetInfo.cpp
+    	html/canvas/WebGLLoseContext.cpp
+    	html/canvas/WebGLObject.cpp
+    	html/canvas/WebGLProgram.cpp
+    	html/canvas/WebGLRenderbuffer.cpp
+    	html/canvas/WebGLRenderingContext.cpp
+    	html/canvas/WebGLShader.cpp
+    	html/canvas/WebGLShaderPrecisionFormat.cpp
+    	html/canvas/WebGLSharedObject.cpp
+    	html/canvas/WebGLTexture.cpp
+    	html/canvas/WebGLUniformLocation.cpp
+    	html/canvas/WebGLVertexArrayObjectOES.cpp
+    )
+    list(APPEND IDL_SRC
+        html/canvas/EXTDrawBuffers.idl
+        html/canvas/EXTTextureFilterAnisotropic.idl
+	html/canvas/OESStandardDerivatives.idl
+        html/canvas/OESTextureFloat.idl
+	html/canvas/OESTextureHalfFloat.idl
+	html/canvas/OESVertexArrayObject.idl
+	html/canvas/OESElementIndexUint.idl
+    	html/canvas/WebGLActiveInfo.idl
+    	html/canvas/WebGLBuffer.idl
+	html/canvas/WebGLCompressedTextureATC.idl 
+	html/canvas/WebGLCompressedTexturePVRTC.idl   
+    	html/canvas/WebGLCompressedTextureS3TC.idl
+    	html/canvas/WebGLContextAttributes.idl
+    	html/canvas/WebGLContextEvent.idl
+    	html/canvas/WebGLDebugRendererInfo.idl
+    	html/canvas/WebGLDebugShaders.idl
+    	html/canvas/WebGLDepthTexture.idl
+    	html/canvas/WebGLFramebuffer.idl
+    	html/canvas/WebGLLoseContext.idl
+    	html/canvas/WebGLProgram.idl
+    	html/canvas/WebGLRenderbuffer.idl
+    	html/canvas/WebGLRenderingContext.idl
+    	html/canvas/WebGLShader.idl
+    	html/canvas/WebGLShaderPrecisionFormat.idl
+    	html/canvas/WebGLTexture.idl
+    	html/canvas/WebGLUniformLocation.idl
+    	html/canvas/WebGLVertexArrayObjectOES.idl
+    )
+endif(ENABLE_3D_CANVAS)
+

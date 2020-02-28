@@ -1,0 +1,57 @@
+#if(USE_I18N STREQUAL "EMBEDDED")
+#    set(I18N_INCLUDE_DIRS ${OWB_SOURCE_DIR}/JavaScriptCore/icu)
+#
+#    set(USE_I18N_EMBEDDED TRUE)
+#    mark_as_advanced(USE_I18N_EMBEDDED)
+#endif(USE_I18N STREQUAL "EMBEDDED")
+
+#if(USE_I18N STREQUAL "GLIB")
+#    pkg_check_modules(I18NGLIB REQUIRED glib-2.0)
+#    pkg_check_modules(I18NPANGO REQUIRED pango)
+#    find_package(ICU REQUIRED)
+#    if(NOT ICU_FOUND)
+#        message(FATAL_ERROR "icu package not found. Install it to be able to compile owb.")
+#    endif(NOT ICU_FOUND)
+#    set(I18N_INCLUDE_DIRS ${I18NGLIB_INCLUDE_DIRS} ${I18NPANGO_INCLUDE_DIRS} ${ICU_INCLUDE})
+#    set(I18N_LIBRARIES ${I18NGLIB_LIBRARIES} ${I18NPANGO_LIBRARIES} ${ICU_LIBRARY})
+#
+#    set(USE_I18N_GLIB TRUE)
+#    mark_as_advanced(USE_I18N_GLIB)
+#	 set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libicu40 (>= 4.0.1-2ubuntu2), libglib2.0-0 (>= 2.22.3-0ubuntu1), libpango1.0-0 (>= 1.26.0-1)")
+#endif(USE_I18N STREQUAL "GLIB")
+
+#if(USE_I18N STREQUAL "ICU")
+#	 IF(NOT WIN32)
+#		 find_package(ICU REQUIRED)
+#		 if(NOT ICU_FOUND)
+#			 message(FATAL_ERROR "icu package not found. Install it to be able to compile owb.")
+#		 endif(NOT ICU_FOUND)
+#	 ELSE(NOT WIN32)
+#		 ## We haven't got a good pkg-config under Windows so we let cmake search libs
+#		 find_path(ICU_INC pwin32.h ${WINLIB_INC_PATH} ${WINLIB_INC_PATH}/icu ${WINLIB_INC_PATH}/unicode)
+#		 find_path(ICONV_INC iconv.h ${WINLIB_INC_PATH} ${WINLIB_INC_PATH}/iconv)
+#		 SET(ICU_INCLUDE ${ICU_INC} ${ICONV_INC})
+#		 find_file(ICUDT_LIB icudt.lib ${WINLIB_LIB_PATH} ${WINLIB_LIB_PATH}/icu ${WINLIB_LIB_PATH}/unicode)
+#		 find_file(ICUUCD_LIB icuucd.lib ${WINLIB_LIB_PATH} ${WINLIB_LIB_PATH}/icu ${WINLIB_LIB_PATH}/unicode)
+#		 find_file(ICONV_LIB libiconv.lib ${WINLIB_LIB_PATH} ${WINLIB_LIB_PATH}/iconv)
+#		 SET(ICU_LIBRARY ${ICUUCD_LIB} ${ICUDT_LIB} ${ICONV_LI})
+#	 ENDIF(NOT WIN32)
+#
+#    set(I18N_INCLUDE_DIRS ${ICU_INCLUDE})
+#    set(I18N_LIBRARIES ${ICU_LIBRARY})
+#
+    set(USE_I18N_ICU TRUE)
+    mark_as_advanced(USE_I18N_ICU)
+#	 set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libicu40 (>= 4.0.1-2ubuntu2)")
+#endif(USE_I18N STREQUAL "ICU")
+
+#if(USE_I18N STREQUAL "QT")
+#    pkg_check_modules(QTI18N REQUIRED QtCore)
+#    set(I18N_INCLUDE_DIRS ${QTI18N_INCLUDE_DIRS})
+#    set(I18N_LIBRARIES ${QTI18N_LIBRARY})
+#
+#    set(USE_I18N_QT TRUE)
+#    mark_as_advanced(USE_I18N_QT)
+#	 set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libqtcore4 (>= 4.5.3really4.5.2-0ubuntu1)")
+#endif(USE_I18N STREQUAL "QT")
+

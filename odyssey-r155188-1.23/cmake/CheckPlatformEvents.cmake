@@ -1,0 +1,7 @@
+if(USE_GRAPHICS MATCHES "^SDL*")
+    set(USE_EVENTS_SDL TRUE)
+    mark_as_advanced(USE_EVENTS_SDL)
+
+    set(USE_EVENTS_GENERIC TRUE)
+    mark_as_advanced(USE_EVENTS_GENERIC)
+endif(USE_GRAPHICS MATCHES "^SDL*")

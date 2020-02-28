@@ -1,0 +1,6 @@
+if(ENABLE_TESTS_CPPUNIT)
+    pkg_check_modules(CPPUNIT REQUIRED cppunit)
+    set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libcppunit-1.12-1 (>= 1.12.1-1)")
+    include(CTest)
+    enable_testing()
+endif(ENABLE_TESTS_CPPUNIT)

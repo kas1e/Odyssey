@@ -1,0 +1,11 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libwebkit-owb
+Description: Web rendering library based on webkit.
+Version: @WEBKIT_VERSION@
+Requires: @REQUIREMENT@
+Libs: -L${libdir} -lwebkit-owb
+Cflags: -DWTF_PLATFORM_@USE_GRAPHICS@ @DAE@ @BINDINGJS@ @WIDGETENGINE@ @DATABASE@ @ICONDATABASE@ -I${includedir}/webkit-owb

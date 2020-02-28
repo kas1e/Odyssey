@@ -1,0 +1,77 @@
+if(USE_FONTS STREQUAL "AMIGAOS4")
+    set(FONTS_INCLUDE_DIRS /usr/local/amiga/ppc-amigaos/SDK/local/newlib/include/fontconfig /usr/local/amiga/ppc-amigaos/SDK/local/newlib/include/freetype)
+    set(FONTS_LIBRARIES /usr/local/amiga/ppc-amigaos/SDK/local/newlib/lib/libfontconfig.so /usr/local/amiga/ppc-amigaos/SDK/local/newlib/lib/libfreetype.so)
+
+    set(USE_FONTS_AMIGAOS4 TRUE)
+    mark_as_advanced(USE_FONTS_AMIGAOS4)
+endif(USE_FONTS STREQUAL "AMIGAOS4")
+
+if(USE_FONTS STREQUAL "CAIRO")
+    pkg_check_modules(CAIRO REQUIRED cairo>=1.4)
+    pkg_check_modules(FONTCONFIG REQUIRED fontconfig>=2.4)
+#    pkg_check_modules(FREETYPE REQUIRED freetype2>=9.0)
+    set(FONTS_INCLUDE_DIRS ${CAIRO_INCLUDE_DIRS} ${FONTCONFIG_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
+    set(FONTS_LIBRARIES ${CAIRO_LIBRARIES} ${FONTCONFIG_LIBRARIES} ${FREETYPE_LIBRARIES})
+
+    set(USE_FONTS_CAIRO TRUE)
+    mark_as_advanced(USE_FONTS_CAIRO)
+    set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libfontconfig1 (>= 2.6.0-1ubuntu12), libfreetype6 (>= 2.3.9-5), libcairo2 (>= 1.8.8-2ubuntu1)")
+endif(USE_FONTS STREQUAL "CAIRO")
+
+if(USE_FONTS STREQUAL "EMBEDDED")
+    set(USE_FONTS_EMBEDDED TRUE)
+    mark_as_advanced(USE_FONTS_EMBEDDED)
+endif(USE_FONTS STREQUAL "EMBEDDED")
+
+if(USE_FONTS STREQUAL "FREETYPE")
+    IF(NOT WIN32)
+#        pkg_check_modules(FONTCONFIG REQUIRED fontconfig>=2.4)
+#        pkg_check_modules(FREETYPE REQUIRED freetype2>=9.0)
+    ELSE(NOT WIN32)
+        ## We haven't got a good pkg-config under Windows so we let cmake search libs
+        find_path(FONTCONFIG_INCLUDE_DIRS fontconfig.h ${WINLIB_INC_PATH} ${WINLIB_INC_PATH}/fontconfig)
+        find_path(FREETYPE_INCLUDE_DIRS freetype.h ${WINLIB_INC_PATH} ${WINLIB_INC_PATH}/freetype ${WINLIB_INC_PATH}/freetype2 ${WINLIB_INC_PATH}/freetype2/freetype)    
+        find_file(FONTCONFIG_LIBRARIES fontconfig.lib ${WINLIB_LIB_PATH} ${WINLIB_LIB_PATH}/fontconfig)
+        find_file(FREETYPE_LIBRARIES freetype.lib ${WINLIB_LIB_PATH} ${WINLIB_LIB_PATH}/freetype)
+    ENDIF(NOT WIN32)
+    
+#    set(FONTS_INCLUDE_DIRS ${FONTCONFIG_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
+#    set(FONTS_LIBRARIES ${FONTCONFIG_LIBRARIES} ${FREETYPE_LIBRARIES})
+
+    set(USE_FONTS_FREETYPE TRUE)
+    mark_as_advanced(USE_FONTS_FREETYPE)
+    set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libfontconfig1 (>= 2.6.0-1ubuntu12), libfreetype6 (>= 2.3.9-5)")
+endif(USE_FONTS STREQUAL "FREETYPE")
+
+if(USE_FONTS STREQUAL "GTK")
+    pkg_check_modules(CAIRO REQUIRED cairo>=1.4)
+    pkg_check_modules(GTK REQUIRED gtk+-2.0>=2.8)
+    pkg_check_modules(FONTCONFIG REQUIRED fontconfig>=2.4)
+    pkg_check_modules(FREETYPE REQUIRED freetype2>=9.0)
+    set(FONTS_INCLUDE_DIRS ${GTK_INCLUDE_DIRS} ${FONTCONFIG_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
+    set(FONTS_LIBRARIES ${GTK_LIBRARIES} ${FONTCONFIG_LIBRARIES} ${FREETYPE_LIBRARIES})
+
+    set(USE_FONTS_GTK TRUE)
+    mark_as_advanced(USE_FONTS_GTK)
+    set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libfontconfig1 (>= 2.6.0-1ubuntu12), libfreetype6 (>= 2.3.9-5), libcairo2 (>= 1.8.8-2ubuntu1), libgtk2.0-0 (>= 2.18.3-1ubuntu2.1)")
+endif(USE_FONTS STREQUAL "GTK")
+
+if(USE_FONTS STREQUAL "QT")
+    pkg_check_modules(QTFONT REQUIRED QtCore)
+    set(FONTS_INCLUDE_DIRS ${QTFONT_INCLUDE_DIRS})
+    set(FONTS_LIBRARIES ${QTFONT_LIBRARIES})
+
+    set(USE_FONTS_QT TRUE)
+    mark_as_advanced(USE_FONTS_QT)
+    set(DEB_PACKAGE_DEPENDS "${DEB_PACKAGE_DEPENDS}, libqtcore4 (>= 4.5.3really4.5.2-0ubuntu1)")
+endif(USE_FONTS STREQUAL "QT")
+
+if(USE_FONTS STREQUAL "MORPHOS")
+#    pkg_check_modules(FONTCONFIG REQUIRED fontconfig>=2.4)
+#    pkg_check_modules(FREETYPE REQUIRED freetype2>=9.0)
+#    set(FONTS_INCLUDE_DIRS ${FONTCONFIG_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
+#    set(FONTS_LIBRARIES ${FONTCONFIG_LIBRARIES} ${FREETYPE_LIBRARIES})
+
+    set(USE_FONTS_MORPHOS TRUE)
+    mark_as_advanced(USE_FONTS_MORPHOS)
+endif(USE_FONTS STREQUAL "MORPHOS")

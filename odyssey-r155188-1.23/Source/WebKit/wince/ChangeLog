@@ -1,0 +1,161 @@
+2013-09-10  Darin Adler  <darin@apple.com>
+
+        Frame::tree should return a reference instead of a pointer
+        https://bugs.webkit.org/show_bug.cgi?id=120259
+
+        Reviewed by Andreas Kling.
+
+        * WebView.cpp:
+        (WebView::createFrame):
+        Use tree(). instead of tree()->.
+
+2013-08-19  Pratik Solanki  <psolanki@apple.com>
+
+        <https://webkit.org/b/119918> Frame::selection() should return a reference
+
+        Reviewed by Darin Adler.
+
+        m_selection is never NULL so return a reference from Frame::selection(). Also removed some
+        unnecessary null checks and assert diff ts exposed as a result.
+
+        * WebCoreSupport/EditorClientWinCE.cpp:
+        (WebKit::EditorClientWinCE::handleEditingKeyboardEvent):
+
+2013-08-15  Anders Carlsson  <andersca@apple.com>
+
+        <https://webkit.org/b/119859> Frame::loader() should return a reference
+
+        Reviewed by Andreas Kling.
+
+        * WebCoreSupport/FrameLoaderClientWinCE.cpp:
+        (WebKit::FrameLoaderClientWinCE::dispatchDecidePolicyForResponse):
+        (WebKit::FrameLoaderClientWinCE::dispatchDecidePolicyForNewWindowAction):
+        (WebKit::FrameLoaderClientWinCE::dispatchDecidePolicyForNavigationAction):
+        (WebKit::FrameLoaderClientWinCE::dispatchWillSubmitForm):
+        * WebCoreSupport/FrameNetworkingContextWinCE.cpp:
+        (WebKit::FrameNetworkingContextWinCE::referrer):
+        * WebView.cpp:
+        (WebView::createFrame):
+        (WebView::load):
+        (WebView::reload):
+        (WebView::stop):
+
+2013-07-25  Andreas Kling  <akling@apple.com>
+
+        ChromeClient::focusedNodeChanged() should be focusedElementChanged().
+        <http://webkit.org/b/119110>
+
+        Reviewed by Anders Carlsson.
+
+        * WebCoreSupport/ChromeClientWinCE.cpp:
+        (WebKit::ChromeClientWinCE::focusedElementChanged):
+        * WebCoreSupport/ChromeClientWinCE.h:
+
+2013-06-26  Patrick Gansterer  <paroga@webkit.org>
+
+        Unreviewed WinCE build fix after r152065.
+
+        * WebCoreSupport/ChromeClientWinCE.cpp:
+        (WebKit::ChromeClientWinCE::AXStartFrameLoad):
+        (WebKit::ChromeClientWinCE::AXFinishFrameLoad):
+        * WebCoreSupport/ChromeClientWinCE.h:
+
+2013-06-05  Anders Carlsson  <andersca@apple.com>
+
+        Remove ChromeClient::webView()
+        https://bugs.webkit.org/show_bug.cgi?id=116054
+
+        Reviewed by Darin Adler.
+
+        This blatantly horrible layer violation was only used to know if a ChromeClient is an empty
+        client or not. We already have a (slightly less horrible) way to do that.
+
+        * WebCoreSupport/ChromeClientWinCE.h:
+        (ChromeClientWinCE):
+
+2013-05-13  Anders Carlsson  <andersca@apple.com>
+
+        Frame::editor() should return a reference
+        https://bugs.webkit.org/show_bug.cgi?id=116037
+
+        Reviewed by Darin Adler.
+
+        * WebCoreSupport/EditorClientWinCE.cpp:
+        (WebKit::EditorClientWinCE::handleEditingKeyboardEvent):
+
+2013-04-29  Patrick Gansterer  <paroga@webkit.org>
+
+        Unreviewed build fix.
+
+        * WebCoreSupport/FrameLoaderClientWinCE.cpp: Added missing header.
+        * WebView.h: Ditto.
+
+2013-04-25  Joseph Pecoraro  <pecoraro@apple.com>
+
+        Web Inspector: ConsoleMessage should include line and column number where possible
+        https://bugs.webkit.org/show_bug.cgi?id=114929
+
+        Reviewed by Timothy Hatcher.
+
+        * WebCoreSupport/ChromeClientWinCE.cpp:
+        (WebKit::ChromeClientWinCE::addMessageToConsole):
+        * WebCoreSupport/ChromeClientWinCE.h:
+
+2013-04-18  Patrick Gansterer  <paroga@webkit.org>
+
+        Unreviewed WinCE build fix after r148545.
+
+        * WebCoreSupport/EditorClientWinCE.cpp:
+        * WebView.cpp:
+
+2013-04-15  Patrick Gansterer  <paroga@webkit.org>
+
+        Unreviewed WinCE build fix after r148373.
+
+        * WebCoreSupport/EditorClientWinCE.cpp:
+
+2013-04-06  Patrick Gansterer  <paroga@webkit.org>
+
+        Unreviewed WinCE build fix after r145849.
+
+        * WebCoreSupport/EditorClientWinCE.cpp:
+
+2013-03-15  Nate Chapin  <japhet@chromium.org>
+
+        Hide MainResourceLoader from the outside world
+        https://bugs.webkit.org/show_bug.cgi?id=109971
+
+        Reviewed by Adam Barth.
+
+        * WebCoreSupport/FrameLoaderClientWinCE.cpp:
+        (WebKit::FrameLoaderClientWinCE::convertMainResourceLoadToDownload):
+        * WebCoreSupport/FrameLoaderClientWinCE.h:
+        (FrameLoaderClientWinCE):
+
+2013-03-15  Abhishek Arya  <inferno@chromium.org>
+
+        Replace static_casts with to* helper functions.
+        https://bugs.webkit.org/show_bug.cgi?id=112401
+
+        Reviewed by Stephen Chenney.
+
+        to* helper functions are preferred over static_cast calls since they
+        help to catch bad casts easily on the testing infrastructure.
+
+        * WebCoreSupport/FrameLoaderClientWinCE.cpp:
+        (WebKit::FrameLoaderClientWinCE::redirectDataToPlugin):
+
+2013-03-14  Manuel Rego Casasnovas  <rego@igalia.com>
+
+        Add selectTrailingWhitespaceEnabled setting to WebCore::Page
+        https://bugs.webkit.org/show_bug.cgi?id=109404
+
+        Reviewed by Tony Chang.
+
+        Use new settings for smartInsertDeleteEnabled and
+        selectTrailingWhitespaceEnabled.
+
+        * WebCoreSupport/EditorClientWinCE.cpp:
+        (WebKit::EditorClientWinCE::smartInsertDeleteEnabled):
+        (WebKit::EditorClientWinCE::isSelectTrailingWhitespaceEnabled):
+

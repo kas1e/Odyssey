@@ -1,0 +1,10 @@
+#ifndef OWB_CONFIG_H
+#define OWB_CONFIG_H
+
+#define BOOKMARKLET_INSTALL_PATH "PROGDIR:bookmarklet/"
+#define OWB_DATA "${WITH_OWB_CONFIG_DIR}"
+#define INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+#define RESOURCE_PATH "PROGDIR:resource/"
+
+#endif //OWB_CONFIG_H
+

@@ -1,0 +1,21 @@
+/*!
+@page CodingRules Coding rules
+
+<div class="header">
+<center>\< @ref PrevRef | @ref OrigynWebBrowser | @ref NextRef \></center>
+<hr>
+</div>
+
+This is a description of the various programming conventions we use.  
+It is based on conventions from Apple's WebKit, but is applicable to C++ 
+programming in general.  It covers both C++ language features and 
+styles as well as conventions specific to WebKit itself.
+
+These conventions are intended to be very minimal &mdash; the focus is 
+almost entirely on the public API that is exposed to developers, and 
+not on detailing where every brace and tab goes in the actual 
+implementation.
+
+Full WebKit coding rules can be found here: http://webkit.org/coding/coding-style.html
+
+*/

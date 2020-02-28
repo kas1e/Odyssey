@@ -1,0 +1,42 @@
+
+#include "../../JavaScriptCore/kjs/config.h"
+#include "../../WebCore/config.h"
+#if 0
+#define OWBAL WebCore
+#define WKAL WebCore
+
+#ifdef __cplusplus
+namespace OWBAL{ //declarations
+}
+
+namespace WKAL{	//declarations
+}
+
+namespace OWBAL{ //using
+}
+
+namespace WKAL{	//using
+}
+
+namespace WebCore{
+}
+
+namespace WTF{
+}
+
+
+#define NONBAL(CLASS) namespace WebCore{class CLASS;} namespace WKAL{using WebCore::CLASS;} namespace OWBAL{using WebCore::CLASS;}
+#define NONBALT(CLASS) namespace WebCore{template<typename T> class CLASS;} namespace WKAL{using WebCore::CLASS;} namespace OWBAL{using WebCore::CLASS;}
+NONBAL(String)
+NONBAL(SharedBuffer)
+NONBAL(TextRun)
+NONBAL(Font)
+NONBAL(Frame)
+NONBALT(Timer)
+NONBAL(DocumentFragment)
+NONBAL(CairoPath)
+NONBAL(ImageData)
+
+#endif
+#endif
+
