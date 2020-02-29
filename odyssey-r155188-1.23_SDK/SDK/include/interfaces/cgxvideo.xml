@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE library SYSTEM "library.dtd">
+<library name="cgxvideo" basename="CGXVideoBase" openname="cgxvideo.library" basetype="Library">
+	<include>intuition/intuition.h</include>
+	<include>intuition/screens.h</include>
+	<include>cybergraphx/cgxvideo.h</include>
+	<include>utility/tagitem.h</include>
+	<interface name="main" version="1.0" struct="CgxvideoIFace" prefix="_Cgxvideo_" asmprefix="ICgxvideo" global="ICgxvideo">
+		<method name="Obtain" result="ULONG"/>
+		<method name="Release" result="ULONG"/>
+		<method name="Expunge" result="void" status="unimplemented"/>
+		<method name="Clone" result="struct Interface *" status="unimplemented"/>
+		<method name="CreateVLayerHandleTags" result="struct VLayerHandle *">
+			<arg name="screen" type="struct Screen *"/>
+			<vararg name="Tags" type="Tag"/>
+		</method>
+		<method name="DeleteVLayerHandle" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+		</method>
+		<method name="AttachVLayerTagList" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+			<arg name="window" type="struct Window *"/>
+			<arg name="Tags" type="struct TagItem *"/>
+		</method>
+		<method name="AttachVLayerTags" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+			<arg name="window" type="struct Window *"/>
+			<vararg name="Tags" type="Tag"/>
+		</method>
+		<method name="DetachVLayer" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+		</method>
+		<method name="GetVLayerAttr" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+			<arg name="AttrID" type="ULONG"/>
+		</method>
+		<method name="LockVLayer" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+		</method>
+		<method name="UnlockVLayer" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+		</method>
+		<method name="SetVLayerAttrTagList" result="void">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+			<arg name="Tags" type="struct TagItem *"/>
+		</method>
+		<method name="SetVLayerAttrTags" result="void">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+			<vararg name="Tags" type="Tag"/>
+		</method>
+		<method name="Reserved78" result="void" status="unimplemented"/>
+		<method name="Reserved84" result="void" status="unimplemented"/>
+		<method name="Reserved90" result="void" status="unimplemented"/>
+		<method name="SwapVLayerBuffer" result="void">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+		</method>
+		<method name="WriteSPLine" result="ULONG">
+			<arg name="VLayerHandle" type="struct VLayerHandle *"/>
+			<arg name="buffer" type="unsigned char *"/>
+			<arg name="x" type="int"/>
+			<arg name="y" type="int"/>
+			<arg name="w" type="int"/>
+		</method>
+		<method name="QueryVLayerAttr" result="ULONG">
+			<arg name="screen" type="struct Screen *"/>
+			<arg name="AttrID" type="ULONG"/>
+		</method>
+	</interface>
+</library>
