@@ -31,7 +31,13 @@ You can compile it with GCC 4.4.3 with very minimal changes, but this source cod
 
 === Download Odyssey repo
 
-You should already have "/amiga" directory in root dir (to which you clone Adtools repo before). 
+Everything should be done from Cygwin's shell. All the commands I quote there need to be typed in Cygwin's shell.
+
+Using any other GIT client you may find useful for you in not recommended, as you can end up with issues when your favorite GIT
+client will convert line endings to Windows-style CRLF, and then the Odyssey build process will fail, because "lex" will fail.
+So you on your own with your favorite Git clients, and that guide means that we use Cygwin's command line "git".
+
+Also you should already have "/amiga" directory in root dir (to which you clone Adtools repo before). 
 
 So, go to that directory and clone Odyssey's repo:
 
