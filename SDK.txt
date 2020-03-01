@@ -1,0 +1,34 @@
+Some of the 3d party libraries are pure ./configure; make (like XML, Expat, Png12, Jpeg), but some are not: For example Fontconfig has some specific callback added, Curl modified quite heavy to have threading works.
+ICU libs changed as well. 
+
+You also can't just use up2date versions of those 3d party libs (some can, some not). It needs changes in the Odyssey's code too then. Every changed library or another one of another version can cause all sorts of new issues. 
+
+So in meanwhile use those ones which come in SDK. Once things improve, they also will be changed. 
+
+Currently that what is used in Odyssey's SDK:
+
+MUI         - MUI-5.0-2019R4 (main one + contrib one), from http://muidev.de
+asyncio     - asyncio.library 50.3, from http://os4depot.net
+openurl     - openurl.library 7.18, from http://os4depot.net
+codesets    - codesets.library 6.21, from http://os4depot.net
+expat       - expat.library 53.1, from http://os4depot.net
+Z           - libz 1.2.11, from http://os4depot.net
+
+
+icu         - v3.4.1 (libicui18n.a, libicuuc.a and libicudata.a). 
+fontconfig  - v2.8.0 (with custom changes in terms of progdir, get rid of HARDLINK usage,  some special amiga callback for fontconfig_progress on running)
+freetype    - v2.4.4
+cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
+pixman-1    - v0.32.4
+curl        - v7.28.1 (added amigaos4 native threading resolver)
+rtmp        - v2.3
+png         - v1.12
+sqlite3     - v3.7.5
+xslt        - v1.1.28
+jpeg        - v9b
+openssl     - v1.0.1q (libssl, libcrypto)
+ffmpeg      - v2.1 (libavdevice, libavformat, libavcodec, libavutil, libswscale and libswresample)
+xml2        - v2.9.1
+bz2         - v1.0.5
+aos4depot   - sttcpy() and DoSuperNew() realisations.
+debug       - just for kprintf

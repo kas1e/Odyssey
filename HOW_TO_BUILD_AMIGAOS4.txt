@@ -1,42 +1,25 @@
 
-=== No release-forks please !
-
-Please _NO_ other-browser release-forks!
-
-You can't just change a few bits there, and release another "some_browser". By doing this you kill all motivation to continue working on.
-WebKit is free, but all Amiga (GUI and stuff) specific code there are hard work of some peoples (Fab, Joerg, DeadWood, Daniel_onyxsoft & Kas1e), who do not want situations when a source is taken, some things changed,
-and released like some other browser with some other name. So please respect that even if you didn't like.
-
-If you wish to fix and improve things there, all should be put back to that repo, so later another version of Odyssey can be released.
-
-All help appreciated, be it pull-request, patches, forum topics or whatever, but please no release-forks of Odyssey, calling it "somename_Odyssey" or "some_other_browser". If you wish your own
-browser and control how things should be done, just take WebKit source code and do whatever you want with taking those amiga-specific parts from Odyssey as reference.
-
-And of course, it is absolutely not allowed to take that code, and making commercial releases of all sorts, be it Enhancer, OS4, or whatever else.
-
-Probably there weren't big needs to explain an obvious, but just in case someone will find the idea of taking it all, changing a name, few bits with build date and made another "browser" as something worthy. So please NO. Thanks!
-
 === You need cross-compiler
 
-You need a cross-compiler setup. Point is to be able to use CMake, Perl, Bison and all that stuff which natively on OS4 not works as expected or not present at all.
+You need a cross-compiler setup. Point is to be able to use CMake, Perl, Bison, Ruby, Gperf and all that stuff which natively on OS4 not works as expected or not present at all.
 
-Recommended is Linux because of proper fork() realization, which CMake and its build process (scanning dependencies) are based on.
+Recommended is Linux because of proper fork() realization, on which CMake and its build process (scanning dependencies) are based on.
 
-Of course, you can use Cygwin (as I do), or whatever you want. Just be aware when you use Cygwin, it didn't have fork() as it has done on Linux. Each process is starting from scratch and has to load and
+Of course, you can use Cygwin (as I do), or whatever you want. Just be aware when you use Cygwin, it didn't have fork() as it has done on Linux. It is emulated, and for each process is starting from scratch and has to load and
 init the Cygwin DLL, LibC, etc that a fork-and-go system already has loaded. Because of that when Cmake starts to scan dependencies it may take a while. For example, it takes about 15-20 minutes on scanning WebCore dependencies
 on fast enough PC with Cygwin. On Linux, everything will be faster. I still build everything on Cygwin on fast enough PC because of my own reasons, but it's still not _that fast_ and take about 1 hour to build the whole
 thing. On the same machine but on Linux cross-compiler it will take for about 20-30 minutes. Choose what you wish, there no restrictions in terms of cross-compiling.
 
 For building Odyssey you better to have Odyssey-only setup of cross-compiler as 3d party includes and libraries need it for building Odyssey, will overwrite your newer and up2date includes and libs you have in your SDK
-(such as png, Cairo, FreeType, OpenSSL, Curl, and many others).
+(such as PNG, Cairo, FreeType, OpenSSL, Curl, and others).
 
-Many tutorials present about how to setup cross-compiler. If you want to use it over Cygwin, there is one:
+Many tutorials present about how to setup cross-compiler for AmigaOS4. If you want to use it over Cygwin, there is one i write some time ago:
 
 http://os4coding.net/blog/kas1e/how-build-amigaos4-cross-compiler-binutils-2232-gcc-830-cygwin
 
 For Linux, it will be twice easier to set up, as you don't need the "install Cygwin" part.
 
-You should have Adtool's GCC 8.2.0 or 8.3.0 and Hyperion's SDK_53.30 as a minimum.
+You should have Adtool's GCC 8.3.0 (older 8.2.0 ok too) and Hyperion's SDK_53.30 as a minimum.
 
 You can compile it with GCC 4.4.3 with very minimal changes, but this source code is and will be based on the latest GCC.
 
@@ -50,50 +33,18 @@ So, go to that directory and clone Odyssey's repo:
 cd /amiga/
 git clone https://github.com/kas1e/Odyssey/
 
-You should end up with current odysseys 1.23 code being in /amiga/Odyssey/odyssey-r155188-1.23/
+You should end up with current odysseys 1.23 code being in /amiga/Odyssey/odyssey-r155188-1.23/ and SDK files being in /amiga/Odyssey/odyssey-r155188-1.23_SDK/
 
 
 === Install Odyssey's 3d party includes and libs
 
-When you clone the repo , you also should have directory /amiga/Odyssey/odyssey-r155188-1.23_SDK/
+As been told, when you clone the repo , you also should have directory /amiga/Odyssey/odyssey-r155188-1.23_SDK/
 
 All you need is to copy all the files from that odyssey-r155188-1.23_SDK over your AmigaOS4's SDK.
 Your original amigaos4 installed SDK should be already in /usr/local/amiga/ppc-amigaos/SDK/, so you copy all those Odyssey's SDK files in it.
+Pure copy of while SDK driver on top of your AmigaOS4'S SDK driver are fine.
 
-Some of the 3d party libraries are pure ./configure; make (like XML, Expat, Png12, Jpeg), but some are not: For example Fontconfig has some specific callback added, Curl modified quite heavy to have threading works.
-ICU libs changed as well. 
-
-You also can't just use up2date versions of those 3d party libs (some can, some not). It needs changes in the Odyssey's code too then. Every changed library or another one of another version can cause all sorts of new issues. 
-
-So in meanwhile use those ones which come in SDK. Once things improve, they also will be changed.
-
-Currently that what is used as SDK files for Odyssey:
-
-MUI         - MUI-5.0-2019R4 (main one + contrib one), from http://muidev.de
-asyncio     - asyncio.library 50.3, from http://os4depot.net
-openurl     - openurl.library 7.18, from http://os4depot.net
-codesets    - codesets.library 6.21, from http://os4depot.net
-expat       - expat.library 53.1, from http://os4depot.net
-Z           - libz 1.2.11, from http://os4depot.net
-
-
-icu         - v3.4.1 (libicui18n.a, libicuuc.a and libicudata.a). 
-fontconfig  - v2.8.0 (with custom changes in terms of progdir, get rid of HARDLINK usage,  some special amiga callback for fontconfig_progress on running)
-freetype    - v2.4.4
-cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
-pixman-1    - v0.32.4
-curl        - v7.28.1 (added amigaos4 native threading resolver)
-rtmp        - v2.3
-png         - v1.12
-sqlite3     - v3.7.5
-xslt        - v1.1.28
-jpeg        - v9b
-openssl     - v1.0.1q (libssl, libcrypto)
-ffmpeg      - v2.1 (libavdevice, libavformat, libavcodec, libavutil, libswscale and libswresample)
-xml2        - v2.9.1
-bz2         - v1.0.5
-aos4depot   - sttcpy() and DoSuperNew() realisations.
-debug       - just for kprintf
+Check SDK.txt for more info about and about version of libs being used for Odyssey.
 
 
 === Compiling.
