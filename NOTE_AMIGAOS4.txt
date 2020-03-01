@@ -11,8 +11,8 @@ All help appreciated, be it pull-request, patches, forum topics or whatever, but
 "somename_Odyssey" or "some_other_browser". If you wish your own browser and control how things should be done, just take WebKit source
 code and do whatever you want with taking those amiga-specific parts from Odyssey as reference.
 
-And of course, it is absolutely not allowed to take that code, and making commercial releases of all sorts, be it for Enhancer, OS4 itself,
-or whatever else.
+And of course, it is absolutely not allowed to take that code, and making commercial releases of all sorts, be it for Enhancer, OS4
+itself, or whatever else.
 
-Probably there weren't big needs to explain an obvious, but just in case someone will find the idea of taking it all, changing a name, few
-bits with build date and made another "browser" as something worthy. So please NO. Thanks!
+Probably there weren't big needs to explain an obvious, but just in case someone will find the idea of taking it all, changing a name,
+few bits with build date and made another "browser" as something worthy. So please NO. Thanks!

@@ -1,8 +1,8 @@
-Some of the 3d party libraries are pure ./configure; make (like XML2, Freetype, Png12, Jpeg, etc), but some are not: For example Fontconfig has
-some specific callback added, Curl modified quite heavy to have threading works. ICU libs changed as well. 
+Some of the 3d party libraries are pure ./configure; make (like XML2, Freetype, Png12, Jpeg, etc), but some are not: For example
+Fontconfig has some specific callback added, Curl modified quite heavy to have threading works. ICU libs changed as well. 
 
-You also can't just use up2date versions of those 3d party libs (some can, some not). It needs changes in the Odyssey's code too then. Every
-changed library or another one of another version can cause all sorts of new issues. 
+You also can't just use up2date versions of those 3d party libs (some can, some not). It needs changes in the Odyssey's code too
+then. Every changed library or another one of another version can cause all sorts of new issues. 
 
 So in meanwhile use those ones which come in SDK. Once things improve, they also will be changed. 
 
@@ -17,7 +17,7 @@ Z           - libz 1.2.11, from http://os4depot.net
 
 
 icu         - v3.4.1 (libicui18n.a, libicuuc.a and libicudata.a). 
-fontconfig  - v2.8.0 (with custom changes in terms of progdir, get rid of HARDLINK usage, AmigaOS callback for fontconfig_progress on running)
+fontconfig  - v2.8.0 (PROGDIR: changes, get rid of HARDLINK usage, Amiga-specific callback code for fontconfig_progress on running)
 freetype    - v2.4.4
 cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
 pixman-1    - v0.32.4

@@ -83,11 +83,12 @@ listed in, you will also in needs to install additionally 2 more:
 
 They both need for the building process.
 
-Now to compiling. Firstly we generate via Cmake all the makefiles need it for the build process, by issuing this big-fat command
-(being in the /amiga/Odyssey/odyssey-r155188-1.23/):
+Now to compiling. Firstly we generate via Cmake all the makefiles need it for the build process, by creating build directory and
+issuing big-fat CMake command , being in the /amiga/Odyssey/odyssey-r155188-1.23/
 
-
-cmake \
+mkdir build
+cd build
+cmake .. \
     -DCMAKE_CROSSCOMPILING=ON \
     -DCMAKE_TOOLCHAIN_FILE=./amigaos4.cmake \
     -DCMAKE_MODULE_PATH=../cmake \
@@ -137,16 +138,12 @@ cmake \
     -DENABLE_YARR:BOOL=ON
 
 
-
-Then we just do "make -f Makefile owb -j4"
-
--j4 is to use 4 cores to speed the compilation process.
+Then while we in that "build" directory, we just do "make -f Makefile owb -j4" (-j4 is to use 4 cores to speed the
+compilation process).
 
 If all will go fine, everything will build till the end, and fail to build main.cpp with words "wtf/Compiler.h" not found.
 
-So you build our main.cpp manually:
-
-cd /amiga/Odyssey/odyssey-r155188-1.23/Tools/OWBLauncher/MorphOS
+So you build our main.cpp manually (being in the same "build" directory)
 
 ppc-amigaos-g++.exe -mlongcall -D__USE_INLINE__ -std=gnu++0x \
 -Wno-expansion-to-defined -Wall -W  -Wno-parentheses -fno-exceptions \
@@ -158,13 +155,11 @@ ppc-amigaos-g++.exe -mlongcall -D__USE_INLINE__ -std=gnu++0x \
 -I/amiga/Odyssey/odyssey-r155188-1.23/Source/WTF \
 -I/amiga/Odyssey/odyssey-r155188-1.23/Source/WebCore/platform \
 -I/amiga/Odyssey/odyssey-r155188-1.23/Source/JavaScriptCore/runtime/ \
--c main.cpp -O2 -o ../CMakeFiles/owb.dir/MorphOS/main.cpp.obj
+-c ../Tools/OWBLauncher/MorphOS/main.cpp -O2 -o Tools/OwbLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj
 
 === Linking.
 
 And then just link everything:
-
-cd /amiga/Odyssey/odyssey-r155188-1.23/
 
 ppc-amigaos-gcc -athread=single -static Tools/OWBLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj -o Odyssey \
 -Llib lib/libwebkit-owb.a -lwebcore -ljsc -lwtf -lcairo -lpixman-1 -lfontconfig -lfreetype -lcurl \
@@ -172,8 +167,8 @@ ppc-amigaos-gcc -athread=single -static Tools/OWBLauncher/CMakeFiles/owb.dir/Mor
 -lbz2 -lssl -lcrypto -licui18n -licuuc -licudata -lpthread -ldebug -laos4deps -lauto -lz -lstdc++
 
 
-Done! Your "Odyssey" binary placed in the root folder of your Odyssey's repo. Take a release archive from os4depot, and
-replace the binary with a new one to do tests.
+Done! Your "Odyssey" binary placed in root of "build" folder. Take a release archive from os4depot, and replace the
+binary with a new one to do tests.
 
 === Q/A
 
