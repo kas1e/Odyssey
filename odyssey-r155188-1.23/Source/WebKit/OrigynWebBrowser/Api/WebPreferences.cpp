@@ -258,7 +258,7 @@ void WebPreferences::clearAllCertificatesInfo()
 
 const char* WebPreferences::valueForKey(const char* key)
 {
-    string value = m_privatePrefs[key];
+    string &value = m_privatePrefs[key];
     return value.c_str();
 }
 
@@ -269,7 +269,7 @@ void WebPreferences::setValueForKey(const char* key, const char* value)
 
 const char* WebPreferences::stringValueForKey(const char* key)
 {
-    string value = m_privatePrefs[key];
+    string &value = m_privatePrefs[key];
     return value.c_str();
 }
 
