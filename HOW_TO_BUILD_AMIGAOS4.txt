@@ -107,8 +107,6 @@ cmake .. \
     -DENABLE_MULTIPLE_THREADS=OFF \
     -DENABLE_ACCESSIBILITY:BOOL=ON \
     -DENABLE_BLOB:BOOL=ON \
-    -DENABLE_ACCESSIBILITY:BOOL=ON \
-    -DENABLE_BLOB:BOOL=ON \
     -DENABLE_DATALIST:BOOL=ON \
     -DENABLE_DOM_STORAGE:BOOL=ON \
     -DENABLE_EVENTSOURCE:BOOL=ON \
@@ -152,15 +150,15 @@ If all will go fine, everything will build till the end, and fail to build main.
 So you build our main.cpp manually (being in the same "build" directory)
 
 ppc-amigaos-g++.exe -mlongcall -D__USE_INLINE__ -std=gnu++0x \
--Wno-expansion-to-defined -Wall -W  -Wno-parentheses -fno-exceptions \
+-Wno-expansion-to-defined -Wall -W -Wno-parentheses -fno-exceptions \
 -I/usr/local/amiga/ppc-amigaos/SDK/local/common/include/cairo \
--I/amiga/Odyssey/odyssey-r155188-1.23/Base \
--I/amiga/Odyssey/odyssey-r155188-1.23/Base/wtf \
--I/amiga/Odyssey/odyssey-r155188-1.23/Source/WebKit/OrigynWebBrowser/Api/MorphOS \
--I/amiga/Odyssey/odyssey-r155188-1.23/Source/JavaScriptCore \
--I/amiga/Odyssey/odyssey-r155188-1.23/Source/WTF \
--I/amiga/Odyssey/odyssey-r155188-1.23/Source/WebCore/platform \
--I/amiga/Odyssey/odyssey-r155188-1.23/Source/JavaScriptCore/runtime/ \
+-I../Base \
+-I../Base/wtf \
+-I../Source/WebKit/OrigynWebBrowser/Api/MorphOS \
+-I../Source/JavaScriptCore \
+-I../Source/WTF \
+-I../Source/WebCore/platform \
+-I../Source/JavaScriptCore/runtime/ \
 -c ../Tools/OWBLauncher/MorphOS/main.cpp -O2 -o Tools/OwbLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj
 
 === Linking.
