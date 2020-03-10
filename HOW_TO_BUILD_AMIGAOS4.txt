@@ -149,7 +149,7 @@ If all will go fine, everything will build till the end, and fail to build main.
 
 So you build our main.cpp manually (being in the same "build" directory)
 
-ppc-amigaos-g++.exe -mlongcall -D__USE_INLINE__ -std=gnu++0x \
+ppc-amigaos-g++ -mlongcall -D__USE_INLINE__ -std=gnu++0x \
 -Wno-expansion-to-defined -Wall -W -Wno-parentheses -fno-exceptions \
 -I/usr/local/amiga/ppc-amigaos/SDK/local/common/include/cairo \
 -I../Base \
@@ -159,7 +159,7 @@ ppc-amigaos-g++.exe -mlongcall -D__USE_INLINE__ -std=gnu++0x \
 -I../Source/WTF \
 -I../Source/WebCore/platform \
 -I../Source/JavaScriptCore/runtime/ \
--c ../Tools/OWBLauncher/MorphOS/main.cpp -O2 -o Tools/OwbLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj
+-c ../Tools/OWBLauncher/MorphOS/main.cpp -O2 -o Tools/OWBLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj
 
 === Linking.
 

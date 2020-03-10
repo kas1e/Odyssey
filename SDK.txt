@@ -21,13 +21,13 @@ fontconfig  - v2.8.0 (PROGDIR: changes, get rid of HARDLINK usage, Amiga-specifi
 freetype    - v2.4.4
 cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
 pixman-1    - v0.32.4
-curl        - v7.28.1 (added amigaos4 native threading resolver)
-rtmp        - v2.3
+curl        - v7.68.0 (added amigaos4 native threading resolver, fixed file:// part)
+rtmp        - v2.4
 png         - v1.12
 sqlite3     - v3.7.5
 xslt        - v1.1.28
 jpeg        - v9b
-openssl     - v1.0.1q (libssl, libcrypto)
+openssl     - v1.1.1c (libssl, libcrypto)
 ffmpeg      - v2.1 (libavdevice, libavformat, libavcodec, libavutil, libswscale and libswresample)
 xml2        - v2.9.1
 bz2         - v1.0.5
