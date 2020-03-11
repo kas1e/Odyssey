@@ -521,7 +521,7 @@
 #define WTF_USE_CAIRO 1
 #define WTF_USE_FREETYPE 1
 //#define WTF_USE_HARFBUZZ 1
-//#define WTF_USE_WEBP 1
+#define WTF_USE_WEBP 1
 #define ENABLE_GLOBAL_FASTMALLOC_NEW 0
 #endif
 

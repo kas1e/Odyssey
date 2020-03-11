@@ -45,11 +45,14 @@
 #if (WEBP_DECODER_ABI_VERSION < 0x0163)
 #define MODE_rgbA MODE_RGBA
 #define MODE_bgrA MODE_BGRA
+#define MODE_Argb MODE_ARGB
 #endif
 
-#if CPU(BIG_ENDIAN) || CPU(MIDDLE_ENDIAN)
+#if CPU(BIG_ENDIAN)
+inline WEBP_CSP_MODE outputMode(bool hasAlpha) { return hasAlpha ? MODE_Argb : MODE_ARGB; }
+#elif CPU(MIDDLE_ENDIAN)
 inline WEBP_CSP_MODE outputMode(bool hasAlpha) { return hasAlpha ? MODE_rgbA : MODE_RGBA; }
-#else // LITTLE_ENDIAN, output BGRA pixels.
+#elif // LITTLE_ENDIAN, output BGRA pixels.
 inline WEBP_CSP_MODE outputMode(bool hasAlpha) { return hasAlpha ? MODE_bgrA : MODE_BGRA; }
 #endif
 

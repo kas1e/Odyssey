@@ -26,10 +26,11 @@ rtmp        - v2.4
 png         - v1.12
 sqlite3     - v3.7.5
 xslt        - v1.1.28
+xml2        - v2.9.1
 jpeg        - v9b
 openssl     - v1.1.1c (libssl, libcrypto)
 ffmpeg      - v2.1 (libavdevice, libavformat, libavcodec, libavutil, libswscale and libswresample)
-xml2        - v2.9.1
+webp        - v1.1.0
 bz2         - v1.0.5
 aos4deps    - sttcpy() and DoSuperNew() realisations.
 debug       - just for kprintf
