@@ -247,20 +247,32 @@ STATIC STRPTR useragents_labels[] =
 {
 	"Odyssey Web Browser",
 
-	"Firefox 25 (Windows)",
 	"Firefox 3.6 (Windows)",
+	"Firefox 25 (Windows)",
+	"Firefox 74 (Windows)",
 
-	"Internet Explorer 10",
-	"Internet Explorer 8",
 	"Internet Explorer 6",
+	"Internet Explorer 8",
+	"Internet Explorer 10",
+	"Internet Explorer 11",
 
-	"Opera 12 (Windows)",
+	"Edge 80 (Windows)",
 
+	"Opera 12.14 (Windows)",
+	"Opera 12.16 (Mac)",
+	"Opera 67 (Mac)",
+	
 	"Safari 6.0.2 (Mac)",
+	"Safari 13 (Mac)",
+	
 	"Chrome 32 (Windows)",
+	"Chrome 80 (Windows)",
 
-	"IPhone",
-	"IPad",
+	"IPhone 6",
+	"IPhone 13",
+	
+	"IPad 6.1",
+	"IPad 13.2.3",
 
 	NULL
 };
@@ -317,27 +329,39 @@ void init_useragent()
 }
 #endif
 
-
 STATIC STRPTR useragents_strings[] =
 {
 	odysseyuseragent,
 	"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0",
 	"Mozilla/5.0 (Windows NT 6.1; rv:1.9.2) Gecko/20100101 Firefox/3.6",
+	"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/74.0",
 
-	"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)",
-	"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)",
 	"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)",
+	"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)",
+	"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)",
+	"Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
+
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36 Edg/80.0.361.62",
 
 	"Opera/9.80 (Windows NT 5.1; U; en) Presto/2.12.388 Version/12.14",
+	"Opera/9.80 (Macintosh; Intel Mac OS X 10.14.1) Presto/2.12.388 Version/12.16",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36 OPR/67.0.3575.53",
+
 
 	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 Safari/536.26.17",
-	"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
+	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15",
 
+	"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
+	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
+	
 	"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25",
+	"Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/66.6 Mobile/14A5297c Safari/602.1",
+	
 	"Mozilla/5.0 (iPad; U; CPU OS 6_1 like Mac OS X; en-us) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10B141 Safari/8536.25",
+	"Mozilla/5.0 (iPad; CPU OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
 
 	NULL
-};
+}; 
 
 ULONG get_user_agent_count()
 {

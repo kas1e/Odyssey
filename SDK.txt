@@ -31,5 +31,5 @@ openssl     - v1.1.1c (libssl, libcrypto)
 ffmpeg      - v2.1 (libavdevice, libavformat, libavcodec, libavutil, libswscale and libswresample)
 xml2        - v2.9.1
 bz2         - v1.0.5
-aos4depot   - sttcpy() and DoSuperNew() realisations.
+aos4deps    - sttcpy() and DoSuperNew() realisations.
 debug       - just for kprintf
