@@ -167,7 +167,7 @@ And then just link everything:
 
 ppc-amigaos-gcc -athread=single -static Tools/OWBLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj -o Odyssey \
 -Llib lib/libwebkit-owb.a -lwebcore -ljsc -lwtf -lcairo -lpixman-1 -lfontconfig -lfreetype -lcurl \
--lrtmp -ljpeg -lpng -lsqlite3 -lxslt -lavdevice -lavformat -lavcodec -lavutil -lswscale -lswresample -lxml2 -lexpat \
+-lrtmp -ljpeg -lpng -lwebp -lsqlite3 -lxslt -lavdevice -lavformat -lavcodec -lavutil -lswscale -lswresample -lxml2 -lexpat \
 -lbz2 -lssl -lcrypto -licui18n -licuuc -licudata -lpthread -ldebug -laos4deps -lauto -lz -lstdc++
 
 
