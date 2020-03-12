@@ -911,7 +911,7 @@ DEFNEW
 			MUIA_Application_Version    , "$VER: Odyssey Web Browser " VERSION " (" DATE ")",
 			MUIA_Application_Copyright  , "© 2009-2013 Fabien Coeurjoly",
 			MUIA_Application_Author     , "Fabien Coeurjoly",
-			MUIA_Application_Description, APPLICATION_DESCRIPTION,
+			MUIA_Application_Description, APPLICATION_DESCRIPTION " " REVISION,
 			MUIA_Application_UsedClasses, classlist,
 			MUIA_Application_Base       , APPLICATION_BASE_OS4,
 			MUIA_Application_DiskObject , diskobject = GetDiskObject(_ProgramName),

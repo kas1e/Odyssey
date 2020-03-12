@@ -15,8 +15,8 @@
 
 /* Constants */
 
-#define VERSION  "1.23"
-#define DATE     "25.12.2013"
+#define VERSION  "1.23 r5_beta03"
+#define DATE     __DATE__
 #define REVISION "WebKit r155188"
 
 #define THREAD_NAME              "OWB Thread"
