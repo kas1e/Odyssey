@@ -23,7 +23,7 @@ cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
 pixman-1    - v0.32.4
 curl        - v7.68.0 (added amigaos4 native threading resolver, fixed file:// part)
 rtmp        - v2.4
-png         - v1.2.50
+png         - v1.6.37
 sqlite3     - v3.7.5
 xml2        - v2.9.10
 xslt        - v1.1.34

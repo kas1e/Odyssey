@@ -241,6 +241,9 @@ static void initializeSupportedImageMIMETypes()
     static const char* types[] = {
         "image/jpeg",
         "image/png",
+#if ENABLE(APNG)
+        "image/apng",
+#endif
         "image/gif",
         "image/bmp",
         "image/vnd.microsoft.icon",    // ico

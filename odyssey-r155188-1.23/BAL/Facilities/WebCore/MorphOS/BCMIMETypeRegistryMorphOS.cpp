@@ -53,6 +53,7 @@ static const ExtensionMap extensionMap [] = {
     { "text/xsl", "xsl" },
     { "image/gif", "gif" },
     { "image/png", "png" },
+    { "image/apng", "apng" },
     { imageJpeg, "jpeg" },
     { imageJpeg, "jpg" },
     { imageJpeg, "jfif" },

@@ -175,6 +175,20 @@
 # define CAIRO_RECURSIVE_MUTEX_IMPL_INIT(mutex)
 # define CAIRO_RECURSIVE_MUTEX_IMPL_NIL_INITIALIZER 0
 
+
+#elif defined(__amigaos4__) /************************************************/
+
+#include <proto/exec.h>
+
+  typedef APTR cairo_mutex_impl_t;
+
+# define CAIRO_MUTEX_IMPL_AMIGAOS4 1
+# define CAIRO_MUTEX_IMPL_LOCK(mutex) IExec->MutexObtain((mutex))
+# define CAIRO_MUTEX_IMPL_UNLOCK(mutex) IExec->MutexRelease((mutex))
+# define CAIRO_MUTEX_IMPL_INIT(mutex) ((mutex) = IExec->AllocSysObject(ASOT_MUTEX, NULL))
+# define CAIRO_MUTEX_IMPL_FINI(mutex) IExec->FreeSysObject(ASOT_MUTEX, (mutex))
+# define CAIRO_MUTEX_IMPL_NIL_INITIALIZER NULL
+
 #elif defined(_WIN32) /******************************************************/
 
 #define WIN32_LEAN_AND_MEAN

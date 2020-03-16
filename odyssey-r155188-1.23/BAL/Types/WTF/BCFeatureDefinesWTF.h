@@ -334,6 +334,10 @@
 #define ENABLE_ACCELERATED_OVERFLOW_SCROLLING 0
 #endif
 
+#if !defined(ENABLE_APNG)
+#define ENABLE_APNG 1
+#endif
+
 #if !defined(ENABLE_BATTERY_STATUS)
 #define ENABLE_BATTERY_STATUS 0
 #endif
