@@ -15,7 +15,7 @@
 
 /* Constants */
 
-#define VERSION  "1.23 r5_beta03"
+#define VERSION  "1.23 r5_beta04"
 #define DATE     __DATE__
 #define REVISION "WebKit r155188"
 
