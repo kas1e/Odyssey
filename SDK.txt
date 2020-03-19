@@ -29,7 +29,7 @@ xml2        - v2.9.10
 xslt        - v1.1.34
 jpeg        - v9b
 openssl     - v1.1.1c (libssl, libcrypto)
-ffmpeg      - v2.1 (libavdevice, libavformat, libavcodec, libavutil, libswscale and libswresample)
+ffmpeg      - v2.2.16 Frank's amiga shared libraries implementation: https://sourceforge.net/projects/ffmpeg-amigasharedlibraries/
 webp        - v1.1.0
 bz2         - v1.0.5
 aos4deps    - sttcpy() and DoSuperNew() realisations.
