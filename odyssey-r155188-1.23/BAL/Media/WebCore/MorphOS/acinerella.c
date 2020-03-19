@@ -27,7 +27,7 @@
 #include "libavformat/url.h"		// added from original ffmpeg2.0 to sdk
 #include "libavcodec/avcodec.h"
 #include "libavutil/samplefmt.h"
-#include "libavcodec/audioconvert.h"	// added from original ffmpeg2.0 to sdk
+//#include "libavcodec/audioconvert.h"	// added from original ffmpeg2.0 to sdk
 #include "libavutil/avutil.h"
 #include "libavutil/opt.h"
 #include "libswscale/swscale.h"
