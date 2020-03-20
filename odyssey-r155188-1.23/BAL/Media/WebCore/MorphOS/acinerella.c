@@ -1065,7 +1065,9 @@ void ac_free_audio_decoder(lp_ac_audio_decoder pDecoder)
 
 		if(pDecoder->pCodecCtx && pDecoder->codec_opened)
 			avcodec_close(pDecoder->pCodecCtx);
-		
+
+		av_free(pDecoder->pCodecCtx);
+
 		ReleaseSemaphore(&semAcinerella);
 		
 		mgr_free(pDecoder->pBuffer1);
