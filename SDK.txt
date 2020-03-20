@@ -16,7 +16,7 @@ expat       - expat.library 53.1, from http://os4depot.net
 Z           - libz 1.2.11, from http://os4depot.net
 
 
-icu         - v3.4.1 (libicui18n.a, libicuuc.a and libicudata.a). 
+icu         - v49.1.2 (libicui18n.a, libicuuc.a and libicudata.a). 
 fontconfig  - v2.8.0 (PROGDIR: changes, get rid of HARDLINK usage, Amiga-specific callback code for fontconfig_progress on running)
 freetype    - v2.10.1
 cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
