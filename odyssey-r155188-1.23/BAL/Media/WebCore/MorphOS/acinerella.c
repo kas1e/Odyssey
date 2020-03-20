@@ -1031,10 +1031,10 @@ void ac_free_video_decoder(lp_ac_video_decoder pDecoder)
 	if(pDecoder)
 	{
 		if(pDecoder->pFrame)
-			av_free(pDecoder->pFrame);
+			av_frame_free(&(pDecoder->pFrame));
 			
 		if(pDecoder->pFrameRGB)
-			av_free(pDecoder->pFrameRGB);    
+			av_frame_free(&(pDecoder->pFrameRGB));
 
 		ObtainSemaphore(&semAcinerella);
 			
