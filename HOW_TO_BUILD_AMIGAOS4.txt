@@ -142,48 +142,33 @@ cmake .. \
     -DENABLE_YARR:BOOL=ON
 
 
-Then while we in that "build" directory, we just do "make -f Makefile owb -j4" (-j4 is to use 4 cores to speed the
+Then while we in that "build" directory, we just do "make -f Makefile Odyssey -j4" (-j4 is to use 4 cores to speed the
 compilation process).
 
-If all will go fine, everything will build till the end, and fail to build main.cpp with words "wtf/Compiler.h" not found.
+If all will go fine, you will end up with the "Odyssey" binary placed in the build/bin directory. Take a release archive
+from os4depot, and replace the binary with a new one to do tests.
 
-So you build our main.cpp manually (being in the same "build" directory)
-
-ppc-amigaos-g++ -mlongcall -D__USE_INLINE__ -std=gnu++0x \
--Wno-expansion-to-defined -Wall -W -Wno-parentheses -fno-exceptions \
--I/usr/local/amiga/ppc-amigaos/SDK/local/common/include/cairo \
--I../Base \
--I../Base/wtf \
--I../Source/WebKit/OrigynWebBrowser/Api/MorphOS \
--I../Source/JavaScriptCore \
--I../Source/WTF \
--I../Source/WebCore/platform \
--I../Source/JavaScriptCore/runtime/ \
--c ../Tools/OWBLauncher/MorphOS/main.cpp -O2 -o Tools/OWBLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj
-
-=== Linking.
-
-And then just link everything:
-
-ppc-amigaos-g++ -athread=single -static Tools/OWBLauncher/CMakeFiles/owb.dir/MorphOS/main.cpp.obj -o Odyssey \
--Llib lib/libwebkit-owb.a -lwebcore -ljsc -lwtf -lcairo -lpixman-1 -lfontconfig -lfreetype -lcurl \
--lrtmp -ljpeg -lpng -lwebp -lsqlite3 -lxslt -lavdevice2 -lavformat2 -lavcodec2 -lavutil2 -lswscale2 -lswresample2 \
--lxml2 -lexpat -lbz2 -lssl -lcrypto -licui18n -licuuc -licudata -lpthread -ldebug -laos4deps -lauto -lz
-
-
-Done! Your "Odyssey" binary placed in root of "build" folder. Take a release archive from os4depot, and replace the
-binary with a new one to do tests.
 
 === Q/A
 
 Q: Where is MorphOS and AmigaOS4 specific code?
+
 A: It's placed all over the code (search for "amigaos4" in all .cpp and .h files, as well as for "MORPHOS". Also do check
    for all file names contains "morphos" in the name, some files just taken as it from MorphOS). A few changes in the "WTF"
    part, then a massive amount of work over GUI in the "webkit-owb" part, and a very little change in "webcore". Also "main.cpp".
-   Almost all GUI based code placed in the Source/WebKit/OrigynWebBrowser/API/
+   Almost all GUI based code placed in the Source/WebKit/OrigynWebBrowser/API/MorphOS/
+
 
 
 Q: Where is MediaPlayer files?
-A: BAL/Media/WebCore/MorphOS/
-   "BCMediaPlayerPrivateMorphOS.cpp_save" file is saved original from Morphos and "BCMediaPlayerPrivateMorphOS.cpp" is aos4-adapted
+
+A: Almost all of them are in BAL/Media/WebCore/MorphOS/
+   BCMediaPlayerPrivateMorphOS.cpp_save file is saved original from Morphos and "BCMediaPlayerPrivateMorphOS.cpp" is aos4-adapted
    version.
+
+   There is also acinerella.c in the same BAL/Media/WebCore/MorphOS/ directory, which is the FFmpeg wrapper for simplifying work with
+   FFmpeg with some amiga-specific adaptation. It is open-sourced and can be found here: https://github.com/astoeckel/acinerella/
+
+   The full-screen handler code of MediaPlayer through placed in the Source/WebKit/OriginWebBrowser/Api/MorphOS/owbbrowserclass.cpp,
+   in the  OWBBrowser_VideoEnterFullPage method. Currently, only MorphOS's CGX5 based overlay are handled.
+
