@@ -38,13 +38,19 @@
 
 #include "../../../Source/WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 #if ENABLE_COOKIE_DEBUG
-#include <clib/debug_protos.h>
 #include <stdio.h>
 //#define CookieLog(format, ...) do { char buffer[1024]; snprintf(buffer, sizeof(buffer), __VA_ARGS__); DoMethod(app, MM_OWBApp_AddConsoleMessage, buffer); } while (0)
-#define CookieLog kprintf
+#define CookieLog bug
 #undef LOG_ERROR
-#define LOG_ERROR kprintf
+#define LOG_ERROR bug
 #else
 #define CookieLog(format, ...)
 #endif

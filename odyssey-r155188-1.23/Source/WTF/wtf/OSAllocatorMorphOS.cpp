@@ -29,20 +29,25 @@
 #include <wtf/FastMalloc.h>
 
 #include <string.h>
-#include <clib/debug_protos.h>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 namespace WTF {
 
 void* OSAllocator::reserveUncommitted(size_t bytes, Usage, bool, bool, bool)
 {
-	D(kprintf("OSAllocator::reserveUncommitted(%lu)\n", bytes));
+	D(bug("OSAllocator::reserveUncommitted(%lu)\n", bytes));
 	return fastMalloc(bytes);
 }
 
 void* OSAllocator::reserveAndCommit(size_t bytes, Usage, bool, bool, bool)
 {
-	D(kprintf("OSAllocator::reserveAndCommit(%lu)\n", bytes));
+	D(bug("OSAllocator::reserveAndCommit(%lu)\n", bytes));
 	void *ptr =	fastMalloc(bytes);
 	if(ptr)
 	{
@@ -53,18 +58,18 @@ void* OSAllocator::reserveAndCommit(size_t bytes, Usage, bool, bool, bool)
 
 void OSAllocator::commit(void* address, size_t bytes, bool, bool)
 {
-	D(kprintf("OSAllocator::commit(%p, %lu)\n", address, bytes));
+	D(bug("OSAllocator::commit(%p, %lu)\n", address, bytes));
 	memset(address, 0, bytes);
 }
 
 void OSAllocator::decommit(void* address, size_t bytes)
 {
-	D(kprintf("OSAllocator::decommit(%p, %lu)\n", address, bytes));
+	D(bug("OSAllocator::decommit(%p, %lu)\n", address, bytes));
 }
 
 void OSAllocator::releaseDecommitted(void* address, size_t bytes)
 {
-	D(kprintf("OSAllocator::releaseDecommitted(%p, %lu)\n", address, bytes));
+	D(bug("OSAllocator::releaseDecommitted(%p, %lu)\n", address, bytes));
 	fastFree(address);
 }
 

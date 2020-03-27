@@ -30,7 +30,13 @@
 #include "SharedBuffer.h"
 #include "FileIO.h"
 #include "CString.h"
-#include <clib/debug_protos.h>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 namespace WebCore {
 
@@ -58,7 +64,7 @@ PassRefPtr<SharedBuffer> SharedBuffer::createWithContentsOfFile(const String& fi
         LOG_ERROR("Failed to properly create shared buffer");
         result->m_buffer.clear();
         result = 0;
-	kprintf("huho\n");
+	D(bug("huho\n"));
 	}*/
     delete fileData;
     return result.release();

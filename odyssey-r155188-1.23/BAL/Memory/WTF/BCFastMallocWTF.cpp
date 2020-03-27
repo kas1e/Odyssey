@@ -119,6 +119,13 @@
 #define USE_BACKGROUND_THREAD_TO_SCAVENGE_MEMORY 1
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 #ifndef NDEBUG
 namespace WTF {
 
@@ -240,7 +247,6 @@ TryMallocReturnValue tryFastZeroedMalloc(size_t n)
 #if OS(WINDOWS)
 #include <malloc.h>
 #elif OS(MORPHOS)
-#include <clib/debug_protos.h>
 extern int morphos_crash(size_t);
 #endif
 
@@ -293,7 +299,7 @@ TryMallocReturnValue tryFastMalloc(size_t n)
     fastMallocValidate(result);
 #if OS(MORPHOS)
     g_memory_allocated += n + Internal::ValidationBufferSize;
-    //kprintf("+ g_memory_allocated %d (+%d)\n", g_memory_allocated, n);
+    //D(bug("+ g_memory_allocated %d (+%d)\n", g_memory_allocated, n));
 
     if (g_limit != 0 && (g_memory_allocated > g_limit)) {
 	if (g_memoryNotification)
@@ -321,7 +327,7 @@ retry:
     
     if (!result) 
     {
-	kprintf("fastMalloc: Failed to allocate %lu bytes. Happy crash sponsored by WebKit will follow.\n", n ? n : 2); 
+	D(bug("fastMalloc: Failed to allocate %lu bytes. Happy crash sponsored by WebKit will follow.\n", n ? n : 2)); 
 	if(morphos_crash(n ? n : 2)) 
 	    goto retry;
     }
@@ -365,7 +371,7 @@ retry:
     void* result = calloc(n_elements ? n_elements : 1, element_size ? element_size : 2);
     if (!result) 
     {
-	kprintf("fastCalloc: Failed to allocate %lu x %lu bytes. Happy crash sponsored by WebKit will follow.\n", n_elements ? n_elements : 1, element_size ? element_size : 2);
+	D(bug("fastCalloc: Failed to allocate %lu x %lu bytes. Happy crash sponsored by WebKit will follow.\n", n_elements ? n_elements : 1, element_size ? element_size : 2));
 	if(morphos_crash((n_elements ? n_elements : 1)*(element_size ? element_size : 2))) 
 	    goto retry;
     }
@@ -384,7 +390,7 @@ void fastFree(void* p)
 
 #if OS(MORPHOS)
     g_memory_allocated -= (fastMallocSize(p) + Internal::ValidationBufferSize);
-    //kprintf("- g_memory_allocated %d (-%d)\n", g_memory_allocated, fastMallocSize(p));
+    //D(bug("- g_memory_allocated %d (-%d)\n", g_memory_allocated, fastMallocSize(p)));
 #endif    
     fastMallocMatchValidateFree(p, Internal::AllocTypeMalloc);
     Internal::ValidationHeader* header = Internal::fastMallocValidationHeader(p);
@@ -406,14 +412,14 @@ TryMallocReturnValue tryFastRealloc(void* p, size_t n)
         fastMallocValidate(p);
 #if OS(MORPHOS)
 	g_memory_allocated -= (fastMallocSize(p) + Internal::ValidationBufferSize);
-	//kprintf("- g_memory_allocated %d (-%d)\n", g_memory_allocated, fastMallocSize(p));
+	//D(bug("- g_memory_allocated %d (-%d)\n", g_memory_allocated, fastMallocSize(p)));
 #endif
         Internal::ValidationHeader* result = static_cast<Internal::ValidationHeader*>(realloc(Internal::fastMallocValidationHeader(p), n + Internal::ValidationBufferSize));
         if (!result)
             return 0;
 #if OS(MORPHOS)
         g_memory_allocated += n + Internal::ValidationBufferSize;
-	//kprintf("+ g_memory_allocated %d (+%d)\n", g_memory_allocated, n);
+	//D(bug("+ g_memory_allocated %d (+%d)\n", g_memory_allocated, n));
 
 	if (g_limit != 0 && (g_memory_allocated > g_limit)) {
 	    if (g_memoryNotification)
@@ -448,7 +454,7 @@ retry:
 
     if (!result)
     {
-	kprintf("fastRealloc: Failed to allocate %lu bytes. Happy crash sponsored by WebKit will follow.\n", n ? n : 2);
+	D(bug("fastRealloc: Failed to allocate %lu bytes. Happy crash sponsored by WebKit will follow.\n", n ? n : 2));
 	if(morphos_crash(n ? n : 2))
 	    goto retry;
     }

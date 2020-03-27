@@ -82,6 +82,13 @@
 #include "clipboard.h"
 #include "asl.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 /******************************************************************
  * owbwindowclass
  *****************************************************************/
@@ -219,7 +226,7 @@ static void copyWebViewSelectionToClipboard(WebView* webView, bool html, bool lo
 
 static  void setup_browser_notifications(Object *obj, struct Data *data, Object *browser)
 {
-	//kprintf("OWBWindow: setup notifications for browser %p\n", browser);
+	//D(bug("OWBWindow: setup notifications for browser %p\n", browser));
 
 	DoMethod(browser, MUIM_Notify, MA_OWBBrowser_Loading, MUIV_EveryTime, data->progressgroup,   3, MUIM_Set, MUIA_Group_ActivePage, MUIV_TriggerValue);
 	DoMethod(browser, MUIM_Notify, MA_OWBBrowser_Loading, MUIV_EveryTime, data->navigationgroup, 3, MUIM_Set, MA_TransferAnim_Animate, MUIV_TriggerValue);
@@ -242,7 +249,7 @@ static  void setup_browser_notifications(Object *obj, struct Data *data, Object 
 
 	/*
 	Object *urlstring = (Object *) getv((Object *) getv(data->addressbargroup, MA_AddressBarGroup_PopString), MUIA_Popstring_String);
-	kprintf("set notification urlstring %p browser %p\n", urlstring, browser);
+	D(bug("set notification urlstring %p browser %p\n", urlstring, browser));
 	DoMethod(urlstring, MUIM_Notify, MUIA_String_Contents, MUIV_EveryTime, browser, 3, MUIM_Set, MA_OWBBrowser_EditedURL, MUIV_TriggerValue);
 	*/
 	//DoMethod(obj, MUIM_Notify, MUIA_Window_ActiveObject, MUIV_EveryTime, browser, 1, MM_OWBBrowser_FocusChanged);
@@ -252,10 +259,10 @@ static void cleanup_browser_notifications(Object *obj, struct Data *data, Object
 {
 	//DoMethod(obj, MUIM_KillNotify, MUIA_Window_ActiveObject);
 
-	//kprintf("OWBWindow: cleanup notifications for browser %p\n", browser);
+	//D(bug("OWBWindow: cleanup notifications for browser %p\n", browser));
 	/*
 	Object *urlstring = (Object *) getv((Object *) getv(data->addressbargroup, MA_AddressBarGroup_PopString), MUIA_Popstring_String);
-	kprintf("clear notification urlstring %p browser %p\n", urlstring, browser);
+	D(bug("clear notification urlstring %p browser %p\n", urlstring, browser));
 	DoMethod(urlstring, MUIM_KillNotifyObj, MUIA_String_Contents, browser);
 	*/
 	DoMethod(browser, MUIM_KillNotify, MA_OWBBrowser_Loading);
@@ -572,7 +579,7 @@ DEFDISP
 	GETDATA;
 	APTR n, m;
 
-	//kprintf("OWBWindow: disposing window %p\n", obj);
+	//D(bug("OWBWindow: disposing window %p\n", obj));
 
 	if(data->completion_thread)
 	{
@@ -613,7 +620,7 @@ DEFDISP
 
 	free(data->userscriptimage_shorthelp);
 
-	//kprintf("OWBWindow: ok, calling supermethod\n");
+	//D(bug("OWBWindow: ok, calling supermethod\n"));
 
 	return DOSUPER;
 }
@@ -2308,7 +2315,7 @@ DEFSMETHOD(OWBWindow_ActivePage)
 
 	data->lastpagenum = msg->pagenum;
 
-	//kprintf("OWBWindow: active page %d\n", msg->pagenum);
+	//D(bug("OWBWindow: active page %d\n", msg->pagenum));
 
 	FORCHILD(data->pagegroup, MUIA_Group_ChildList)
 	{
@@ -2332,8 +2339,8 @@ DEFSMETHOD(OWBWindow_ActivePage)
 
 			data->active_browser = (Object *) getv((Object *)child, MA_OWBGroup_Browser);
 
-			//kprintf("OWBWindow: active browser = %p\n", data->active_browser);
-			//kprintf("OWBWindow: loading state: %d\n", getv(data->active_browser, MA_OWBBrowser_Loading));
+			//D(bug("OWBWindow: active browser = %p\n", data->active_browser));
+			//D(bug("OWBWindow: loading state: %d\n", getv(data->active_browser, MA_OWBBrowser_Loading)));
 
 			setup_browser_notifications(obj, data, data->active_browser);
 

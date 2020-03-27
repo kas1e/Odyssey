@@ -57,15 +57,19 @@
 #include "gui.h"
 #include "utils.h"
 #include <proto/intuition.h>
-#include <clib/debug_protos.h>
 #include <proto/asl.h>
 #include "asl.h"
-#define D(x)
 #undef get
 #undef set
 #undef String
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 using namespace std;
@@ -79,12 +83,12 @@ WebInspectorClient::WebInspectorClient(WebView *view)
 
 WebInspectorClient::~WebInspectorClient()
 {
-    D(kprintf("WebInspectorClient::~WebInspectorClient\n"));
+    D(bug("WebInspectorClient::~WebInspectorClient\n"));
 }
 
 void WebInspectorClient::inspectorDestroyed()
 {
-    D(kprintf("inspectorDestroyed\n"));
+    D(bug("inspectorDestroyed\n"));
     closeInspectorFrontend();
     delete this;
 }
@@ -134,7 +138,7 @@ void WebInspectorClient::bringFrontendToFront()
 
 void WebInspectorClient::releaseFrontend()
 {
-    D(kprintf("releaseFrontend\n"));
+    D(bug("releaseFrontend\n"));
     m_frontendPage = 0;
     m_frontendClient = 0;
 }
@@ -203,7 +207,7 @@ WebInspectorFrontendClient::WebInspectorFrontendClient(WebView* inspectedWebView
 
 WebInspectorFrontendClient::~WebInspectorFrontendClient()
 {
-	D(kprintf("WebInspectorFrontendClient::~WebInspectorFrontendClient\n"));
+	D(bug("WebInspectorFrontendClient::~WebInspectorFrontendClient\n"));
 	destroyInspectorView(true); 
 }
 
@@ -233,7 +237,7 @@ void WebInspectorFrontendClient::bringToFront()
 
 void WebInspectorFrontendClient::closeWindow()
 {
-	D(kprintf("closeWindow\n"));
+	D(bug("closeWindow\n"));
 	destroyInspectorView(true);
 }
 
@@ -274,13 +278,13 @@ void WebInspectorFrontendClient::setToolbarHeight(unsigned)
 
 void WebInspectorFrontendClient::inspectedURLChanged(const String& newURL)
 {
-    D(kprintf("inspectedURLChanged <%s>\n", newURL.latin1().data()));
+    D(bug("inspectedURLChanged <%s>\n", newURL.latin1().data()));
     notImplemented();
 }
 
 void WebInspectorFrontendClient::destroyInspectorView(bool notifyInspectorController)
 {
-    D(kprintf("this %p destroyInspectorView(%d)\n", this, notifyInspectorController));
+    D(bug("this %p destroyInspectorView(%d)\n", this, notifyInspectorController));
 
     m_inspectorClient->releaseFrontend();
 
@@ -291,7 +295,7 @@ void WebInspectorFrontendClient::destroyInspectorView(bool notifyInspectorContro
 
 	if (notifyInspectorController)
 	{
-		D(kprintf("disconnectFrontend\n"));
+		D(bug("disconnectFrontend\n"));
 		if(m_inspectedWebView)
 		{
 			core(m_inspectedWebView)->inspectorController()->disconnectFrontend();

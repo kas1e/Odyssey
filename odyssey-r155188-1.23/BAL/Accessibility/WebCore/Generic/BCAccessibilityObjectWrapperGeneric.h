@@ -27,7 +27,12 @@
 #ifndef AccessibilityObjectWrapper_h
 #define AccessibilityObjectWrapper_h
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 namespace WebCore {
 
@@ -46,7 +51,7 @@ namespace WebCore {
         {
             // FIXME: Remove this once our immediate subclass no longer uses COM.
             
-	    kprintf("Disabled addressOfCount()=0 in AccessibilityObjectWrapper... is it even used?");
+	    D(bug("Disabled addressOfCount()=0 in AccessibilityObjectWrapper... is it even used?"));
 	    //*addressOfCount() = 0;
         }
         AccessibilityObjectWrapper() : m_object(0) { }

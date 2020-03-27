@@ -26,7 +26,6 @@
 #include "HTMLInputElement.h"
 
 #include "gui.h"
-#include <clib/debug_protos.h>
 
 namespace WebCore {
 

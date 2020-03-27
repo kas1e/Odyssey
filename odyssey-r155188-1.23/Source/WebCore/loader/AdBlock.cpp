@@ -34,7 +34,6 @@
 #include <wtf/Vector.h>
 
 #include <stdio.h>
-#include <clib/debug_protos.h>
 #include "../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
 
 namespace WebCore {

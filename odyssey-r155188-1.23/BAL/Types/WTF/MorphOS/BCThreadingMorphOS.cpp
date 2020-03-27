@@ -55,14 +55,15 @@
 #include <dos/dosextens.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
-#include <clib/debug_protos.h>
 
-#ifdef __amigaos4__
-#define kprintf DebugPrintF
-#endif
 
-#define D(x) //x
-#define D2(x) //x
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+#define D2(x)
 
 
 namespace WTF {
@@ -184,33 +185,33 @@ static void initializeStaticTimerBase()
 
 void initializeThreading()
 {
-	D(kprintf("initializeThreading()\n")); 
+	D(bug("initializeThreading()\n")); 
 	if (!atomicallyInitializedStaticMutex)
 	{
-		D(kprintf("we in initializeThreading(): inside of the !atomicallyinitializedstaticmutex and before StringImp::empty\n"));
+		D(bug("we in initializeThreading(): inside of the !atomicallyinitializedstaticmutex and before StringImp::empty\n"));
 		StringImpl::empty();
-		D(kprintf("we in initializeThreading(): before atoicallyinitializedstaticmutex = new Mutex\n"));
+		D(bug("we in initializeThreading(): before atoicallyinitializedstaticmutex = new Mutex\n"));
 		atomicallyInitializedStaticMutex = new Mutex;
-		D(kprintf("we in initializeThreading(): before threadmapmutex()\n"));
+		D(bug("we in initializeThreading(): before threadmapmutex()\n"));
 		threadMapMutex();
-		D(kprintf("we in initializeThreading(): before syncportmapmutex()\n"));
+		D(bug("we in initializeThreading(): before syncportmapmutex()\n"));
 		syncPortMapMutex();
-		D(kprintf("we in initializeThreading(): before threadReplyStateMapMutex()\n"));
+		D(bug("we in initializeThreading(): before threadReplyStateMapMutex()\n"));
 		threadReplyStateMapMutex();
 
-		D(kprintf("we in initializeThreading(): before wtfThreadData()\n"));
+		D(bug("we in initializeThreading(): before wtfThreadData()\n"));
 		wtfThreadData();
-		D(kprintf("we in initializeThreading(): before initializeRandomNumberGenerator()\n"));
+		D(bug("we in initializeThreading(): before initializeRandomNumberGenerator()\n"));
 		initializeRandomNumberGenerator();
-		D(kprintf("we in initializeThreading(): before s_dtoap5mutex = new mutex\n"));
+		D(bug("we in initializeThreading(): before s_dtoap5mutex = new mutex\n"));
 		s_dtoaP5Mutex = new Mutex;
-		D(kprintf("we in initializeThreading(): before initializeDates\n"));
+		D(bug("we in initializeThreading(): before initializeDates\n"));
 		initializeDates();
 
-		D(kprintf("we in initializeThreading(): before mainthreadidentifier = currentThread()\n"));
+		D(bug("we in initializeThreading(): before mainthreadidentifier = currentThread()\n"));
 		mainThreadIdentifier = currentThread();
 		
-		D(kprintf("mainThreadIdentifier %d\n", mainThreadIdentifier));
+		D(bug("mainThreadIdentifier %d\n", mainThreadIdentifier));
 
 		initializeStaticTimerBase();
 	}
@@ -287,7 +288,7 @@ static ThreadIdentifier establishIdentifierForThreadHandle(APTR threadHandle)
 
 	static ThreadIdentifier identifierCount = 1;
 
-	D(kprintf("establishIdentifierForThreadHandle() adding thread id %lu\n", identifierCount));
+	D(bug("establishIdentifierForThreadHandle() adding thread id %lu\n", identifierCount));
 
 	threadMap().add(identifierCount, threadHandle);
 
@@ -316,7 +317,7 @@ static struct MsgPort* syncPortByProcess(APTR process)
 {
 	MutexLocker locker(syncPortMapMutex());
 
-	D(kprintf("syncPortByProcess(%p)\n", process));
+	D(bug("syncPortByProcess(%p)\n", process));
 
 	SyncPortMap::iterator i = syncPortMap().begin();
 	for (; i != syncPortMap().end(); ++i)
@@ -334,7 +335,7 @@ static struct MsgPort* createSyncPortForProcess(APTR process)
 
 	struct MsgPort *msgPort = CreateMsgPort();
 
-	D(kprintf("createSyncPortForThreadProcess(%p) -> MsgPort %p\n", process, msgPort));
+	D(bug("createSyncPortForThreadProcess(%p) -> MsgPort %p\n", process, msgPort));
 
 	if(msgPort)
 	{
@@ -345,7 +346,7 @@ static struct MsgPort* createSyncPortForProcess(APTR process)
 
 static void removeSyncPort(APTR syncPort)
 {
-	D(kprintf("removeSyncPort(%p)\n", syncPort));
+	D(bug("removeSyncPort(%p)\n", syncPort));
 
 	MutexLocker locker(syncPortMapMutex());
 
@@ -358,7 +359,7 @@ struct ThreadReplyState* threadReplyStateByThreadHandle(APTR threadHandle)
 {
 	MutexLocker locker(threadReplyStateMapMutex());
 
-	D(kprintf("threadReplyStateByThreadHandle(%p)\n", threadHandle));
+	D(bug("threadReplyStateByThreadHandle(%p)\n", threadHandle));
 
 	ThreadReplyStateMap::iterator i = threadReplyStateMap().begin();
 	for (; i != threadReplyStateMap().end(); ++i)
@@ -374,7 +375,7 @@ struct ThreadReplyState* threadReplyStateByThreadStartMsg(APTR threadStartMsg)
 {
 	MutexLocker locker(threadReplyStateMapMutex());
 
-	D(kprintf("threadReplyStateByThreadStartMsg(%p)\n", threadStartMsg));
+	D(bug("threadReplyStateByThreadStartMsg(%p)\n", threadStartMsg));
 
 	ThreadReplyStateMap::iterator i = threadReplyStateMap().begin();
 	for (; i != threadReplyStateMap().end(); ++i)
@@ -393,7 +394,7 @@ static ThreadReplyState* createThreadReplyState(struct ThreadData *threadHandle,
 
 	struct ThreadReplyState *threadReplyState = (struct ThreadReplyState *) malloc(sizeof(*threadReplyState));
 
-	D(kprintf("createReplyState(%p, %p) -> %p\n", threadHandle, threadStartMsg, threadReplyState));
+	D(bug("createReplyState(%p, %p) -> %p\n", threadHandle, threadStartMsg, threadReplyState));
 
 	if(threadReplyState)
 	{
@@ -412,7 +413,7 @@ static void removeThreadReplyState(ThreadReplyState *threadReplyState)
 {
 	MutexLocker locker(threadReplyStateMapMutex());
 
-	D(kprintf("removeThreadReplyState(%p)\n", threadReplyState));
+	D(bug("removeThreadReplyState(%p)\n", threadReplyState));
 
 	threadReplyStateMap().remove(threadReplyState);
 }
@@ -422,7 +423,7 @@ int	pendingChildrenForThread(APTR process)
 	int count = 0;
 	MutexLocker locker(threadReplyStateMapMutex());
 
-	D(kprintf("pendingChildrenForThread(%p)\n", process));
+	D(bug("pendingChildrenForThread(%p)\n", process));
 
 	ThreadReplyStateMap::iterator i = threadReplyStateMap().begin();
 	for (; i != threadReplyStateMap().end(); ++i)
@@ -439,7 +440,7 @@ int	pendingChildrenForThread(APTR process)
 
 ThreadIdentifier createThreadInternal(ThreadFunction entryPoint, void* data, const char* threadName)
 {
-	D(kprintf("createThreadInternal(%s)\n", threadName));
+	D(bug("createThreadInternal(%s)\n", threadName));
 
 	struct ThreadData* threadHandle = (struct ThreadData *) malloc(sizeof(*threadHandle));
 
@@ -512,7 +513,7 @@ ThreadIdentifier createThreadInternal(ThreadFunction entryPoint, void* data, con
 
 void initializeCurrentThreadInternal(const char* threadName)
 {
-	D(kprintf("setThreadNameInternal(%s)\n", threadName));
+	D(bug("setThreadNameInternal(%s)\n", threadName));
 }
 
 int waitForThreadCompletion(ThreadIdentifier threadID)
@@ -521,7 +522,7 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 
 	struct ThreadData *threadHandle = (struct ThreadData *) threadHandleForIdentifier(threadID);
 
-	D(kprintf("waitForThreadCompletion(%lu) -> threadHandle %p\n", threadID, threadHandle));
+	D(bug("waitForThreadCompletion(%lu) -> threadHandle %p\n", threadID, threadHandle));
 
 	// If the thread was detached, don't wait
 	if(threadHandle && !threadHandle->td_Detached)
@@ -529,11 +530,11 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 		ULONG processed = FALSE;
 		struct ThreadReplyState *threadReplyState = threadReplyStateByThreadHandle(threadHandle);
 
-		D(kprintf("Matching threadreplystate %p\n", threadReplyState));
+		D(bug("Matching threadreplystate %p\n", threadReplyState));
 		// First check if the thread didn't already complete
 		if(threadReplyState && threadReplyState->trs_Replied)
 		{
-			D(kprintf("Already replied\n"));
+			D(bug("Already replied\n"));
 			processed = TRUE;
 		}
 
@@ -544,7 +545,7 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 			{
 				struct ThreadStartMsg* tsm;
 
-				D(kprintf("Waiting for startupmsg\n"));
+				D(bug("Waiting for startupmsg\n"));
 				WaitPort(threadHandle->td_MsgPort);
 				tsm = (struct ThreadStartMsg*) GetMsg(threadHandle->td_MsgPort);
 
@@ -558,13 +559,13 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 						// It's the one we're waiting for.
 						if(threadReplyState->trs_ThreadHandle == threadHandle)
 						{
-							D(kprintf("Our thread, proceed\n"));
+							D(bug("Our thread, proceed\n"));
 							processed = TRUE;
 						}
 						// It's not. Mark it as replied and keep waiting
 						else
 						{
-							D(kprintf("Not our thread, marking as replied\n"));
+							D(bug("Not our thread, marking as replied\n"));
 							threadReplyState->trs_Replied = TRUE;
 						}
 					}
@@ -583,12 +584,12 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 
 		threadReplyStateMapMutex().lock();
 		int remaining = pendingChildrenForThread(FindTask(NULL));
-		D(kprintf("Remaining children %d\n", remaining));
+		D(bug("Remaining children %d\n", remaining));
 		if(remaining == 0)
 		{
 			// No more child thread, then we can delete the message port.
 			removeSyncPort(threadHandle->td_MsgPort);
-			D(kprintf("DeleteMsgPort(%p)\n", threadHandle->td_MsgPort));
+			D(bug("DeleteMsgPort(%p)\n", threadHandle->td_MsgPort));
 			DeleteMsgPort(threadHandle->td_MsgPort);
 		}
 		threadReplyStateMapMutex().unlock();
@@ -598,14 +599,14 @@ int waitForThreadCompletion(ThreadIdentifier threadID)
 		free(threadHandle);
 	}
 
-	D(kprintf("waitForThreadCompletion(%lu) OK\n", threadID));
+	D(bug("waitForThreadCompletion(%lu) OK\n", threadID));
 
 	return 0;
 }
 
 void waitForDetachedThreads()
 {
-	kprintf("waitForDetachedThreads() (probably doesn't work)\n");
+	bug("waitForDetachedThreads() (probably doesn't work)\n");
 
 	MutexLocker locker(threadMapMutex());
 
@@ -616,16 +617,16 @@ void waitForDetachedThreads()
 
 		if (threadHandle && threadHandle->td_Detached)
 		{
-			kprintf("Found detached thread\n");
+			bug("Found detached thread\n");
 
 			ULONG processed = FALSE;
 			struct ThreadReplyState *threadReplyState = threadReplyStateByThreadHandle(threadHandle);
 
-			D(kprintf("Matching threadreplystate %p\n", threadReplyState));
+			D(bug("Matching threadreplystate %p\n", threadReplyState));
 			// First check if the thread didn't already complete
 			if(threadReplyState && threadReplyState->trs_Replied)
 			{
-				D(kprintf("Already replied\n"));
+				D(bug("Already replied\n"));
 				processed = TRUE;
 			}
 
@@ -636,7 +637,7 @@ void waitForDetachedThreads()
 				{
 					struct ThreadStartMsg* tsm;
 
-					D(kprintf("Waiting for startupmsg\n"));
+					D(bug("Waiting for startupmsg\n"));
 					WaitPort(threadHandle->td_MsgPort);
 					tsm = (struct ThreadStartMsg*) GetMsg(threadHandle->td_MsgPort);
 
@@ -650,13 +651,13 @@ void waitForDetachedThreads()
 							// It's the one we're waiting for.
 							if(threadReplyState->trs_ThreadHandle == threadHandle)
 							{
-								D(kprintf("Our thread, proceed\n"));
+								D(bug("Our thread, proceed\n"));
 								processed = TRUE;
 							}
 							// It's not. Mark it as replied and keep waiting
 							else
 							{
-								D(kprintf("Not our thread, marking as replied\n"));
+								D(bug("Not our thread, marking as replied\n"));
 								threadReplyState->trs_Replied = TRUE;
 							}
 						}
@@ -670,12 +671,12 @@ void waitForDetachedThreads()
 
 			threadReplyStateMapMutex().lock();
 			int remaining = pendingChildrenForThread(FindTask(NULL));
-			D(kprintf("Remaining children %d\n", remaining));
+			D(bug("Remaining children %d\n", remaining));
 			if(remaining == 0)
 			{
 				// No more child thread, then we can delete the message port.
 				removeSyncPort(threadHandle->td_MsgPort);
-				D(kprintf("DeleteMsgPort(%p)\n", threadHandle->td_MsgPort));
+				D(bug("DeleteMsgPort(%p)\n", threadHandle->td_MsgPort));
 				DeleteMsgPort(threadHandle->td_MsgPort);
 			}
 			threadReplyStateMapMutex().unlock();
@@ -690,7 +691,7 @@ void waitForDetachedThreads()
 
 void detachThread(ThreadIdentifier threadID)
 {
-	kprintf("detachThread() (probably doesn't work)\n");
+	D(bug("detachThread() (probably doesn't work)\n"));
 
 	struct ThreadData *threadHandle = (struct ThreadData *) threadHandleForIdentifier(threadID);
 
@@ -706,7 +707,7 @@ ThreadIdentifier currentThread()
 	struct ThreadData *threadHandle;
 	APTR currentThread = FindTask(NULL);
 
-	D(kprintf("currentThread() task %p\n", currentThread));
+	D(bug("currentThread() task %p\n", currentThread));
 
 	if (ThreadIdentifier id = identifierByThread(currentThread))
 		return id;
@@ -727,7 +728,7 @@ ThreadIdentifier currentThread()
 
 bool isMainThread()
 {
-	D(kprintf("isMainThread() %d\n", currentThread() == mainThreadIdentifier));
+	D(bug("isMainThread() %d\n", currentThread() == mainThreadIdentifier));
 	return currentThread() == mainThreadIdentifier;
 }
 
@@ -818,7 +819,7 @@ ThreadCondition::ThreadCondition()
 {
 	struct _Condition *c;
 
-	D2(kprintf("ThreadCondition::ThreadCondition()\n"));
+	D2(bug("ThreadCondition::ThreadCondition()\n"));
 
 	/* allocate */
 	if ((c = (struct _Condition *)  AllocMem(sizeof(struct _Condition), MEMF_PUBLIC)))
@@ -830,14 +831,14 @@ ThreadCondition::ThreadCondition()
 		c->count = 0;
 	}
 
-	D2(kprintf("ThreadCondition::ThreadCondition() OK\n"));
+	D2(bug("ThreadCondition::ThreadCondition() OK\n"));
 }
 
 ThreadCondition::~ThreadCondition()
 {
 	struct _Condition *c = (struct _Condition *) m_condition;
 
-	D2(kprintf("ThreadCondition::~ThreadCondition()\n"));
+	D2(bug("ThreadCondition::~ThreadCondition()\n"));
 
 	if(c)
 	{
@@ -852,7 +853,7 @@ ThreadCondition::~ThreadCondition()
 		FreeMem(c, sizeof(struct _Condition));
 	}
 
-	D2(kprintf("ThreadCondition::~ThreadCondition() OK\n"));
+	D2(bug("ThreadCondition::~ThreadCondition() OK\n"));
 }
 
 void ThreadCondition::wait(Mutex & mutex)
@@ -860,7 +861,7 @@ void ThreadCondition::wait(Mutex & mutex)
 	struct _Condition *c = (struct _Condition *) m_condition;
 	struct _CondWaiter *waiter;
 
-	D2(kprintf("ThreadCondition::wait()\n"));
+	D2(bug("ThreadCondition::wait()\n"));
 
 	/* setup a new waiter */
 	if ((waiter = (struct _CondWaiter *) AllocMem(sizeof(struct _CondWaiter), MEMF_CLEAR)) == NULL)
@@ -894,7 +895,7 @@ void ThreadCondition::wait(Mutex & mutex)
 	/* retake the mutex */
 	mutex.lock();
 
-	D2(kprintf("ThreadCondition::wait() OK\n"));
+	D2(bug("ThreadCondition::wait() OK\n"));
 }
 
 bool ThreadCondition::timedWait(Mutex& mutex, double absoluteTime)
@@ -904,7 +905,7 @@ bool ThreadCondition::timedWait(Mutex& mutex, double absoluteTime)
 	bool conditionHit = false;
 	double interval = absoluteTime - currentTime();
 
-	D2(kprintf("ThreadCondition::timedWait()\n"));
+	D2(bug("ThreadCondition::timedWait()\n"));
 
 	if (interval < 0.0)
 		return false;
@@ -977,7 +978,7 @@ bool ThreadCondition::timedWait(Mutex& mutex, double absoluteTime)
 	/* retake the mutex */
 	mutex.lock();
 
-	D2(kprintf("ThreadCondition::timedWait() caught signal: %d\n", conditionHit));
+	D2(bug("ThreadCondition::timedWait() caught signal: %d\n", conditionHit));
 
 	return conditionHit;
 }
@@ -987,7 +988,7 @@ void ThreadCondition::signal()
 	struct _Condition *c = (struct _Condition *) m_condition;
 	struct _CondWaiter *waiter;
 
-	D2(kprintf("ThreadCondition::signal()\n"));
+	D2(bug("ThreadCondition::signal()\n"));
 
 	/* safely remove a waiter from the list */
 	ObtainSemaphore(&c->lock);
@@ -1006,7 +1007,7 @@ void ThreadCondition::signal()
 	/* all done */
 	FreeMem(waiter, sizeof(struct _CondWaiter));
 
-	D2(kprintf("ThreadCondition::signal() OK\n"));
+	D2(bug("ThreadCondition::signal() OK\n"));
 }
 
 void ThreadCondition::broadcast()
@@ -1014,7 +1015,7 @@ void ThreadCondition::broadcast()
 	struct _Condition *c = (struct _Condition *) m_condition;
 	struct _CondWaiter *waiter;
 
-	D2(kprintf("ThreadCondition::broadcast()\n"));
+	D2(bug("ThreadCondition::broadcast()\n"));
 
 	/* safely operation on the condition */
 	ObtainSemaphore(&c->lock);

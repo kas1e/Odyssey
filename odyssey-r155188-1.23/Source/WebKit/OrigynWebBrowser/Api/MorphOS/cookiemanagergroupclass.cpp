@@ -46,6 +46,11 @@
 
 #include "gui.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 using namespace WebCore;
@@ -172,7 +177,7 @@ DEFTMETHOD(CookieManagerGroup_Load)
 
 	DoMethod(data->lt_cookies, MUIM_Listtree_Remove, MUIV_Listtree_Remove_ListNode_Root, MUIV_Listtree_Remove_TreeNode_All, 0);
 
-	D(kprintf("Loading cookies\n"));
+	D(bug("Loading cookies\n"));
 
 	HashMap<String, CookieMap*>& manager_map = cookieManager().getCookieMap();
 
@@ -227,10 +232,10 @@ DEFTMETHOD(CookieManagerGroup_Load)
 		node.http_only = cookie->isHttpOnly();
 		node.session = cookie->isSession();
 
-		D(kprintf("protocol <%s>\n", node.protocol));
-		D(kprintf("\tdomain <%s>\n", node.domain));
-		D(kprintf("\tname <%s>\n", node.name));
-		D(kprintf("\tpath <%s>\n", node.path));
+		D(bug("protocol <%s>\n", node.protocol));
+		D(bug("\tdomain <%s>\n", node.domain));
+		D(bug("\tname <%s>\n", node.name));
+		D(bug("\tpath <%s>\n", node.path));
 
 		/*
 		newentry = (struct MUIS_Listtree_TreeNode *) DoMethod(data->lt_cookies, MUIM_Listtree_FindName,
@@ -279,7 +284,7 @@ DEFSMETHOD(CookieManagerGroup_DidInsert)
 	struct MUIS_Listtree_TreeNode *tn = NULL;
 	ParsedCookie* cookie = (ParsedCookie *) msg->cookie;
 
-	D(kprintf("didInsert <%s><%s>\n", cookie->domain().utf8().data(), cookie->name().utf8().data()));
+	D(bug("didInsert <%s><%s>\n", cookie->domain().utf8().data(), cookie->name().utf8().data()));
 
 	for(pos=0; ; pos++)
 	{
@@ -357,7 +362,7 @@ DEFSMETHOD(CookieManagerGroup_DidRemove)
 	struct MUIS_Listtree_TreeNode *tn = NULL, *tn2 = NULL;
 	ParsedCookie *cookie = (ParsedCookie *) msg->cookie;
 
-	D(kprintf("didRemove <%s><%s>\n", cookie->domain().utf8().data(), cookie->name().utf8().data()));
+	D(bug("didRemove <%s><%s>\n", cookie->domain().utf8().data(), cookie->name().utf8().data()));
 
 	/* find the domain node */
 	for(pos=0; ; pos++)

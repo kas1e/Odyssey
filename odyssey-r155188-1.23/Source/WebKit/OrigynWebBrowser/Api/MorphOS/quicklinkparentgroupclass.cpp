@@ -40,7 +40,12 @@
 #define get(obj,attr,store) GetAttr(attr,obj,(ULONG *)store)
 #endif
 
-//#define D(x)
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 /* private */
 
@@ -74,7 +79,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					get(child, MA_QuickLinkGroup_MinH, &min_h);
 					get(child, MA_QuickLinkGroup_MaxW, &max_w);
 					get(child, MA_QuickLinkGroup_MaxH, &max_h);
-					D(kprintf("QL Parent Group: mode=%ld buts=%ld min_w=%ld min_h=%ld\n",mode,buts,min_w,min_h));
+					D(bug("QL Parent Group: mode=%ld buts=%ld min_w=%ld min_h=%ld\n",mode,buts,min_w,min_h));
 					if (mode & MV_QuickLinkGroup_Mode_Vert)
 					{
 						lm->lm_MinMax.MinWidth  = max_w;
@@ -96,7 +101,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 				}
 				else
 				{
-					D(kprintf("QL Parent Group: HIDED\n"));
+					D(bug("QL Parent Group: HIDED\n"));
 					if (_maxheight(child)==1)
 					{
 						// HSpace()
@@ -135,7 +140,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					h=_maxheight(child);
 					if (w>lm->lm_Layout.Width) w=lm->lm_Layout.Width;
 					if (h>lm->lm_Layout.Height) h=lm->lm_Layout.Height;
-					D(kprintf("QL Parent Group: w=%ld h=%ld\n",w,h));
+					D(bug("QL Parent Group: w=%ld h=%ld\n",w,h));
 					if (!MUI_Layout(child,0,0,w,h,0))
 					{
 						return(FALSE);
@@ -220,18 +225,18 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 					Object *button;
 					struct MinList *l;
 					APTR cstate;
-					D(kprintf("QuickLinkParentGroup_Hide FALSE\n"));
+					D(bug("QuickLinkParentGroup_Hide FALSE\n"));
 					get(obj, MUIA_Group_ChildList, &l);
 					cstate=l->mlh_Head;
 					button=(Object *)NextObject((Object **)&cstate);
 					//DoMethod(obj, MUIM_Group_InitChange);
 					if (button)
 					{
-						D(kprintf("QuickLinkParentGroup_Hide Remove space\n"));
+						D(bug("QuickLinkParentGroup_Hide Remove space\n"));
 						DoMethod(obj, OM_REMMEMBER, button);
 						DoMethod(button, OM_DISPOSE);
 					}
-					D(kprintf("QuickLinkParentGroup_Hide Add QLGroup %08lx\n", data->qlgroup));
+					D(bug("QuickLinkParentGroup_Hide Add QLGroup %08lx\n", data->qlgroup));
 					DoMethod(obj, OM_ADDMEMBER, data->qlgroup);
 					//DoMethod(obj, MUIM_Group_ExitChange);
 					data->hidden=FALSE;
@@ -244,12 +249,12 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 					struct MinList *l;
 					APTR cstate;
 
-					D(kprintf("QuickLinkParentGroup_Hide TRUE\n"));
+					D(bug("QuickLinkParentGroup_Hide TRUE\n"));
 					get(obj, MUIA_Group_ChildList, &l);
 					cstate=l->mlh_Head;
 					data->qlgroup=(Object *)NextObject((Object **)&cstate);
 					//DoMethod(obj, MUIM_Group_InitChange);
-					D(kprintf("QuickLinkParentGroup_Hide Remove QLGroup %08lx\n", data->qlgroup));
+					D(bug("QuickLinkParentGroup_Hide Remove QLGroup %08lx\n", data->qlgroup));
 					if (data->qlgroup)
 					{
 						DoMethod(obj, OM_REMMEMBER, data->qlgroup);
@@ -259,14 +264,14 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 					if (mode & MV_QuickLinkGroup_Mode_Vert)
 					{
 						// Vertical mode add 1 pixel band
-						D(kprintf("QuickLinkParentGroup_Hide Add HSpace\n"));
+						D(bug("QuickLinkParentGroup_Hide Add HSpace\n"));
 						child=(Object *)HSpace(1);
 						if(child) DoMethod(obj, MUIM_Group_AddTail, child);
 					}
 					else
 					{
 						// Horiz mode add 1 pixel band
-						D(kprintf("QuickLinkParentGroup_Hide Add VSpace\n"));
+						D(bug("QuickLinkParentGroup_Hide Add VSpace\n"));
 						child=(Object *)VSpace(1);
 						if(child) DoMethod(obj, MUIM_Group_AddTail, child);
 					}
@@ -299,10 +304,10 @@ DEFNEW
 DEFDISP
 {
 	GETDATA;
-	D(kprintf("QuickLinkParentGroup: disposing\n"));
+	D(bug("QuickLinkParentGroup: disposing\n"));
 	if (data->hidden)
 	{
-		D(kprintf("Hidden mode dispose QLGroup"));
+		D(bug("Hidden mode dispose QLGroup"));
 		DoMethod(data->qlgroup, OM_DISPOSE);
 	}
 	return DOSUPER;

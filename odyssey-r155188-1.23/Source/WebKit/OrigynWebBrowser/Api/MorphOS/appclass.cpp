@@ -118,9 +118,15 @@
 #include "asl.h"
 #include "ExtCredential.h"
 
-
-#define D(x)
 #undef String
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 
 
 /******************************************************************
@@ -1118,7 +1124,7 @@ DEFDISP
 	removeClipboardMonitor();
 	#endif
 	
-	//kprintf("OWBApp: Ok, calling supermethod\n");
+	//D(bug("OWBApp: Ok, calling supermethod\n"));
 
 	return DOSUPER;
 }
@@ -2521,15 +2527,15 @@ DEFSMETHOD(OWBApp_SetFormState)
 	Document *doc = (Document *) msg->doc;
 	String strippedURL = stripURL(KURL(ParsedURLString, *host)).string();
 
-	D(kprintf("SetFormState for URL <%s>\nStripped <%s>\n", host->latin1().data(), strippedURL.latin1().data()));
+	D(bug("SetFormState for URL <%s>\nStripped <%s>\n", host->latin1().data(), strippedURL.latin1().data()));
 
 	ExtCredential *credential = (ExtCredential *) DoMethod(data->passwordmanagerwin, MM_PasswordManagerGroup_Get, &strippedURL);
 
-	D(kprintf("Found Form credential? %p\n", credential));
+	D(bug("Found Form credential? %p\n", credential));
 
 	if (credential && credential->type() == CREDENTIAL_TYPE_FORM && credential->flags() != CREDENTIAL_FLAG_BLACKLISTED)
 	{
-		D(kprintf("user <%s> password <%s>\n", credential->user().utf8().data(), credential->password().utf8().data()));
+		D(bug("user <%s> password <%s>\n", credential->user().utf8().data(), credential->password().utf8().data()));
 
 		// Iterate through all forms
 		RefPtr<HTMLCollection> forms = doc->forms();
@@ -2601,7 +2607,7 @@ DEFSMETHOD(OWBApp_SaveFormState)
 
 				if (webFormPasswordData.isValid())
 				{
-					D(kprintf("Valid formdata found for <%s>\n", webFormPasswordData.origin.string().latin1().data()));
+					D(bug("Valid formdata found for <%s>\n", webFormPasswordData.origin.string().latin1().data()));
 
 					if(getv(app, MA_OWBApp_SaveFormCredentials) && DoMethod(data->passwordmanagerwin, MM_PasswordManagerGroup_Get, &(webFormPasswordData.origin.string())) == NULL)
 					{
@@ -2612,7 +2618,7 @@ DEFSMETHOD(OWBApp_SaveFormState)
 													webFormPasswordData.passwordElement,
 													0);
 
-						D(kprintf("Credentials ElementNames [%s : %s] ElementValues [%s : %s]\n", webFormPasswordData.userNameElement.latin1().data(), webFormPasswordData.userNameValue.latin1().data(), webFormPasswordData.passwordElement.latin1().data(), webFormPasswordData.passwordValue.latin1().data()));
+						D(bug("Credentials ElementNames [%s : %s] ElementValues [%s : %s]\n", webFormPasswordData.userNameElement.latin1().data(), webFormPasswordData.userNameValue.latin1().data(), webFormPasswordData.passwordElement.latin1().data(), webFormPasswordData.passwordValue.latin1().data()));
 
 						if (!extCredential.isEmpty())
 						{
@@ -2921,9 +2927,9 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 	    path =  decodeURLEscapeSequences(path);
 	}
 
-	//kprintf("OWBApp_RequestPolicyForMimeType mimetype <%s> url <%s> attachment %d path <%s>\n", mimetype.utf8().data(), urlstring.utf8().data(), response->isAttachment(), path.latin1().data());
-	//kprintf("IsSupportedMediaMIMEType(%s): %d\n", mimetype.utf8().data(), MIMETypeRegistry::isSupportedMediaMIMEType(mimetype));
-	//kprintf("WebView::canShowMIMEType(%s): %d\n", mimetype.utf8().data(), webView->canShowMIMEType(mimetype.utf8().data()));
+	//D(bug("OWBApp_RequestPolicyForMimeType mimetype <%s> url <%s> attachment %d path <%s>\n", mimetype.utf8().data(), urlstring.utf8().data(), response->isAttachment(), path.latin1().data()));
+	//D(bug("IsSupportedMediaMIMEType(%s): %d\n", mimetype.utf8().data(), MIMETypeRegistry::isSupportedMediaMIMEType(mimetype)));
+	//D(bug("WebView::canShowMIMEType(%s): %d\n", mimetype.utf8().data(), webView->canShowMIMEType(mimetype.utf8().data())));
 
 /* Honour attachment attribute */
 	if(response->isAttachment())
@@ -2947,7 +2953,7 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 		}
 	}
 
-	//kprintf("1 matching_mn %p <%s>\n", matching_mn, matching_mn?matching_mn->mimetype:"");
+	//D(bug("1 matching_mn %p <%s>\n", matching_mn, matching_mn?matching_mn->mimetype:""));
 
 	/* Search again with family match */
 	if(!matching_mn)
@@ -2975,7 +2981,7 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 		}
 	}
 
-	//kprintf("2 matching_mn %p <%s>\n", matching_mn, matching_mn?matching_mn->mimetype:"");
+	//D(bug("2 matching_mn %p <%s>\n", matching_mn, matching_mn?matching_mn->mimetype:""));
 
 	/* Extension check in text/plain case, to handle bad text/html mimetype responses */
 	if((matching_mn && (equalIgnoringCase(String(matching_mn->mimetype), "text/html") ||
@@ -2988,14 +2994,14 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 	{
 	    int pos = path.reverseFind('.');
 
-		//kprintf("looking for extension now...\n");
+		//D(bug("looking for extension now...\n"));
 
 		if (pos >= 0)
 		{
 			bool found = false;
 	        String extension = path.substring(pos + 1);
 
-			//kprintf("extension %s\n", extension.utf8().data());
+			//D(bug("extension %s\n", extension.utf8().data()));
 
 			ITERATELIST(n, &mimetype_list)
 			{
@@ -3006,11 +3012,11 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 
 				for(unsigned int i = 0; i < listExtensions.size(); i++)
 				{
-					//kprintf("checking extension %s (mimetype %s)\n", listExtensions[i].utf8().data(), mn->mimetype);
+					//D(bug("checking extension %s (mimetype %s)\n", listExtensions[i].utf8().data(), mn->mimetype));
 
 					if(equalIgnoringCase(listExtensions[i], extension))
 					{
-						//kprintf("found !\n");
+						//D(bug("found !\n"));
 						matching_mn = mn;
 						found = true;
 						break;
@@ -3023,7 +3029,7 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 		}	 
 	}
 
-	//kprintf("3 matching_mn %p <%s>\n", matching_mn, matching_mn?matching_mn->mimetype:"");
+	//D(bug("3 matching_mn %p <%s>\n", matching_mn, matching_mn?matching_mn->mimetype:""));
 
 	if(matching_mn)
 	{
@@ -3163,7 +3169,7 @@ DEFSMETHOD(OWBApp_RequestPolicyForMimeType)
 		return TRUE;
 	}
 
-	//kprintf("Nothing found in mimetypes, fallback to default behaviour (canShow: %d)\n", webView->canShowMIMEType(type));
+	//D(bug("Nothing found in mimetypes, fallback to default behaviour (canShow: %d)\n", webView->canShowMIMEType(type)));
 
 /* Fall back to default behaviour */
 
@@ -3341,7 +3347,7 @@ DEFSMETHOD(OWBApp_RestoreSession)
 
 DEFSMETHOD(OWBApp_SaveSession)
 {
-	//kprintf("OWBApp_SaveSession\n");
+	//D(bug("OWBApp_SaveSession\n"));
 
 	String sessionfile = SESSION_PATH;
 

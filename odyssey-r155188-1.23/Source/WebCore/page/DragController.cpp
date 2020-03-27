@@ -81,8 +81,6 @@
 #include <wtf/CurrentTime.h>
 #include <wtf/RefPtr.h>
 
-#include <clib/debug_protos.h>
-
 namespace WebCore {
 
 static PlatformMouseEvent createMouseEvent(DragData* dragData)

@@ -48,6 +48,13 @@
 #define get(obj,attr,store) GetAttr(attr,obj,(ULONG *)store)
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 extern STRPTR * get_user_agent_strings();
 extern STRPTR * get_user_agent_labels();
 
@@ -454,7 +461,7 @@ DEFSMETHOD(URLPrefsGroup_ApplySettingsForURL)
 	WebView *webView = (WebView *) msg->webView;
 	BalWidget *widget = webView->viewWindow();
 
-	//kprintf("ApplySettingForURL <%s>\n", msg->url);
+	//D(bug("ApplySettingForURL <%s>\n", msg->url));
 
 	if(webView && widget)
 	{
@@ -501,7 +508,7 @@ DEFSMETHOD(URLPrefsGroup_ApplySettingsForURL)
 
 			if(re.match(msg->url) >=0)
 			{
-				//kprintf("ApplySettingForURL pattern <%s> matches\n", un->urlpattern);
+				//D(bug("ApplySettingForURL pattern <%s> matches\n", un->urlpattern));
 
 				// Apply URL settings
 				webView->page()->settings().setScriptEnabled(un->settings.javascript != FALSE);

@@ -33,4 +33,3 @@ ffmpeg      - v2.2.16 Frank's amiga shared libraries implementation: https://sou
 webp        - v1.1.0
 bz2         - v1.0.5
 aos4deps    - sttcpy() and DoSuperNew() realisations.
-debug       - just for kprintf

@@ -89,7 +89,6 @@
 #include "gui.h"
 #include "utils.h"
 #include "asl.h"
-#include <clib/debug_protos.h>
 #include <proto/dos.h>
 #include <proto/graphics.h>
 #include <proto/intuition.h>
@@ -99,6 +98,11 @@
 #include <devices/rawkeycodes.h>
 #include <devices/inputevent.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 #undef PageGroup
@@ -236,29 +240,29 @@ MorphOSJSActionDelegate::~MorphOSJSActionDelegate()
 
 void MorphOSWebFrameDelegate::windowObjectClearNotification(WebFrame*, void*, void*)
 {
-	D(kprintf("windowObjectClearNotification\n"));
+	D(bug("windowObjectClearNotification\n"));
 }
 
 void MorphOSWebFrameDelegate::didReceiveServerRedirectForProvisionalLoadForFrame(WebFrame*)
 {
-	D(kprintf("didReceiveServerRedirectForProvisionalLoadForFrame\n"));
+	D(bug("didReceiveServerRedirectForProvisionalLoadForFrame\n"));
 }
 
 void MorphOSWebFrameDelegate::didCancelClientRedirectForFrame(WebFrame*)
 {
-	D(kprintf("didCancelClientRedirectForFrame\n"));
+	D(bug("didCancelClientRedirectForFrame\n"));
 }
 
 void MorphOSWebFrameDelegate::willPerformClientRedirectToURL(WebFrame*, const char*, double, double)
 {
-	D(kprintf("willPerformClientRedirectToURL\n"));
+	D(bug("willPerformClientRedirectToURL\n"));
 }
 
 void MorphOSWebFrameDelegate::didStartProvisionalLoad(WebFrame* webFrame)
 {
     WebView* webView = webFrame->webView();
 
-	D(kprintf("didStartProvisionalLoad\n"));
+	D(bug("didStartProvisionalLoad\n"));
 
     if (webView->mainFrame() != webFrame)
         return;
@@ -302,7 +306,7 @@ void MorphOSWebFrameDelegate::didCommitLoad(WebFrame* webFrame)
 {
     WebView* webView = webFrame->webView();
 
-	D(kprintf("didCommitLoad\n"));
+	D(bug("didCommitLoad\n"));
 
     if (webView->mainFrame() != webFrame)
         return;
@@ -338,7 +342,7 @@ void MorphOSWebFrameDelegate::didFinishLoad(WebFrame* webFrame)
 	BalWidget* widget = webView->viewWindow();
     WebFrame* mainFrame = webView->mainFrame();
 
-	D(kprintf("didFinishLoad\n"));
+	D(bug("didFinishLoad\n"));
 
     if (mainFrame != webFrame)
         return;
@@ -395,7 +399,7 @@ void MorphOSWebFrameDelegate::didFinishLoad(WebFrame* webFrame)
 
 void MorphOSWebFrameDelegate::didFailProvisionalLoad(WebFrame* webFrame, WebError* error)
 {
-	D(kprintf("didFailProvisionalLoad\n"));
+	D(bug("didFailProvisionalLoad\n"));
 
 	didFailLoad(webFrame, error);
 }
@@ -408,7 +412,7 @@ void MorphOSWebFrameDelegate::didFailLoad(WebFrame* webFrame, WebError* error)
     // XXX: Is it right to filter it that way?
     bool handleAsError = !error->resourceError().isCancellation() && !error->isPolicyChangeError() && error->code() != 204 /*&& error->code() != 23*/;
 
-    D(kprintf("didFailLoad code %d frame %p mainframe %p\n", error->code(), webFrame, mainFrame));
+    D(bug("didFailLoad code %d frame %p mainframe %p\n", error->code(), webFrame, mainFrame));
 
     if (mainFrame != webFrame)
         return;
@@ -425,7 +429,7 @@ void MorphOSWebFrameDelegate::didFailLoad(WebFrame* webFrame, WebError* error)
 
 	if(error->resourceError().sslErrors())
 	{
-		//kprintf("SSL Error %d\n", error->resourceError().sslErrors());
+		//D(bug("SSL Error %d\n", error->resourceError().sslErrors()));
 	}
 
 	if(handleAsError)
@@ -471,7 +475,7 @@ void MorphOSWebFrameDelegate::didFinishDocumentLoadForFrame(WebFrame* webFrame)
 {
 	WebView* webView = webFrame->webView();
 	
-	D(kprintf("didFinishDocumentLoadForFrame\n"));
+	D(bug("didFinishDocumentLoadForFrame\n"));
 
 	BalWidget* widget = webView->viewWindow();
 
@@ -485,7 +489,7 @@ void MorphOSWebFrameDelegate::willCloseFrame(WebFrame* webFrame)
 {
 	WebView* webView = webFrame->webView();
 	
-	D(kprintf("willCloseFrame\n"));
+	D(bug("willCloseFrame\n"));
 
 	BalWidget* widget = webView->viewWindow();
 
@@ -497,29 +501,29 @@ void MorphOSWebFrameDelegate::willCloseFrame(WebFrame* webFrame)
 
 void MorphOSWebFrameDelegate::didHandleOnloadEventsForFrame(WebFrame*)
 {
-	D(kprintf("didHandleOnloadEventsForFrame\n"));
+	D(bug("didHandleOnloadEventsForFrame\n"));
 }
 
 void MorphOSWebFrameDelegate::didChangeLocationWithinPageForFrame(WebFrame*)
 {
-	D(kprintf("didChangeLocationWithinPageForFrame\n"));
+	D(bug("didChangeLocationWithinPageForFrame\n"));
 }
 
 void MorphOSWebFrameDelegate::didFirstLayoutInFrame(WebFrame*)
 {
-	D(kprintf("dispatchDidFirstLayout\n"));
+	D(bug("dispatchDidFirstLayout\n"));
 }
 
 void MorphOSWebFrameDelegate::didFirstVisuallyNonEmptyLayoutInFrame(WebFrame*)
 {
-	D(kprintf("dispatchDidFirstVisuallyNonEmptyLayout\n"));
+	D(bug("dispatchDidFirstVisuallyNonEmptyLayout\n"));
 }
 
 void MorphOSWebFrameDelegate::titleChange(WebFrame* webFrame, const char* title)
 {
 	WebView* webView = webFrame->webView();
 
-	D(kprintf("titleChange\n"));
+	D(bug("titleChange\n"));
 	
 	if (webView->mainFrame() != webFrame)
         return;
@@ -533,14 +537,14 @@ void MorphOSWebFrameDelegate::titleChange(WebFrame* webFrame, const char* title)
 
 void MorphOSWebFrameDelegate::dispatchNotEnoughMemory(WebFrame*)
 {
-	kprintf("dispatchNotEnoughMemory\n");
+	D(bug("dispatchNotEnoughMemory\n"));
 }
 
 void MorphOSWebFrameDelegate::didDisplayInsecureContent(WebFrame* webFrame)
 {
     WebView* webView = webFrame->webView();
 
-	D(kprintf("didDisplayInsecureContent\n"));
+	D(bug("didDisplayInsecureContent\n"));
 
     if (webView->mainFrame() != webFrame)
         return;
@@ -559,7 +563,7 @@ void MorphOSWebFrameDelegate::didRunInsecureContent(WebFrame* webFrame, WebSecur
 {
     WebView* webView = webFrame->webView();
 
-	D(kprintf("didRunInsecureContent\n"));
+	D(bug("didRunInsecureContent\n"));
 
     if (webView->mainFrame() != webFrame)
         return;
@@ -576,7 +580,7 @@ void MorphOSWebFrameDelegate::didRunInsecureContent(WebFrame* webFrame, WebSecur
 
 void MorphOSWebFrameDelegate::didChangeIcons(WebFrame* webFrame)
 {
-	D(kprintf("didChangeIcons\n"));
+	D(bug("didChangeIcons\n"));
 }
 
 void MorphOSWebFrameDelegate::updateURL(void *browser, char *url)
@@ -643,49 +647,49 @@ MorphOSResourceLoadDelegate::~MorphOSResourceLoadDelegate()
 void MorphOSResourceLoadDelegate::identifierForInitialRequest(WebView* webView, WebMutableURLRequest* request, WebDataSource* dataSource, unsigned long identifier)
 {
 	const char *url = request->URL();
-	kprintf("MorphOSResourceLoadDelegate::identifierForInitialRequest [%d - %s ]\n", identifier, url);
+	D(bug("MorphOSResourceLoadDelegate::identifierForInitialRequest [%d - %s ]\n", identifier, url));
 	free((char *)url);
 }
 
 WebMutableURLRequest* MorphOSResourceLoadDelegate::willSendRequest(WebView* webView, unsigned long identifier, WebMutableURLRequest* request, WebURLResponse* redirectResponse, WebDataSource* dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::willSendRequest(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::willSendRequest(%d)\n", identifier));
     return request;
 }
 
 void MorphOSResourceLoadDelegate::didFinishLoadingFromDataSource(WebView* webView, unsigned long identifier, WebDataSource* dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::didFinishLoadingFromDataSource(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::didFinishLoadingFromDataSource(%d)\n", identifier));
 }
 
 void MorphOSResourceLoadDelegate::didFailLoadingWithError(WebView* webView, unsigned long identifier, WebError* error, WebDataSource* dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::didFailLoadingWithError(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::didFailLoadingWithError(%d)\n", identifier));
 }
 
 void MorphOSResourceLoadDelegate::didReceiveResponse(WebView *webView, unsigned long identifier, WebURLResponse *response, WebDataSource *dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::didReceiveResponse(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::didReceiveResponse(%d)\n", identifier));
 }
 
 void MorphOSResourceLoadDelegate::didReceiveContentLength(WebView *webView, unsigned long identifier, unsigned length, WebDataSource *dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::didReceiveContentLength(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::didReceiveContentLength(%d)\n", identifier));
 }
 
 void MorphOSResourceLoadDelegate::didReceiveAuthenticationChallenge(WebView *webView, unsigned long identifier, WebURLAuthenticationChallenge *challenge, WebDataSource *dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::didReceiveAuthenticationChallenge(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::didReceiveAuthenticationChallenge(%d)\n", identifier));
 }
 
 void MorphOSResourceLoadDelegate::didCancelAuthenticationChallenge(WebView *webView, unsigned long identifier, WebURLAuthenticationChallenge *challenge, WebDataSource *dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::didCancelAuthenticationChallenge(%d)\n", identifier);
+	D(bug("MorphOSResourceLoadDelegate::didCancelAuthenticationChallenge(%d)\n", identifier));
 }
 
 void MorphOSResourceLoadDelegate::plugInFailedWithError(WebView *webView, WebError *error, WebDataSource *dataSource)
 {
-	kprintf("MorphOSResourceLoadDelegate::plugInFailedWithError()\n");
+	D(bug("MorphOSResourceLoadDelegate::plugInFailedWithError()\n"));
 }
 
 /******/
@@ -737,30 +741,30 @@ BalRectangle WebViewPrivate::onExpose(BalEventExpose event)
     GraphicsContext ctx(widget->cr);
 	IntRect rect(m_webView->dirtyRegion());
 
-	//kprintf("WebViewPrivate::onExpose(%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height());
+	//D(bug("WebViewPrivate::onExpose(%d,%d,%d,%d)\n", rect.x(), rect.y(), rect.width(), rect.height()));
 
 	if (frame->contentRenderer() && frame->view() && !rect.isEmpty() && !getv(widget->browser, MA_OWBBrowser_VideoElement))
 	{
 		bool coalesce = shouldCoalesce(rect);
 
-		if(renderBenchmark) { kprintf("dirtyRegion [%d %d %d %d] rects %d coalesce %d\n", rect.x(), rect.y(), rect.width(), rect.height(), m_dirtyRegions.size(), coalesce); } //
+		if(renderBenchmark) { D(bug("dirtyRegion [%d %d %d %d] rects %d coalesce %d\n", rect.x(), rect.y(), rect.width(), rect.height(), m_dirtyRegions.size(), coalesce)); } //
 
 		if(coalesce)
 		{
-			if(renderBenchmark) { kprintf("*** Coalescing rects\n"); } //
+			if(renderBenchmark) { D(bug("*** Coalescing rects\n")); } //
 
 			clearDirtyRegion();
 
 			frame->view()->updateLayoutAndStyleIfNeededRecursive();
 
-			if(renderBenchmark)	{ layout = currentTime() - start; start = currentTime(); kprintf("Painting [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height()); } //
+			if(renderBenchmark)	{ layout = currentTime() - start; start = currentTime(); D(bug("Painting [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height())); } //
 
 			ctx.save();
 			ctx.clip(rect);
 			frame->view()->paint(&ctx, rect);
 			ctx.restore();
 
-			if(renderBenchmark)	{ paint = currentTime() - start; start = currentTime(); kprintf("Painting inspector [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height()); } //
+			if(renderBenchmark)	{ paint = currentTime() - start; start = currentTime(); D(bug("Painting inspector [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height())); } //
 /*
 #if ENABLE(INSPECTOR)
 			ctx.save();
@@ -769,7 +773,7 @@ BalRectangle WebViewPrivate::onExpose(BalEventExpose event)
 			ctx.restore();
 #endif
 
-			if(renderBenchmark)	{ inspector = currentTime() - start; start = currentTime(); kprintf("Blitting [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height()); } //
+			if(renderBenchmark)	{ inspector = currentTime() - start; start = currentTime(); D(bug("Blitting [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height())); } //
 */
 			updateView(widget, rect, false);
 
@@ -777,7 +781,7 @@ BalRectangle WebViewPrivate::onExpose(BalEventExpose event)
 		}
 		else
 		{
-			if(renderBenchmark) { kprintf("*** Not Coalescing rects\n"); } //
+			if(renderBenchmark) { D(bug("*** Not Coalescing rects\n")); } //
 
 			Vector<IntRect> dirtyRegions = m_dirtyRegions; // urg
 			clearDirtyRegion();
@@ -788,7 +792,7 @@ BalRectangle WebViewPrivate::onExpose(BalEventExpose event)
 
 			for(size_t i = 0; i < dirtyRegions.size(); i++)
 			{
-				if(renderBenchmark) { kprintf("Painting [%d %d %d %d]\n", dirtyRegions[i].x(), dirtyRegions[i].y(), dirtyRegions[i].width(), dirtyRegions[i].height()); }
+				if(renderBenchmark) { D(bug("Painting [%d %d %d %d]\n", dirtyRegions[i].x(), dirtyRegions[i].y(), dirtyRegions[i].width(), dirtyRegions[i].height())); }
 				ctx.save();
 				ctx.clip(dirtyRegions[i]);
 				frame->view()->paint(&ctx, dirtyRegions[i]);
@@ -799,7 +803,7 @@ BalRectangle WebViewPrivate::onExpose(BalEventExpose event)
 				frame->page()->inspectorController()->drawHighlight(ctx);
 				ctx.restore();
 */
-				if(renderBenchmark)	{ paint += currentTime() - start; start = currentTime(); kprintf("Blitting [%d %d %d %d]\n", dirtyRegions[i].x(), dirtyRegions[i].y(), dirtyRegions[i].width(), dirtyRegions[i].height()); } //
+				if(renderBenchmark)	{ paint += currentTime() - start; start = currentTime(); D(bug("Blitting [%d %d %d %d]\n", dirtyRegions[i].x(), dirtyRegions[i].y(), dirtyRegions[i].width(), dirtyRegions[i].height())); } //
 
 				updateView(widget, dirtyRegions[i], false);
 
@@ -814,14 +818,14 @@ BalRectangle WebViewPrivate::onExpose(BalEventExpose event)
 
     if(renderBenchmark)
 	{
-		kprintf("WebViewPrivate::onExpose(%d,%d,%d,%d)\n  Layout: %f ms\n  Paint: %f ms\n  Inspector: %f ms\n  Blit: %f ms\n->Total: %f ms\n\n",
+		D(bug("WebViewPrivate::onExpose(%d,%d,%d,%d)\n  Layout: %f ms\n  Paint: %f ms\n  Inspector: %f ms\n  Blit: %f ms\n->Total: %f ms\n\n",
 			rect.x(), rect.y(), rect.width(), rect.height(),
 			layout*1000,
 			paint*1000,
 			inspector*1000,
 			blit*1000,
 			(layout + paint + blit + inspector)*1000
-			);
+			));
 	}
 
 	return rect;
@@ -1193,20 +1197,20 @@ bool WebViewPrivate::onKeyDown(BalEventKey event)
 			{
 				MemoryCache::Statistics stats = memoryCache()->getStatistics();
 
-				kprintf("Statistics about cache:\n");
-				kprintf("\timages: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.images.count, stats.images.size, stats.images.liveSize, stats.images.decodedSize);
-				kprintf("\tcssStyleSheets: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.cssStyleSheets.count, stats.cssStyleSheets.size, stats.cssStyleSheets.liveSize, stats.cssStyleSheets.decodedSize);
-				kprintf("\tscripts: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.scripts.count, stats.scripts.size, stats.scripts.liveSize, stats.scripts.decodedSize);
-				kprintf("\tfonts: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.fonts.count, stats.fonts.size, stats.fonts.liveSize, stats.fonts.decodedSize);
+				D(bug("Statistics about cache:\n"));
+				D(bug("\timages: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.images.count, stats.images.size, stats.images.liveSize, stats.images.decodedSize));
+				D(bug("\tcssStyleSheets: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.cssStyleSheets.count, stats.cssStyleSheets.size, stats.cssStyleSheets.liveSize, stats.cssStyleSheets.decodedSize));
+				D(bug("\tscripts: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.scripts.count, stats.scripts.size, stats.scripts.liveSize, stats.scripts.decodedSize));
+				D(bug("\tfonts: count=%d - size=%d - liveSize=%d - decodedSize=%d\n", stats.fonts.count, stats.fonts.size, stats.fonts.liveSize, stats.fonts.decodedSize));
 
-				kprintf("Statistics about JavaScript:\n");
+				D(bug("Statistics about JavaScript:\n"));
 
 				HeapInfo heapInfo;
 				ScriptGCEvent::getHeapSize(heapInfo);
 
-				kprintf("\theap: used %d - total %d\n", heapInfo.usedJSHeapSize, heapInfo.totalJSHeapSize);
+				D(bug("\theap: used %d - total %d\n", heapInfo.usedJSHeapSize, heapInfo.totalJSHeapSize));
 
-				kprintf("Running Garbage collector now.\n");
+				D(bug("Running Garbage collector now.\n"));
 				
 				int savedPageCacheCapacity = pageCache()->capacity();
 				pageCache()->setCapacity(0);
@@ -1430,7 +1434,7 @@ void WebViewPrivate::popupMenuShow(void *popupInfo)
 
 void WebViewPrivate::updateView(BalWidget *widget, IntRect rect, bool sync)
 {
-	// kprintf("updateview(%p (%p),(%d,%d,%d,%d))\n", widget, widget?widget->window:NULL, rect.x(), rect.y(), rect.width(), rect.height());
+	// D(bug("updateview(%p (%p),(%d,%d,%d,%d))\n", widget, widget?widget->window:NULL, rect.x(), rect.y(), rect.width(), rect.height()));
 
     if (!widget || !widget->window || rect.isEmpty())
         return;
@@ -1450,14 +1454,14 @@ void WebViewPrivate::sendExposeEvent(IntRect)
 
 void WebViewPrivate::repaint(const WebCore::IntRect& windowRect, bool contentChanged, bool immediate, bool repaintContentOnly)
 {
-	// kprintf("WebViewPrivate::repaint([%d %d %d %d], %d, %d , %d\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), contentChanged, immediate, repaintContentOnly);
+	// D(bug("WebViewPrivate::repaint([%d %d %d %d], %d, %d , %d\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), contentChanged, immediate, repaintContentOnly));
 
     if (windowRect.isEmpty())
         return;
     IntRect rect = windowRect;
     rect.intersect(m_rect);
 
-	// kprintf("repaint: contentChanged %d immediate %d repaintContentOnly %d\n", contentChanged, immediate, repaintContentOnly);
+	// D(bug("repaint: contentChanged %d immediate %d repaintContentOnly %d\n", contentChanged, immediate, repaintContentOnly));
 
     if (rect.isEmpty())
         return;
@@ -1503,10 +1507,10 @@ void WebViewPrivate::scrollBackingStore(WebCore::FrameView* view, int dx, int dy
 	if(renderBenchmark)
 	{
 		start = currentTime();
-		kprintf("WebViewPrivate::scrollBackingStore(%d, %d, scrollViewRect[%d, %d, %d, %d], clipRect[%d, %d, %d, %d])\n", dx, dy,
+		D(bug("WebViewPrivate::scrollBackingStore(%d, %d, scrollViewRect[%d, %d, %d, %d], clipRect[%d, %d, %d, %d])\n", dx, dy,
 								scrollViewRect.x(), scrollViewRect.y(), scrollViewRect.width(), scrollViewRect.height(),
-								clipRect.x(), clipRect.y(), clipRect.width(), clipRect.height());
-		kprintf("  dirtyRegion [%d, %d, %d, %d]\n", m_webView->dirtyRegion().x, m_webView->dirtyRegion().y, m_webView->dirtyRegion().w, m_webView->dirtyRegion().h);
+								clipRect.x(), clipRect.y(), clipRect.width(), clipRect.height()));
+		D(bug("  dirtyRegion [%d, %d, %d, %d]\n", m_webView->dirtyRegion().x, m_webView->dirtyRegion().y, m_webView->dirtyRegion().w, m_webView->dirtyRegion().h));
 	}
 
 	m_backingStoreDirtyRegion.move(dx, dy);
@@ -1556,13 +1560,13 @@ void WebViewPrivate::scrollBackingStore(WebCore::FrameView* view, int dx, int dy
         dirtyH = dy;
     }
 
-	//kprintf("new dirtyRegion [%d, %d, %d, %d]\n", dirtyX, dirtyY, dirtyW, dirtyH);
+	//D(bug("new dirtyRegion [%d, %d, %d, %d]\n", dirtyX, dirtyY, dirtyW, dirtyH));
 
 	if (dirtyX || dirtyY || dirtyW || dirtyH)
 	{
 		WebCore::IntRect r = WebCore::IntRect(x, y, width, height);
 
-		if(renderBenchmark) { kprintf("  Scroll d=[%d %d] r=[%d, %d, %d, %d]\n", dx, dy, r.x(), r.y(), r.width(), r.height()); } //
+		if(renderBenchmark) { D(bug("  Scroll d=[%d %d] r=[%d, %d, %d, %d]\n", dx, dy, r.x(), r.y(), r.width(), r.height())); } //
 
 		DoMethod(widget->browser, MM_OWBBrowser_Scroll, dx, dy, &r);
         m_webView->addToDirtyRegion(IntRect(dirtyX, dirtyY, dirtyW, dirtyH));
@@ -1575,12 +1579,12 @@ void WebViewPrivate::scrollBackingStore(WebCore::FrameView* view, int dx, int dy
 	// Sync scrollers here (less lag feeling that way, since the rest isn't synchron)
 	DoMethod(widget->browser, MM_OWBBrowser_UpdateScrollers);
 
-	//kprintf("new dirtyRegion [%d, %d, %d, %d]\n", m_webView->dirtyRegion().x, m_webView->dirtyRegion().y, m_webView->dirtyRegion().w, m_webView->dirtyRegion().h);
+	//D(bug("new dirtyRegion [%d, %d, %d, %d]\n", m_webView->dirtyRegion().x, m_webView->dirtyRegion().y, m_webView->dirtyRegion().w, m_webView->dirtyRegion().h));
 
 	sendExposeEvent(updateRect); // only processed at next expose event, potential lag
 	//onExpose(0);               // immediate, but scrolling sideffect with fixed elements
 
-   if(renderBenchmark) { kprintf("WebViewPrivate::scrollBackingStore()\n  Scroll: %f ms\n", currentTime() - start); } //
+   if(renderBenchmark) { D(bug("WebViewPrivate::scrollBackingStore()\n  Scroll: %f ms\n", currentTime() - start)); } //
 }
 
 /* Implement these properly */

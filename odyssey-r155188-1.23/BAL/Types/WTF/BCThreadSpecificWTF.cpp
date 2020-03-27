@@ -43,7 +43,6 @@
 #include "ThreadSpecific.h"
 
 #include <proto/exec.h>
-#include <clib/debug_protos.h>
 
 namespace WTF {
 

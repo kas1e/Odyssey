@@ -40,6 +40,11 @@
 #define get(obj,attr,store) GetAttr(attr,obj,(ULONG *)store)
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 /* private */
@@ -86,7 +91,7 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 					APTR cstate;
 					Object *child;
 					
-					D(kprintf("QuickLinkGroup Set Mode\n"));
+					D(bug("QuickLinkGroup Set Mode\n"));
 					
 					get(obj,MUIA_Group_ChildList,&l);
 					cstate=l->mlh_Head;
@@ -136,7 +141,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 			
 			get(obj, MA_QuickLinkGroup_Data, &data);
 	
-			D(kprintf("### QuickLinkGroup MinMax Data: %08lx:\n",(ULONG)data));
+			D(bug("### QuickLinkGroup MinMax Data: %08lx:\n",(ULONG)data));
 			if (!data) return(FALSE);    
 
 			//get(obj, MUIA_Group_HorizSpacing, &data->hspace);
@@ -148,14 +153,14 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 			data->count=0;
 			//data->truerow=data->row;
 
-			//kprintf("Start calculate hspace=%ld vspace=%ld\n",data->hspace,data->vspace);
+			//D(bug("Start calculate hspace=%ld vspace=%ld\n",data->hspace,data->vspace));
 			cstate = (Object *)lm->lm_Children->mlh_Head;
 			while ( (child=(Object *)NextObject(&cstate)) )
 			{
 				data->count++;
 				if (_minwidth(child)>minwidth)  minwidth=_minwidth(child);
 				if (_minheight(child)>minheight) minheight=_minheight(child);
-				D(kprintf("mw=%ld dw=%ld\n",_minwidth(child),_defwidth(child));)
+				D(bug("mw=%ld dw=%ld\n",_minwidth(child),_defwidth(child));)
 			}
 
 			// Store size mini of a button like a grid
@@ -177,7 +182,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 				maxheight=(minheight*data->truerow)+(data->vspace*(data->truerow-1));
 			}
 
-			//D(kprintf("Group: min size is w=%ld h=%ld\n",minwidth,minheight));
+			//D(bug("Group: min size is w=%ld h=%ld\n",minwidth,minheight));
 
 			/* set the result fields in the message */
 			if (data->mode & MV_QuickLinkGroup_Mode_Vert)
@@ -202,7 +207,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 			data->max_h=lm->lm_MinMax.MaxHeight;
 			data->max_w=lm->lm_MinMax.MaxWidth;
  
-			D(kprintf("Layout MinMax END.\n"));
+			D(bug("Layout MinMax END.\n"));
 			return(0);
 		}
 
@@ -232,9 +237,9 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 			
 			get(obj, MA_QuickLinkGroup_Data, &data);
 			
-			D(kprintf("### QuickLinkGroup Layout Data: %08lx:\n",(ULONG)data));
+			D(bug("### QuickLinkGroup Layout Data: %08lx:\n",(ULONG)data));
 			if (!data) return(FALSE);    
-			//D(kprintf("Layout Width=%ld Button_w=%ld Hspace=%ld\n", lm->lm_Layout.Width, data->button_w, data->hspace));
+			//D(bug("Layout Width=%ld Button_w=%ld Hspace=%ld\n", lm->lm_Layout.Width, data->button_w, data->hspace));
 
 			if (data->mode & MV_QuickLinkGroup_Mode_Vert)
 			{
@@ -250,7 +255,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					ULONG last_col=(lm->lm_Layout.Width) / (data->button_w + data->hspace);  
 					cols=data->count/data->row;  // Want n cols per line   	
 					if (data->count%data->row>0) cols++;   
-					D(kprintf("Layout can display %ld and want %ld\n",last_col,cols);)
+					D(bug("Layout can display %ld and want %ld\n",last_col,cols);)
 					
 					if (last_col>cols)
 					{
@@ -258,14 +263,14 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 						array_x= (lm->lm_Layout.Width) / cols;
 						if ((array_x*cols)+(data->hspace*(cols-1)>lm->lm_Layout.Width)) array_x--;   
 						if ((array_x*cols)+(data->hspace*(cols-1)>lm->lm_Layout.Width)) array_x--;
-						D(kprintf("Col Mode 1: cols=%ld array_x=%ld\n",cols,array_x);)
+						D(bug("Col Mode 1: cols=%ld array_x=%ld\n",cols,array_x);)
 					}
 					else
 					{
 						array_x= (lm->lm_Layout.Width) / last_col; 	 
 						if ((array_x*last_col)+(data->hspace*(last_col-1)>lm->lm_Layout.Width)) array_x--;
 						if ((array_x*last_col)+(data->hspace*(last_col-1)>lm->lm_Layout.Width)) array_x--;    
-						D(kprintf("Col Mode 2: last_col=%ld array_x=%ld\n",last_col,array_x);)
+						D(bug("Col Mode 2: last_col=%ld array_x=%ld\n",last_col,array_x);)
 					}
 					/*if (lm->lm_Layout.Width/cols > array_x)
 					{
@@ -286,7 +291,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					if ((array_x*cols)+(data->hspace*(cols-1)>lm->lm_Layout.Width)) array_x--;
 				}
 			}
-			//D(kprintf("Layout cols=%ld array_x=%ld array_y=%ld\n", cols, array_x, array_y));
+			//D(bug("Layout cols=%ld array_x=%ld array_y=%ld\n", cols, array_x, array_y));
 			xpos=0;
 			ypos=0;
 			col_count=1;
@@ -322,7 +327,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 							}
 							if (!MUI_Layout(child,xpos,ypos,temp_w,_minheight(child),0))
 							{
-								D(kprintf("Layout fail for: child=%08lx x=%ld y=%ld w=%ld h=%ld\n",child,xpos,ypos,array_x,array_y));
+								D(bug("Layout fail for: child=%08lx x=%ld y=%ld w=%ld h=%ld\n",child,xpos,ypos,array_x,array_y));
 								return(FALSE);
 							}
 							if (data->mode & MV_QuickLinkGroup_Mode_Vert) ypos+=data->vspace+_minheight(child);
@@ -332,7 +337,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					}
 				}
 				max_row=row_count;
-				D(kprintf("Prop MaxRow is %ld Truerow is %ld\n", max_row, data->truerow)); 	
+				D(bug("Prop MaxRow is %ld Truerow is %ld\n", max_row, data->truerow)); 	
 			}
 			else
 			{
@@ -344,7 +349,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					{
 						ULONG pos=node->ql_order;
 						pos--;
-						//D(kprintf("Order %ld xpos=%ld ypos=%ld\n", pos, pos%cols, pos/cols));
+						//D(bug("Order %ld xpos=%ld ypos=%ld\n", pos, pos%cols, pos/cols));
 						if (data->mode & MV_QuickLinkGroup_Mode_Vert)  
 						{
 							row_count=pos%cols;
@@ -361,7 +366,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 								row_count=pos/cols;
 								xpos=col_count*(array_x+data->hspace);
 								ypos=row_count*(array_y+data->vspace);
-								D(kprintf("Want %ld x %ld\n",col_count, row_count);)
+								D(bug("Want %ld x %ld\n",col_count, row_count);)
 								if (xpos+array_x>lm->lm_Layout.Width)
 								{
 									// no more space for this button add it under  	
@@ -369,7 +374,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 									ULONG warp_col=col_count-last_col;
 									col_count=(warp_col%last_col);
 									row_count+=data->row+data->row*(warp_col/last_col);
-									D(kprintf("-> Recalc %ld x %ld\n",col_count, row_count);)
+									D(bug("-> Recalc %ld x %ld\n",col_count, row_count);)
 									xpos=col_count*(array_x+data->hspace);
 									ypos=row_count*(array_y+data->vspace);
 								}
@@ -385,16 +390,16 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 								if (row_count>max_row) max_row=row_count;  	
 							}
 						}
-						//D(kprintf("Layout: x=%ld y=%ld x+=%ld y+=%ld\n", xpos, ypos, xpos+array_x, ypos+array_y ));
+						//D(bug("Layout: x=%ld y=%ld x+=%ld y+=%ld\n", xpos, ypos, xpos+array_x, ypos+array_y ));
 						if (array_x<data->button_w)
 						{
-							D(kprintf("################# BUG ##############\n");)
-							D(kprintf("Array X < minbut delta is %ld (space avail %ld)\n",data->button_w-array_x,data->hspace);)
+							D(bug("################# BUG ##############\n");)
+							D(bug("Array X < minbut delta is %ld (space avail %ld)\n",data->button_w-array_x,data->hspace);)
 							if (data->button_w-array_x<=data->hspace) array_x+=data->button_w-array_x;
 						}
 						if (!MUI_Layout(child,xpos,ypos,array_x,array_y,0))
 						{
-							D(kprintf("Layout fail for: child=%08lx x=%ld y=%ld w=%ld h=%ld\n",child,xpos,ypos,array_x,array_y));
+							D(bug("Layout fail for: child=%08lx x=%ld y=%ld w=%ld h=%ld\n",child,xpos,ypos,array_x,array_y));
 							return(FALSE);
 						}
 					}
@@ -408,14 +413,14 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 			{
 				lm->lm_Layout.Height=((max_row+1)*array_y)+(data->vspace*max_row);
 			}
-			D(kprintf("Layout END.\n"));
+			D(bug("Layout END.\n"));
 			max_row++;
-			D(kprintf("Relayout: max_row=%ld truerow=%ld initial=%ld\n", max_row, data->truerow, data->row));
+			D(bug("Relayout: max_row=%ld truerow=%ld initial=%ld\n", max_row, data->truerow, data->row));
 			if (data->re_layout_count<2)
 			{
 				if (max_row>data->truerow && data->truerow<data->row )
 				{
-					D(kprintf("Relayout: Need more max_row=%ld truerow=%ld initial=%ld ", max_row, data->truerow, data->row));
+					D(bug("Relayout: Need more max_row=%ld truerow=%ld initial=%ld ", max_row, data->truerow, data->row));
 					if (max_row>data->row)
 					{
 						data->truerow=data->row;
@@ -423,7 +428,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 					}
 					else data->truerow=max_row;
 					
-					D(kprintf("-> truerow=%ld\n", data->truerow));
+					D(bug("-> truerow=%ld\n", data->truerow));
 					data->re_layout_count++;
 					/*
 					DoMethod(app, MUIM_Application_PushMethod,
@@ -449,10 +454,10 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 				}
 				if (max_row<data->truerow && data->truerow>1)
 				{
-					D(kprintf("Relayout: Need less max_row=%ld truerow=%ld initial=%ld ", max_row, data->truerow, data->row));
+					D(bug("Relayout: Need less max_row=%ld truerow=%ld initial=%ld ", max_row, data->truerow, data->row));
 					if (max_row==2 && data->row==1) data->truerow=2;
 					else data->truerow=max_row;
-					D(kprintf("-> truerow=%ld\n", data->truerow));
+					D(bug("-> truerow=%ld\n", data->truerow));
 					data->re_layout_count++;
 					/*DoMethod(app, MUIM_Application_PushMethod,
 						obj, 1,
@@ -473,7 +478,7 @@ static ULONG LayoutFonc( struct Hook *hook, Object *obj, struct MUI_LayoutMsg *l
 			}
 			else
 			{
-				D(kprintf("############## Relayout bug try fix\n"));
+				D(bug("############## Relayout bug try fix\n"));
 			}
 			data->re_layout_count=0;
 			return(TRUE);
@@ -532,7 +537,7 @@ DEFNEW
 DEFDISP
 {
 	GETDATA;
-	D(kprintf("QuickLinkGroup: disposing\n"));
+	D(bug("QuickLinkGroup: disposing\n"));
 	return DOSUPER;
 }
 
@@ -548,7 +553,7 @@ DEFGET
 		}
 		case MA_QuickLinkGroup_Mode:
 		{
-			D(kprintf("QLGroup Get Mode=%08lx\n",data->mode));
+			D(bug("QLGroup Get Mode=%08lx\n",data->mode));
 			*msg->opg_Storage = data->mode;
 			return (TRUE);
 		}
@@ -675,7 +680,7 @@ DEFSMETHOD(QuickLinkGroup_Remove)
 	APTR           cstate;
 	APTR child;
 	
-	D(kprintf("QuickLinkGroup_Remove\n"));
+	D(bug("QuickLinkGroup_Remove\n"));
 
 	get(obj,MUIA_Group_ChildList,&l);
 	cstate=l->mlh_Head;
@@ -684,10 +689,10 @@ DEFSMETHOD(QuickLinkGroup_Remove)
 	{
 		node=NULL;
 		get((Object *)child, MUIA_UserData, &node);
-		//kprintf("Button %08lx %08lx\n", msg->td, node);
+		//D(bug("Button %08lx %08lx\n", msg->td, node));
 		if (node==msg->td)
 		{
-			D(kprintf("Found %s\n",node->alias));
+			D(bug("Found %s\n",node->alias));
 			DoMethod(obj, OM_REMMEMBER, child);
 			// add break here;
 			DoMethod((Object *)child, OM_DISPOSE);
@@ -706,7 +711,7 @@ DEFSMETHOD(QuickLinkGroup_Update)
 	APTR cstate;
 	Object *child;
 	
-	D(kprintf("QuickLinkGroup_Update\n"));
+	D(bug("QuickLinkGroup_Update\n"));
 	
 	get(obj,MUIA_Group_ChildList,&l);
 	cstate=l->mlh_Head;
@@ -717,7 +722,7 @@ DEFSMETHOD(QuickLinkGroup_Update)
 		get(child, MUIA_UserData, &node);
 		if (node==msg->td)
 		{
-			D(kprintf("Found %s\n",node->alias));
+			D(bug("Found %s\n",node->alias));
 			DoMethod(obj,   MUIM_Group_InitChange);
 			DoMethod(child, MM_QuickLinkButtonGroup_Update);
 			DoMethod(obj,   MUIM_Group_ExitChange);

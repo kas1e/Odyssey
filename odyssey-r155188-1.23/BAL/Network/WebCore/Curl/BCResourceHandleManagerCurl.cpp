@@ -71,7 +71,6 @@
 #if OS(MORPHOS)
 #include <unistd.h>
 #include <sys/signal.h>
-#include <clib/debug_protos.h>
 #include <exec/memory.h>
 #include <exec/semaphores.h>
 #include <dos/dostags.h>

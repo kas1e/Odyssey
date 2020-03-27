@@ -35,9 +35,6 @@
 #include "TextEncoding.h"
 #include <wtf/text/Base64.h>
 #include <wtf/text/CString.h>
-#if OS(MORPHOS)
-#include <clib/debug_protos.h>
-#endif
 
 namespace WebCore {
 

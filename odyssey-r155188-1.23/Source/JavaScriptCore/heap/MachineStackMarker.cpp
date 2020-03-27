@@ -32,8 +32,6 @@
 #if OS(MORPHOS)
 #include <proto/exec.h>
 #include <proto/dos.h>
-#include <clib/debug_protos.h>
-#define D(x)
 #endif
 
 #if OS(DARWIN)
@@ -76,6 +74,13 @@
 #endif
 
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WTF;
 
@@ -205,7 +210,7 @@ static inline bool equalThread(const PlatformThread& first, const PlatformThread
 
 void MachineThreads::makeUsableFromMultipleThreads()
 {
-    D(kprintf("makeUsableFromMultipleThreads\n"));
+    D(bug("makeUsableFromMultipleThreads\n"));
 
     if (m_threadSpecific)
         return;
@@ -231,14 +236,14 @@ void MachineThreads::addCurrentThread()
 
 void MachineThreads::removeThread(void* p)
 {
-    D(kprintf("removeThread\n"));
+    D(bug("removeThread\n"));
     if (p)
         static_cast<MachineThreads*>(p)->removeCurrentThread();
 }
 
 void MachineThreads::removeCurrentThread()
 {
-    D(kprintf("RemoveCurrentThread\n"));
+    D(bug("RemoveCurrentThread\n"));
 
     PlatformThread currentPlatformThread = getCurrentPlatformThread();
 
@@ -283,17 +288,17 @@ void MachineThreads::gatherFromCurrentThread(ConservativeRoots& conservativeRoot
 #if COMPILER(MSVC)
 #pragma warning(pop)
 #endif
-    D(kprintf("gatherFromCurrentThread\n"));
+    D(bug("gatherFromCurrentThread\n"));
 
     void* registersBegin = &registers;
     void* registersEnd = reinterpret_cast<void*>(roundUpToMultipleOf<sizeof(void*)>(reinterpret_cast<uintptr_t>(&registers + 1)));
-    D(kprintf("registersBegin %p registersEnd %p\n", registersBegin, registersEnd));
+    D(bug("registersBegin %p registersEnd %p\n", registersBegin, registersEnd));
     swapIfBackwards(registersBegin, registersEnd);
     conservativeRoots.add(registersBegin, registersEnd);
 
     void* stackBegin = stackCurrent;
     void* stackEnd = wtfThreadData().stack().origin();
-    D(kprintf("stackBegin %p stackEnd %p\n", stackBegin, stackEnd));
+    D(bug("stackBegin %p stackEnd %p\n", stackBegin, stackEnd));
     swapIfBackwards(stackBegin, stackEnd);
     conservativeRoots.add(stackBegin, stackEnd);
 }
@@ -552,7 +557,7 @@ static void freePlatformThreadRegisters(PlatformThreadRegisters& regs)
 
 void MachineThreads::gatherFromOtherThread(ConservativeRoots& conservativeRoots, Thread* thread)
 {
-    D(kprintf("gatherFromOtherThread\n"));
+    D(bug("gatherFromOtherThread\n"));
 
     PlatformThreadRegisters regs;
     size_t regSize = getPlatformThreadRegisters(thread->platformThread, regs);
@@ -571,8 +576,8 @@ void MachineThreads::gatherFromOtherThread(ConservativeRoots& conservativeRoots,
     swapIfBackwards(stackPointer, stackBase);
     conservativeRoots.add(stackPointer, stackBase);
 
-    D(kprintf("regs %p regSize %d\n", &regs, regSize));
-    D(kprintf("stackPointer %p stackBase %p\n", stackPointer, stackBase));
+    D(bug("regs %p regSize %d\n", &regs, regSize));
+    D(bug("stackPointer %p stackBase %p\n", stackPointer, stackBase));
 
     freePlatformThreadRegisters(regs);
 }
@@ -581,7 +586,7 @@ void MachineThreads::gatherFromOtherThread(ConservativeRoots& conservativeRoots,
 
 void MachineThreads::gatherConservativeRoots(ConservativeRoots& conservativeRoots, void* stackCurrent)
 {
-    D(kprintf("gatherConservativeRoots\n"));
+    D(bug("gatherConservativeRoots\n"));
 
     gatherFromCurrentThread(conservativeRoots, stackCurrent);
 

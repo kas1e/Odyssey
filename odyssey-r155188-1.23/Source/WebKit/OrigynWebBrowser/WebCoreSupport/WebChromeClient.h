@@ -32,8 +32,6 @@
 #include <ScrollTypes.h>
 #include <wtf/Forward.h>
 
-#include <clib/debug_protos.h>
-
 class WebDesktopNotificationsDelegate;
 class WebView;
 

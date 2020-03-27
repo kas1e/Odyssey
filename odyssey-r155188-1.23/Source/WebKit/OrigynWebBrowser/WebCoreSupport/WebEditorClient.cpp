@@ -56,10 +56,14 @@
 #ifndef __amigaos4__
 #include <proto/spellchecker.h>
 #endif
-#include <clib/debug_protos.h>
-
-#define D(x)
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 using namespace HTMLNames;
@@ -636,7 +640,7 @@ void WebEditorClient::learnWord(const String& word)
 	*/
 
 #if OS(MORPHOS)
-	D(kprintf("learnWord(%s)\n", word.utf8().data()));
+	D(bug("learnWord(%s)\n", word.utf8().data()));
 
 	String wordToLearn = word.lower();
 	STRPTR cword;
@@ -656,7 +660,7 @@ void WebEditorClient::learnWord(const String& word)
 
 		if(dictionary)
 		{
-			D(kprintf("Learning <%s>\n", cword));
+			D(bug("Learning <%s>\n", cword));
 
 			if(dictionary_can_learn())
 			{
@@ -682,7 +686,7 @@ void WebEditorClient::checkSpellingOfString(const UChar* text, int length, int* 
 	*/
 
 #if OS(MORPHOS)
-	D(kprintf("checkSpellingOfString(%s)\n", String(text, length).utf8().data()));
+	D(bug("checkSpellingOfString(%s)\n", String(text, length).utf8().data()));
 
 	int start = 0, len = 0, i = 0;
 	bool wordReached = false;
@@ -743,7 +747,7 @@ void WebEditorClient::checkSpellingOfString(const UChar* text, int length, int* 
 		if(dictionary)
 		{
 #ifndef __amigaos4__		
-			D(kprintf("Checking <%s>\n", cword));
+			D(bug("Checking <%s>\n", cword));
 
 			STRPTR *res = (STRPTR *) Suggest(dictionary, (STRPTR) cword, NULL);
 
@@ -807,7 +811,7 @@ void WebEditorClient::checkGrammarOfString(const UChar* text, int length, Vector
     }*/
 
 #if OS(MORPHOS)
-	//kprintf("checkGrammarOfString(%s)\n", String(text, length).utf8().data());
+	//D(bug("checkGrammarOfString(%s)\n", String(text, length).utf8().data()));
 	*badGrammarLocation = -1;
 	*badGrammarLength = 0;
 #endif
@@ -860,7 +864,7 @@ bool WebEditorClient::spellingUIIsShowing()
 void WebEditorClient::getGuessesForWord(const String& word, const String& context, Vector<String>& guesses)
 {
 #if OS(MORPHOS)
-	D(kprintf("getGuessesForWord(%s)\n", word.utf8().data()));
+	D(bug("getGuessesForWord(%s)\n", word.utf8().data()));
 
 	String isolatedWord;
 	UChar *text = (UChar *) word.characters();
@@ -916,7 +920,7 @@ void WebEditorClient::getGuessesForWord(const String& word, const String& contex
 		if(dictionary)
 		{
 #ifndef __amigaos4__		
-			D(kprintf("Checking <%s>\n", cword));
+			D(bug("Checking <%s>\n", cword));
 
 			STRPTR *res = (STRPTR *) Suggest(dictionary, (STRPTR) cword, NULL);
 
@@ -924,7 +928,7 @@ void WebEditorClient::getGuessesForWord(const String& word, const String& contex
 			{
 				while(*res)
 				{
-					D(kprintf("Suggested: <%s>\n", *res));
+					D(bug("Suggested: <%s>\n", *res));
 					STRPTR suggestedWord = local_to_utf8(*res);
 					if(suggestedWord && suggestedWord[0] != '\0')
 					{

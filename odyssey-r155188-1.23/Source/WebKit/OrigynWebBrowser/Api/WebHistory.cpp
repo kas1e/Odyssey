@@ -44,10 +44,16 @@
 
 #if OS(MORPHOS)
 #include "gui.h"
-#include <clib/debug_protos.h>
 #undef String
 #undef PageGroup
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #include <stdio.h>
 
@@ -317,7 +323,7 @@ void WebHistory::removeAllItems()
 
 WebHistoryItem* WebHistory::itemForURL(const char* url)
 {
-	//kprintf("WebHistory::itemForURL(%s)\n", url.latin1().data());
+	//D(bug("WebHistory::itemForURL(%s)\n", url.latin1().data()));
 
 	for(unsigned int i=0; i < m_historyList.size(); i++)
 	{
@@ -445,7 +451,7 @@ void WebHistory::addVisitedLinksToPageGroup(PageGroup& group)
 
 WebHistoryItem* WebHistory::itemForURLString(const char* urlString) const
 {
-	//kprintf("WebHistory::itemForURLString(%s)\n", urlString.latin1().data());
+	//D(bug("WebHistory::itemForURLString(%s)\n", urlString.latin1().data()));
 	free((char *)urlString);
     return 0;
 }

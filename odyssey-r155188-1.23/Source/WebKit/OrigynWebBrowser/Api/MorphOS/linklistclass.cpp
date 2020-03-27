@@ -42,6 +42,14 @@
 
 #define LOC(a,b) (b)
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
+
 struct Data
 {
 	LONG    Drop;
@@ -62,9 +70,9 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 			DoMethod(obj, MUIM_List_GetEntry, MUIV_List_GetEntry_Active, &td);
 			if (td)
 			{
-				//kprintf("Double click on %08lx\n", td);
+				//D(bug("Double click on %08lx\n", td));
 				// Open link
-				//kprintf("URL: %s\n", (td->alias) ? td->alias : (STRPTR)"(NULL)" ); // address can be NULL
+				//D(bug("URL: %s\n", (td->alias) ? td->alias : (STRPTR)"(NULL)" )); // address can be NULL
 			}
 			break;
 		case MA_Bookmarkgroup_BookmarkObject:
@@ -228,18 +236,18 @@ DEFMMETHOD(DragQuery)
 	
 	if( (data->bookmark_list) && msg->obj==data->bookmark_list)
 	{
-		//kprintf("From Bookmark\n");
+		//D(bug("From Bookmark\n"));
 		tn=(struct MUIS_Listtree_TreeNode *)DoMethod(msg->obj, MUIM_Listtree_GetEntry, NULL, MUIV_Listtree_GetEntry_Position_Active, 0);
 		if (tn)
 		{
 			td=(struct treedata *)tn->tn_User;
-			//kprintf("Flags: %08lx\n",td->flags);
+			//D(bug("Flags: %08lx\n",td->flags));
 			if ( (td->flags & NODEFLAG_LINK) && !(td->flags & NODEFLAG_QUICKLINK) && !(td->flags & NODEFLAG_BAR) ) return MUIV_DragQuery_Accept;
 		}
 	}
 	if( msg->obj==obj )
 	{
-		//kprintf("From ourself\n");
+		//D(bug("From ourself\n"));
 		return MUIV_DragQuery_Accept;
 	}
 
@@ -260,7 +268,7 @@ DEFMMETHOD(DragReport)
 			data->Drop=r.entry;
 			data->Drop_Pos=r.flags;
 			data->Drop_Offset=r.yoffset;
-			//kprintf("DropEntry is %ld pos %ld yoffset %ld\n", data->Drop, data->Drop_Pos, r.yoffset);
+			//D(bug("DropEntry is %ld pos %ld yoffset %ld\n", data->Drop, data->Drop_Pos, r.yoffset));
 		}
 	}
 	return DOSUPER;
@@ -274,7 +282,7 @@ DEFMMETHOD(DragDrop)
 	if (msg->obj==data->bookmark_list)
 	{
 		// From Bookmark
-		//kprintf("Drop from Bookmark\n");
+		//D(bug("Drop from Bookmark\n"));
 		rc=data->Drop+1;
 		if (data->Drop_Pos==1) rc=1;
 		if (data->Drop_Pos==2) rc=-1;
@@ -282,7 +290,7 @@ DEFMMETHOD(DragDrop)
 		set(data->bookmark_obj, MA_Bookmarkgroup_QuickLink, rc);
 		return 0;
 	}
-	//kprintf("Drop sort\n");
+	//D(bug("Drop sort\n"));
 	rc=DOSUPER;
 	DoMethod(app, MUIM_Application_PushMethod,
 		data->bookmark_obj, 1 | MUIV_PushMethod_Delay(500) | MUIF_PUSHMETHOD_SINGLE,

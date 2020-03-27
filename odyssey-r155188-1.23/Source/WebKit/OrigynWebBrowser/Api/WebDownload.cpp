@@ -56,8 +56,14 @@
 
 #if OS(MORPHOS)
 #include "gui.h"
-#include <clib/debug_protos.h>
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -183,7 +189,7 @@ void DownloadClient::didReceiveResponse(ResourceHandle*, const WebCore::Resource
 		// If we're here, it means resume wasn't supported after all
 		if(priv->resourceHandle.get()->isResuming()) 
 		{
-			kprintf("Wanted to resume, but can't\n");
+			D(bug("Wanted to resume, but can't\n"));
 			priv->allowResume = false;
 			priv->allowOverwrite = true; // discuss that
 		}
@@ -451,7 +457,7 @@ void WebDownload::start(bool quiet)
 		m_priv->quiet = getv(app, MA_OWBApp_DownloadStartAutomatically);
 	}
 
-	//kprintf("quiet %d\n", m_priv->quiet);
+	//D(bug("quiet %d\n", m_priv->quiet));
 
     if (m_priv->resourceHandle)
     {

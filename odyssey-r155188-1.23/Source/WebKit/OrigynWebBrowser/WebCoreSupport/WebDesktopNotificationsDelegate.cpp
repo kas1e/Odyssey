@@ -34,7 +34,11 @@
 #include "WebView.h"
 #include "CString.h"
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 #if ENABLE(NOTIFICATIONS) || ENABLE(LEAGCY_NOTIFICATIONS)
@@ -53,30 +57,30 @@ bool WebDesktopNotificationsDelegate::show(Notification* object)
 
     object->setPendingActivity(object);
     
-    kprintf("show [%s]\n%s\n", object->title().latin1().data(), object->body().latin1().data());
+    D(bug("show [%s]\n%s\n", object->title().latin1().data(), object->body().latin1().data()));
 
     return true;
 }
 
 void WebDesktopNotificationsDelegate::cancel(Notification* object)
 {
-  D(kprintf("cancel\n"));
+  D(bug("cancel\n"));
 }
 
 void WebDesktopNotificationsDelegate::notificationObjectDestroyed(Notification*)
 {
-  D(kprintf("objectdestroyed\n"));
+  D(bug("objectdestroyed\n"));
 }
 
 void WebDesktopNotificationsDelegate:: notificationControllerDestroyed()
 {
-  D(kprintf("controllerdestroyed\n"));
+  D(bug("controllerdestroyed\n"));
 }
 
 #if ENABLE(LEGACY_NOTIFICATIONS)
 void WebDesktopNotificationsDelegate::requestPermission(WebCore::ScriptExecutionContext* context, PassRefPtr<VoidCallback> callback)
 {
-  D(kprintf("requestPermission (legacy)\n"));
+  D(bug("requestPermission (legacy)\n"));
 
 	NotificationClient::Permission permission = checkPermission(context);
 	if (permission != NotificationClient::PermissionNotAllowed) {
@@ -89,7 +93,7 @@ void WebDesktopNotificationsDelegate::requestPermission(WebCore::ScriptExecution
 
 void WebDesktopNotificationsDelegate::requestPermission(WebCore::ScriptExecutionContext* context, PassRefPtr<NotificationPermissionCallback> callback)
 {
-  D(kprintf("requestPermission\n"));
+  D(bug("requestPermission\n"));
 
     NotificationClient::Permission permission = checkPermission(context);
 	if (permission != NotificationClient::PermissionNotAllowed) {
@@ -101,12 +105,12 @@ void WebDesktopNotificationsDelegate::requestPermission(WebCore::ScriptExecution
 
 void WebDesktopNotificationsDelegate::cancelRequestsForPermission(ScriptExecutionContext*)
 {
-  D(kprintf("cancelRequestsForPermission\n"));
+  D(bug("cancelRequestsForPermission\n"));
 }
 
 NotificationClient::Permission WebDesktopNotificationsDelegate::checkPermission(WebCore::ScriptExecutionContext*)
 {
-  D(kprintf("checkPermission\n"));
+  D(bug("checkPermission\n"));
     /*
     int out = 0;
     if (hasNotificationDelegate())

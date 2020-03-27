@@ -46,12 +46,17 @@
 
 #if OS(MORPHOS)
 #include "../../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
-#include <clib/debug_protos.h>
-#define D(x)
 #undef String
 #undef set
 #undef get
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 namespace WebCore {
 
@@ -336,7 +341,7 @@ void ResourceHandle::receivedCredential(const AuthenticationChallenge& challenge
 #if OS(MORPHOS)
 	    String host = challenge.protectionSpace().host();
 	    String realm = challenge.protectionSpace().realm();
-	    //kprintf("Storing credentials in db for host %s realm %s (%s %s)\n", host.utf8().data(), realm.utf8().data(), credential.user().utf8().data(), credential.password().utf8().data());
+	    //D(bug("Storing credentials in db for host %s realm %s (%s %s)\n", host.utf8().data(), realm.utf8().data(), credential.user().utf8().data(), credential.password().utf8().data()));
 	    methodstack_push_sync(app, 4, MM_OWBApp_SetCredential, &host, &realm, &credential);
 #endif
         }

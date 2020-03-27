@@ -38,7 +38,6 @@
 #include "CString.h"
 #include <wtf/text/WTFString.h>
 
-#include <clib/debug_protos.h>
 #include <proto/keymap.h>
 #include <proto/diskfont.h>
 #include <diskfont/diskfonttag.h>
@@ -48,7 +47,13 @@
 #include "../../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
 #undef String
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
+
 
 extern uint32 amigaToUnicodeChar(uint32 c);
 
@@ -515,13 +520,13 @@ PlatformKeyboardEvent::PlatformKeyboardEvent(BalEventKey* event)
 	prev_CtrlKey  = ctrlKey();
 	prev_MetaKey  = metaKey();
 
-	D(kprintf("Qualifier Shift %d Alt %d Ctrl %d Meta %d\n", m_shiftKey, m_altKey, m_ctrlKey, m_metaKey));
-	D(kprintf("RawKey %x Qualifier %x\n", m_balEventKey->Code, m_balEventKey->Qualifier));
-	D(kprintf("Text <%s>\n", m_text.latin1().data()));
-	D(kprintf("Unmodified Text <%s>\n", m_unmodifiedText.latin1().data()));
-	D(kprintf("VirtualKey %x\n", m_windowsVirtualKeyCode));
-	D(kprintf("KeyIdentifier <%s>\n", m_keyIdentifier.latin1().data()));
-	D(kprintf("\n\n\n"));
+	//D(bug("Qualifier Shift %d Alt %d Ctrl %d Meta %d\n", m_shiftKey, m_altKey, m_ctrlKey, m_metaKey));
+	D(bug("RawKey %x Qualifier %x\n", m_balEventKey->Code, m_balEventKey->Qualifier));
+	D(bug("Text <%s>\n", m_text.latin1().data()));
+	D(bug("Unmodified Text <%s>\n", m_unmodifiedText.latin1().data()));
+	D(bug("VirtualKey %x\n", m_windowsVirtualKeyCode));
+	D(bug("KeyIdentifier <%s>\n", m_keyIdentifier.latin1().data()));
+	D(bug("\n\n\n"));
 
 }
 
@@ -544,7 +549,7 @@ void PlatformKeyboardEvent::disambiguateKeyDownEvent(Type type, bool backwardCom
 		if (m_text.isEmpty() && m_windowsVirtualKeyCode && m_balEventKey->Code < RAWKEY_ESCAPE)
             m_text.append(UChar(m_windowsVirtualKeyCode));
 
-		D(kprintf("DisambiguateKeyDownEvent <%s>\n", m_text.latin1().data()));
+		D(bug("DisambiguateKeyDownEvent <%s>\n", m_text.latin1().data()));
         m_keyIdentifier = String();
         m_windowsVirtualKeyCode = 0;
     }
@@ -552,7 +557,7 @@ void PlatformKeyboardEvent::disambiguateKeyDownEvent(Type type, bool backwardCom
 
 bool PlatformKeyboardEvent::currentCapsLockState()
 {
-	D(kprintf("currentCapsLockState\n"));
+	D(bug("currentCapsLockState\n"));
     return false;
 }
 
@@ -568,7 +573,7 @@ void PlatformKeyboardEvent::getCurrentModifierState(bool& shiftKey, bool& ctrlKe
 	altKey   = prev_AltKey;
 	metaKey  = prev_MetaKey;
 
-	D(kprintf("getCurrentModifierState Shift %d Alt %d Ctrl %d Meta %d\n", shiftKey, altKey, ctrlKey, metaKey));
+	D(bug("getCurrentModifierState Shift %d Alt %d Ctrl %d Meta %d\n", shiftKey, altKey, ctrlKey, metaKey));
 }
 
 }

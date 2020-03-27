@@ -41,9 +41,14 @@
 #include "gui.h"
 #include "bookmarkgroupclass.h"
 
-#define D(x)
-
 #define LOC(a,b) b
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 struct Data
 {
@@ -226,7 +231,7 @@ DEFNEW
 		data->cMenu = tmp.cMenu;
 		data->mode = tmp.mode;
 		data->cMenu_Title[0] = '\0';
-		//kprintf("QuickLinkButtonGroup End\n");
+		//D(bug("QuickLinkButtonGroup End\n"));
 
 		if(data->node->flags & NODEFLAG_GROUP)
 		{
@@ -685,7 +690,7 @@ DEFTMETHOD(QuickLinkButtonGroup_Redraw)
 
 	if(muiRenderInfo(obj))
 	{
-		D(kprintf("QuickLinkButtonGroup_Redraw <%s>\n", data->node->address));
+		D(bug("QuickLinkButtonGroup_Redraw <%s>\n", data->node->address));
 		MUI_Redraw(obj, MADF_DRAWOBJECT);
 
 		if(data->icon)
@@ -703,7 +708,7 @@ DEFSMETHOD(QuickLinkButtonGroup_RedrawMenuItem)
 
 	if(data->pMenu)
 	{
-		D(kprintf("QuickLinkButtonGroup_RedrawMenu\n"));
+		D(bug("QuickLinkButtonGroup_RedrawMenu\n"));
 		MUI_Redraw((Object *) msg->obj, MADF_DRAWOBJECT);
 	}
 

@@ -177,6 +177,13 @@
 #undef PageGroup
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 using namespace WebCore;
 using std::min;
 using std::max;
@@ -204,7 +211,7 @@ public:
 
     virtual void call()
     {
-    	kprintf("dispatchNotEnoughMemory\n");
+    	D(bug("dispatchNotEnoughMemory\n"));
 		morphos_crash(0);
     }
 };
@@ -675,13 +682,13 @@ void WebView::close()
 
 void WebView::repaint(const WebCore::IntRect& windowRect, bool contentChanged, bool immediate, bool repaintContentOnly)
 {
-    //kprintf("WebView::repaint([%d %d %d %d], %d, %d , %d\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), contentChanged, immediate, repaintContentOnly);
+    //D(bug("WebView::repaint([%d %d %d %d], %d, %d , %d\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), contentChanged, immediate, repaintContentOnly));
     d->repaint(windowRect, contentChanged, immediate, repaintContentOnly);
 }
 
 void WebView::deleteBackingStore()
 {
-    //kprintf("WebView::deleteBackingStore\n");
+    //D(bug("WebView::deleteBackingStore\n"));
     if (m_deleteBackingStoreTimerActive) {
         m_deleteBackingStoreTimerActive = false;
     }
@@ -711,13 +718,13 @@ void WebView::clearDirtyRegion()
 
 void WebView::scrollBackingStore(FrameView* frameView, int dx, int dy, const BalRectangle& scrollViewRect, const BalRectangle& clipRect)
 {
-    //kprintf("WebView::scrollBackingStore\n");
+    //D(bug("WebView::scrollBackingStore\n"));
     d->scrollBackingStore(frameView, dx, dy, scrollViewRect, clipRect);
 }
 
 void WebView::updateBackingStore(FrameView* frameView, bool backingStoreCompletelyDirty)
 {
-    //kprintf("WebView::updateBackingStore(completelyDirty %d\n", backingStoreCompletelyDirty);
+    //D(bug("WebView::updateBackingStore(completelyDirty %d\n", backingStoreCompletelyDirty));
     //frameView->updateBackingStore();
 }
 
@@ -1144,7 +1151,7 @@ bool WebView::canShowMIMEType(const char* mimeType)
 	|| m_page->pluginData().supportsMimeType(type, PluginData::OnlyApplicationPlugins);
     }     
     
-    //kprintf("WebView::canShowMIMEType(%s): %s\n", type.utf8().data(), canShow ? "yes" : "no");
+    //D(bug("WebView::canShowMIMEType(%s): %s\n", type.utf8().data(), canShow ? "yes" : "no"));
     
     return canShow;
 }

@@ -36,12 +36,15 @@
 
 #include <string.h>
 #include <proto/exec.h>
-#include <clib/debug_protos.h>
-
 
 #include "../../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
 #include "acinerella.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 #define AUDIO_BUFFER_BASE_SIZE ((192000 * 3) / 2)
@@ -234,7 +237,7 @@ static void av_log_callback(void* ptr, int level, const char* fmt, va_list vl)
 	/*
 	char buffer[512];
 	vsnprintf(buffer, sizeof(buffer), fmt, vl);
-	kprintf(buffer);
+	D(bug(buffer));
 	*/
 }
 
@@ -273,7 +276,7 @@ lp_ac_instance CALL_CONVT ac_init(void)
 	{
 		InitSemaphore(&semAcinerella);
 		
-		D(kprintf("Initializing ffmpeg\n"));
+		D(bug("Initializing ffmpeg\n"));
 
 		ObtainSemaphore(&semAcinerella);
 		
@@ -335,7 +338,7 @@ int CALL_CONVT ac_open(
 
 	//Generate a unique filename
 	snprintf(filename, sizeof(filename), "%s://%p", "owb", pacInstance);
-	D(kprintf("filename: <%s> instance <%p>\n", filename, pacInstance));
+	D(bug("filename: <%s> instance <%p>\n", filename, pacInstance));
 
 	((lp_ac_data)pacInstance)->pFormatCtx =	avformat_alloc_context();
 	if(avformat_open_input(&(((lp_ac_data)pacInstance)->pFormatCtx), filename, NULL, NULL) != 0)
@@ -534,7 +537,7 @@ lp_ac_package CALL_CONVT ac_read_package(lp_ac_instance pacInstance)
 				{
 					pTmp->pts = clone->dts;
 				}
-				D(kprintf("Allocate packet %p (data %p size %d stream %d destruct %p priv %p)\n", pTmp, pTmp->package.data, pTmp->package.size, pTmp->package.stream_index, pTmp->ffpackage->destruct, pTmp->ffpackage->priv));
+				D(bug("Allocate packet %p (data %p size %d stream %d destruct %p priv %p)\n", pTmp, pTmp->package.data, pTmp->package.size, pTmp->package.stream_index, pTmp->ffpackage->destruct, pTmp->ffpackage->priv));
 			}
 			return (lp_ac_package)(pTmp);
 		}
@@ -549,7 +552,7 @@ void CALL_CONVT ac_free_package(lp_ac_package pPackage)
 	//Free the packet
 	if (pPackage != NULL && pPackage != ac_flush_packet())
 	{
-		D(kprintf("Free packet %p (data %p size %d stream %d destruct %p priv %p)\n", pPackage, ((lp_ac_package_data)pPackage)->package.data, ((lp_ac_package_data)pPackage)->package.size, ((lp_ac_package_data)pPackage)->package.stream_index, ((lp_ac_package_data)pPackage)->ffpackage->destruct, ((lp_ac_package_data)pPackage)->ffpackage->priv));
+		D(bug("Free packet %p (data %p size %d stream %d destruct %p priv %p)\n", pPackage, ((lp_ac_package_data)pPackage)->package.data, ((lp_ac_package_data)pPackage)->package.size, ((lp_ac_package_data)pPackage)->package.stream_index, ((lp_ac_package_data)pPackage)->ffpackage->destruct, ((lp_ac_package_data)pPackage)->ffpackage->priv));
 		av_free_packet(((lp_ac_package_data)pPackage)->ffpackage);
 		mgr_free(((lp_ac_package_data)pPackage)->ffpackage);
 		mgr_free((lp_ac_package_data)pPackage);
@@ -616,7 +619,7 @@ int	ac_set_output_format(lp_ac_decoder decoder, ac_output_format fmt)
 		    //Reserve buffer memory
 		    if(!pDecoder->pCodecCtx->width || !pDecoder->pCodecCtx->height)
 		    {
-				D(kprintf("Invalid video size\n"));
+				D(bug("Invalid video size\n"));
 				ReleaseSemaphore(&pDecoder->sem);
 				return -1;
 		    }
@@ -739,7 +742,7 @@ void* ac_create_video_decoder(lp_ac_instance pacInstance, lp_ac_stream_info info
 	  
 	if(!pDecoder->pCodecCtx->width || !pDecoder->pCodecCtx->height)
 	{
-		D(kprintf("Invalid video size\n"));
+		D(bug("Invalid video size\n"));
 		ac_free_decoder((lp_ac_decoder)pDecoder);
 		return NULL;
 	}
@@ -986,7 +989,7 @@ int CALL_CONVT ac_decode_package(lp_ac_package pPackage, lp_ac_decoder pDecoder)
 	    }
 	}
 	  
-	D(kprintf("Decode packet %p (data %p size %d stream %d destruct %p priv %p)\n", pPackage, ((lp_ac_package_data)pPackage)->package.data, ((lp_ac_package_data)pPackage)->package.size, ((lp_ac_package_data)pPackage)->package.stream_index, ((lp_ac_package_data)pPackage)->ffpackage->destruct, ((lp_ac_package_data)pPackage)->ffpackage->priv));
+	D(bug("Decode packet %p (data %p size %d stream %d destruct %p priv %p)\n", pPackage, ((lp_ac_package_data)pPackage)->package.data, ((lp_ac_package_data)pPackage)->package.size, ((lp_ac_package_data)pPackage)->package.stream_index, ((lp_ac_package_data)pPackage)->ffpackage->destruct, ((lp_ac_package_data)pPackage)->ffpackage->priv));
 
 	if(pDecoder->type == AC_DECODER_TYPE_VIDEO)
 	{

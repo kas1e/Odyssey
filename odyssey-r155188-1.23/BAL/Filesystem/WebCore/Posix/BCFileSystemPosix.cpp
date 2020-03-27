@@ -36,7 +36,6 @@
 #include <exec/exec.h>
 #include <proto/exec.h>
 #include <proto/wb.h>
-#include <clib/debug_protos.h>
 #else
 #include <libgen.h>
 #endif
@@ -47,6 +46,14 @@
 //#include <regex.h>
 #include <dirent.h>
 #include <string>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 using namespace std;
 
 #include <wtf/text/CString.h>
@@ -471,7 +478,7 @@ String openTemporaryFile(const String& prefix, PlatformFileHandle &handle)
 
 	if (!isHandleValid(fileDescriptor))
 	 {
-		kprintf("Can't create temporary file <%s>\n", tempPath);
+		D(bug("Can't create temporary file <%s>\n", tempPath));
                 return String();
          }
     String tempFilePath = tempPath;

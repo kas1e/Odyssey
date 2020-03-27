@@ -33,7 +33,6 @@
 #include <wtf/CurrentTime.h>
 #include <wtf/text/CString.h>
 #include "../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
-#include <clib/debug_protos.h>
 #include <stdio.h>
 
 namespace WebCore {

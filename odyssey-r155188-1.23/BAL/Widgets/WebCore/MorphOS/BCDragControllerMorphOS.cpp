@@ -42,8 +42,6 @@
 
 #include <cstdio>
 
-#include <clib/debug_protos.h>
-
 namespace WebCore {
 
 // FIXME: These values are straight out of DragControllerMac, so probably have

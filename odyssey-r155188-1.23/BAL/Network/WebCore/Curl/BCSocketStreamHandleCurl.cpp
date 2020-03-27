@@ -44,12 +44,12 @@
 #include <sys/socket.h>
 #include <sys/types.h> // The 2 previous for read(2).
 
-//#undef __USE_INLINE__
-//#include <clib/debug_protos.h>
-//#define D(x) // no debug
-#include <proto/exec.h>
-#define kprintf IExec->DebugPrintF
-#define D(x) //x //debug
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #ifndef __amigaos4__
 #include <proto/bsdsocket.h>
@@ -70,7 +70,7 @@ SocketStreamHandle::SocketStreamHandle(const KURL& url, SocketStreamHandleClient
     , m_curlHandle(0)
     , m_curlURL(0)
 {
-	D(kprintf("SocketStreamHandle %p client %p\n", this, m_client));
+	D(bug("SocketStreamHandle %p client %p\n", this, m_client));
     LOG(Network, "SocketStreamHandle %p new client %p", this, m_client);
 
   //  struct Library *SocketBase = IExec->OpenLibrary("bsdsocket.library", 4);
@@ -100,7 +100,7 @@ SocketStreamHandle::SocketStreamHandle(const KURL& url, SocketStreamHandleClient
 
 SocketStreamHandle::~SocketStreamHandle()
 {
-    D(kprintf("~SocketStreamHandle %p\n", this));
+    D(bug("~SocketStreamHandle %p\n", this));
     LOG(Network, "SocketStreamHandle %p delete", this);
     closeConnection();
     setClient(0);
@@ -108,7 +108,7 @@ SocketStreamHandle::~SocketStreamHandle()
 
 int SocketStreamHandle::platformSend(const char* data, int length)
 {
-    D(kprintf("platformSend %p\n", this));
+    D(bug("platformSend %p\n", this));
     LOG(Network, "SocketStreamHandle %p platformSend", this);
     if (!m_curlHandle)
         return 0;
@@ -117,14 +117,14 @@ int SocketStreamHandle::platformSend(const char* data, int length)
 
     long socket;
 	
-	D(kprintf("platformSend socket before curl_easy_getinfo = %08x\n", socket));
-	D(kprintf("platformSend data before curl_easy_getinfo =  [%s]\n", data));
+	D(bug("platformSend socket before curl_easy_getinfo = %08x\n", socket));
+	D(bug("platformSend data before curl_easy_getinfo =  [%s]\n", data));
 	
     CURLcode result = curl_easy_getinfo(m_curlHandle, CURLINFO_LASTSOCKET, &socket);
 	
-	D(kprintf("platformSend socket after curl_easy_getinfo = %08x\n", socket));
-	D(kprintf("platformSend data after curl_easy_getinfo =  [%s]\n", data));	
-	D(kprintf("platformSend curl_easy_getinfo result ='%s'\n", curl_easy_strerror(result)));
+	D(bug("platformSend socket after curl_easy_getinfo = %08x\n", socket));
+	D(bug("platformSend data after curl_easy_getinfo =  [%s]\n", data));	
+	D(bug("platformSend curl_easy_getinfo result ='%s'\n", curl_easy_strerror(result)));
 
 	
 
@@ -132,12 +132,12 @@ int SocketStreamHandle::platformSend(const char* data, int length)
     
     ssize_t lengthSend = ::send(socket, (UBYTE *)data, length, 0);
 	
-	D(kprintf("platformSend lengthSend = %d\n", lengthSend));
-	D(kprintf("platformSend length = %d\n", length));	
+	D(bug("platformSend lengthSend = %d\n", lengthSend));
+	D(bug("platformSend length = %d\n", length));	
 	
     if (lengthSend < 0) {
-		D(kprintf("platformSend Error sending: %s\n",strerror(errno)));
-        D(kprintf("1 m_client %p\n", m_client));
+		D(bug("platformSend Error sending: %s\n",strerror(errno)));
+        D(bug("1 m_client %p\n", m_client));
 	if(m_client) m_client->didFailSocketStream(this, SocketStreamError(errno));
         platformClose();
         return 0;
@@ -151,7 +151,7 @@ void SocketStreamHandle::platformClose()
 {
     LOG(Network, "SocketStreamHandle %p platformClose", this);
 
-    D(kprintf("platformClose %p %p\n", this, m_curlHandle));
+    D(bug("platformClose %p %p\n", this, m_curlHandle));
 
     RefPtr<SocketStreamHandle> protect(this);
 
@@ -190,7 +190,7 @@ CURLcode SocketStreamHandle::createConnection()
 
     m_curlHandle = curl_easy_init();
 
-    D(kprintf("createConnection %p\n", m_curlHandle));
+    D(bug("createConnection %p\n", m_curlHandle));
 
     // Mutate the protocol so that curl can use it.
     KURL url(m_url);
@@ -211,7 +211,7 @@ CURLcode SocketStreamHandle::createConnection()
 void SocketStreamHandle::closeConnection()
 {
 
-    D(kprintf("closeConnection %p\n", m_curlHandle));
+    D(bug("closeConnection %p\n", m_curlHandle));
 	
     if (m_curlHandle) {
         ASSERT(m_pollTimer.isActive());
@@ -229,7 +229,7 @@ void SocketStreamHandle::pollCallback(Timer<SocketStreamHandle>* timer)
     if (!m_curlHandle)
         m_pollTimer.stop();
 
-    D(kprintf("pollCallback %p client %p\n", m_curlHandle, m_client));
+    D(bug("pollCallback %p client %p\n", m_curlHandle, m_client));
 
     RefPtr<SocketStreamHandle> protect(this);
 
@@ -238,7 +238,7 @@ void SocketStreamHandle::pollCallback(Timer<SocketStreamHandle>* timer)
     ASSERT_UNUSED(result, result == CURLE_OK);
 
     if (socket < 0) {
-        D(kprintf("2 client %p\n", m_client));
+        D(bug("2 client %p\n", m_client));
 	if(m_client) m_client->didFailSocketStream(this, SocketStreamError(errno));
 	platformClose();
         return;
@@ -252,9 +252,9 @@ void SocketStreamHandle::pollCallback(Timer<SocketStreamHandle>* timer)
     static struct timeval timeout = { 0, 20 }; // 20 ms
     for (unsigned short i = 0; i < 5; ++i) {
 	int nbRead = select(socket + 1, &read, 0, 0, &timeout);
-	D(kprintf("select() %ld\n", nbRead));
+	D(bug("select() %ld\n", nbRead));
         if (nbRead == -1) {
-  	    D(kprintf("3 m_client %p\n", m_client));
+  	    D(bug("3 m_client %p\n", m_client));
 	    if(m_client) m_client->didFailSocketStream(this, SocketStreamError(errno));
 	    platformClose();
             return;
@@ -265,19 +265,19 @@ void SocketStreamHandle::pollCallback(Timer<SocketStreamHandle>* timer)
         char buffer[1024];
 		ssize_t length = /*ISocket->*/recv(socket, (UBYTE *)buffer, sizeof(buffer), 0);
         if (length < 0) {
-	    D(kprintf("4 m_client %p\n", m_client));
+	    D(bug("4 m_client %p\n", m_client));
 	    if(m_client) m_client->didFailSocketStream(this, SocketStreamError(errno));
 	    platformClose();
             return;
         }
-	D(kprintf("5 m_client %p\n", m_client));
+	D(bug("5 m_client %p\n", m_client));
         if(m_client) m_client->didReceiveSocketStreamData(this, buffer, length);
     }
 }
 
 void SocketStreamHandle::didOpenCallback(Timer<SocketStreamHandle>*)
 {
-    D(kprintf("didOpenCallback %p client %p\n", this, m_client));
+    D(bug("didOpenCallback %p client %p\n", this, m_client));
 	
 	//#ifdef __amigaos4__	
 	//RefPtr<SocketStreamHandle> protect(this);

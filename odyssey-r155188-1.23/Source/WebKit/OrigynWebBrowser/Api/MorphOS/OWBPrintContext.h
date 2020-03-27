@@ -35,8 +35,6 @@
 #include "FrameView.h"
 #include "PrintContext.h"
 
-#include <clib/debug_protos.h>
-
 namespace WebCore {
 
 // Simple class to override some of PrintContext behavior.
@@ -77,7 +75,6 @@ public:
 	virtual float spoolPage(GraphicsContext& ctx, int pageNumber, float scale = 1.0)
     {
         IntRect pageRect = m_pageRects[pageNumber];
-		//kprintf("spoolPage %d pageRect [%d %d %d %d] m_printedPageWidth %f scale %f\n", pageNumber, pageRect.x(), pageRect.y(), pageRect.width(), pageRect.height(), m_printedPageWidth, scale);
 
         ctx.save();
 #if OS(MORPHOS) && !OS(DARWIN)

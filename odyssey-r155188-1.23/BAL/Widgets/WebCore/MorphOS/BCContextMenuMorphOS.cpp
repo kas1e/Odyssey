@@ -35,7 +35,6 @@
 #include <libraries/mui.h>
 #include <proto/muimaster.h>
 #include <clib/alib_protos.h>
-#include <clib/debug_protos.h>
 
 #include <cstdio>
 

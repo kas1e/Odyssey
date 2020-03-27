@@ -62,7 +62,13 @@
 #include <fcntl.h>
 //#include <sys/mman.h>
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 
 using JSC::ExecState;
 using JSC::Interpreter;
@@ -91,7 +97,7 @@ void PluginView::updatePluginWidget()
     m_clipRect = windowClipRect();
     m_clipRect.move(-m_windowRect.x(), -m_windowRect.y());
 
-	//kprintf("PluginView::updatePluginWidget %p [%d %d %d %d]\n", platformPluginWidget(), m_windowRect.x(), m_windowRect.y(), m_windowRect.width(), m_windowRect.height());
+	//D(bug("PluginView::updatePluginWidget %p [%d %d %d %d]\n", platformPluginWidget(), m_windowRect.x(), m_windowRect.y(), m_windowRect.width(), m_windowRect.height()));
 
     if (platformPluginWidget() && (m_windowRect != oldWindowRect || m_clipRect != oldClipRect))
 		setNPWindowRect(m_windowRect);
@@ -204,7 +210,7 @@ void PluginView::setNPWindowRect(const IntRect& rect)
         return;
 	*/
 
-	//kprintf("PluginView::setNPWindowRect(%d %d %d %d)\n", m_npWindow.x, m_npWindow.y, m_npWindow.width, m_npWindow.height);
+	//D(bug("PluginView::setNPWindowRect(%d %d %d %d)\n", m_npWindow.x, m_npWindow.y, m_npWindow.width, m_npWindow.height));
 
     PluginView::setCurrentPluginView(this);
     JSC::JSLock::DropAllLocks dropAllLocks(JSDOMWindowBase::commonVM());
@@ -290,12 +296,12 @@ bool PluginView::platformGetValue(NPNVariable variable, void* value, NPError* re
 
 void PluginView::invalidateRegion(NPRegion)
 {
-	//kprintf("PluginView::invalidateRegion\n");
+	//D(bug("PluginView::invalidateRegion\n"));
 }
 
 void PluginView::invalidateRect(NPRect* rect)
 {
-	//kprintf("PluginView::invalidateRect [%d %d %d %d]\n", rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top);
+	//D(bug("PluginView::invalidateRect [%d %d %d %d]\n", rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top));
 
     if (!rect) {
         invalidate();
@@ -308,13 +314,13 @@ void PluginView::invalidateRect(NPRect* rect)
 
 void PluginView::invalidateRect(const IntRect& rect)
 {
-	//kprintf("PluginView::invalidateRect2 [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height());
+	//D(bug("PluginView::invalidateRect2 [%d %d %d %d]\n", rect.x(), rect.y(), rect.width(), rect.height()));
 	Widget::invalidateRect(rect);
 }
 
 void PluginView::forceRedraw()
 {
-	//kprintf("PluginView::forceRedraw\n");
+	//D(bug("PluginView::forceRedraw\n"));
 	invalidate();
 }
 
@@ -336,7 +342,7 @@ bool PluginView::platformStart()
 
 	setPlatformPluginWidget(m_parentFrame.get()->view()->hostWindow()->platformPageClient());
 
-	//kprintf("platformStart() widget %p\n", m_parentFrame.get()->view()->hostWindow()->platformPageClient());
+	//D(bug("platformStart() widget %p\n", m_parentFrame.get()->view()->hostWindow()->platformPageClient()));
 
     show();
 

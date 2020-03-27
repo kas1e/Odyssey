@@ -3,6 +3,8 @@
 
 #include "aos4funcs_base.h"
 
+#include "debug.h"
+
 #include "../../Source/JavaScriptCore/config.h"
 
 #include "../../WebCore/config.h"

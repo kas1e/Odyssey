@@ -28,8 +28,12 @@
 #include "RefPtrCairo.h"
 #include "../../../../Source/WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
 #include <cairo.h>
-#include <clib/debug_protos.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 namespace WebCore {
@@ -93,7 +97,7 @@ DragImageRef createDragImageIconForCachedImageFilename(const String&)
 
 DragImageRef createDragImageForLink(KURL& url, const String& inLabel, FontRenderingMode fontRenderingMode, Frame* frame)
 {
-    D(kprintf("createDragImageForLink %s %s\n", url.string().latin1().data(), inLabel.latin1().data()));
+    D(bug("createDragImageForLink %s %s\n", url.string().latin1().data(), inLabel.latin1().data()));
 
     FrameView *frameView = frame->view();
     BalWidget *widget = frameView->hostWindow()->platformPageClient();

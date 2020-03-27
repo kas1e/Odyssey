@@ -28,10 +28,8 @@
 
 #include <string.h>
 #include <stdio.h>
-#include <clib/debug_protos.h>
 
 #include "gui.h"
-
 
 struct Data
 {

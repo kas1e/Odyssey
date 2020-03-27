@@ -29,8 +29,11 @@
 #include "config.h"
 #include "MainThread.h"
 
-#include <clib/debug_protos.h>
-
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 #if OS(MORPHOS)
@@ -44,12 +47,12 @@ namespace WTF {
 
 void initializeMainThreadPlatform()
 {
-	D(kprintf("initializeMainThreadPlatform()\n"));
+	D(bug("initializeMainThreadPlatform()\n"));
 }
 
 void scheduleDispatchFunctionsOnMainThread()
 {
-	D(kprintf("scheduleDispatchFunctionsOnMainThread()\n"));
+	D(bug("scheduleDispatchFunctionsOnMainThread()\n"));
 	WakeTimer();
 }
 

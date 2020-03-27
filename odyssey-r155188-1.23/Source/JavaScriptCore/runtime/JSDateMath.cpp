@@ -101,9 +101,12 @@
 #include <sys/timeb.h>
 #endif
 
-#if OS(MORPHOS)
-#include <clib/debug_protos.h>
-#endif
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WTF;
 
@@ -194,7 +197,7 @@ static LocalTimeOffset localTimeOffset(ExecState* exec, double ms)
 
 double gregorianDateTimeToMS(ExecState* exec, const GregorianDateTime& t, double milliSeconds, bool inputIsUTC)
 {
-    //kprintf("gregorianDateTimeToMS d %d m %d y %d ms %f\n", t.monthDay(), t.month(), t.year(), milliSeconds);
+    //D(bug("gregorianDateTimeToMS d %d m %d y %d ms %f\n", t.monthDay(), t.month(), t.year(), milliSeconds));
     double day = dateToDaysFrom1970(t.year(), t.month(), t.monthDay());
     double ms = timeToMS(t.hour(), t.minute(), t.second(), milliSeconds);
     double result = (day * WTF::msPerDay) + ms;
@@ -202,14 +205,14 @@ double gregorianDateTimeToMS(ExecState* exec, const GregorianDateTime& t, double
     if (!inputIsUTC)
         result -= localTimeOffset(exec, result).offset;
 
-    //kprintf("result %f\n", result);
+    //D(bug("result %f\n", result));
     return result;
 }
 
 // input is UTC
 void msToGregorianDateTime(ExecState* exec, double ms, bool outputIsUTC, GregorianDateTime& tm)
 {
-    //kprintf("msToGregorianDateTime ms %f currentTime %f\n", ms, currentTime());
+    //D(bug("msToGregorianDateTime ms %f currentTime %f\n", ms, currentTime()));
     LocalTimeOffset localTime;
     if (!outputIsUTC) {
         localTime = localTimeOffset(exec, ms);
@@ -227,7 +230,7 @@ void msToGregorianDateTime(ExecState* exec, double ms, bool outputIsUTC, Gregori
     tm.setYear(year);
     tm.setIsDST(localTime.isDST);
     tm.setUtcOffset(localTime.offset / WTF::msPerSecond);
-    //kprintf("result msToGregorianDateTime d %d m %d y %d\n", tm.monthDay(), tm.month(), tm.year());
+    //D(bug("result msToGregorianDateTime d %d m %d y %d\n", tm.monthDay(), tm.month(), tm.year()));
 }
 
 double parseDateFromNullTerminatedCharacters(ExecState* exec, const char* dateString)
@@ -238,12 +241,12 @@ double parseDateFromNullTerminatedCharacters(ExecState* exec, const char* dateSt
     double ms = WTF::parseDateFromNullTerminatedCharacters(dateString, haveTZ, offset);
     if (std::isnan(ms))
         return QNaN;
-    //kprintf("JSC::parseDateFromNullTerminatedCharacters ms %f haveTZ %d offset %d\n", ms, haveTZ, offset); 
+    //D(bug("JSC::parseDateFromNullTerminatedCharacters ms %f haveTZ %d offset %d\n", ms, haveTZ, offset)); 
     // fall back to local timezone
     if (!haveTZ)
         offset = localTimeOffset(exec, ms).offset / WTF::msPerMinute;
 
-    //kprintf("JSC::parseDateFromNullTerminatedCharacters offset %d\n", offset);
+    //D(bug("JSC::parseDateFromNullTerminatedCharacters offset %d\n", offset));
 
     return ms - (offset * WTF::msPerMinute);
 }

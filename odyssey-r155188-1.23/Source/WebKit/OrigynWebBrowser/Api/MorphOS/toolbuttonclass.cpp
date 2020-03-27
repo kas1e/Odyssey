@@ -29,7 +29,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <devices/rawkeycodes.h>
-#include <clib/debug_protos.h>
 
 #include "gui.h"
 

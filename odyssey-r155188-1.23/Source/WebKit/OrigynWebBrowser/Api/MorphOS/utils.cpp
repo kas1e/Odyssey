@@ -62,6 +62,12 @@
 #include "aos4funcs_api.h"
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -562,7 +568,7 @@ STRPTR get_accepted_languages(STRPTR code, ULONG len)
 	
 	STRPTR ret = NULL;
 
-	//kprintf("get_accpeted_languages(): at begining\n");
+	//D(bug("get_accpeted_languages(): at begining\n"));
 	
 	if(l)
 	{
@@ -571,13 +577,13 @@ STRPTR get_accepted_languages(STRPTR code, ULONG len)
 		code[0] = 0;
 		ret = code;
 
-		//kprintf("get_accpeted_languages(): in if(l)\n");
+		//D(bug("get_accpeted_languages(): in if(l)\n"));
 		
 		for(i=0; l->loc_PrefLanguages[i] && i < 10; i++)
 		{
 			char *ptr;
 
-			//kprintf("get_accpeted_languages(): in if(l->locl_PrefLanguages))\n");
+			//D(bug("get_accpeted_languages(): in if(l->locl_PrefLanguages))\n"));
 			
 			ptr = (char *) getcode(l->loc_PrefLanguages[i]);
 
@@ -621,8 +627,8 @@ STRPTR get_accepted_languages(STRPTR code, ULONG len)
 		CloseLocale(l);
 	}
 
-	//kprintf("get_accepted_languages: ret is: %s\n", ret);
-	//kprintf("get_accepted_languages: code is: %s\n", code);
+	//D(bug("get_accepted_languages: ret is: %s\n", ret));
+	//D(bug("get_accepted_languages: code is: %s\n", code));
 
 	return ret;
 }
@@ -633,15 +639,15 @@ STRPTR get_language(STRPTR code, ULONG len)
 	struct Locale *l = OpenLocale(NULL);
 	STRPTR ret = NULL;
 
-	//kprintf("get_language(): at begining\n");
+	//D(bug("get_language(): at begining\n"));
 	
 	if(l)
 	{
-		//kprintf("get_language(): in if(l)\n");		
+		//D(bug("get_language(): in if(l)\n"));
 		if((l->loc_PrefLanguages[0]) && (getcode(l->loc_PrefLanguages[0]) != NULL))
 		{
 		
-			//kprintf("get_language(): in l->loc_PrefLangauges[0] && getcode blablabl\n");
+			//D(bug("get_language(): in l->loc_PrefLangauges[0] && getcode blablabl\n"));
 			ret = code;
 			stccpy(code, (char *) getcode(l->loc_PrefLanguages[0]), len);
 			
@@ -652,13 +658,13 @@ STRPTR get_language(STRPTR code, ULONG len)
 
 	if(!ret)
 	{
-		//kprintf("get_language(): aha, we in fail and return !ret\n");
+		//D(bug("get_language(): aha, we in fail and return !ret\n"));
 		ret = code;
 		stccpy(code, "en", len);
 	}
 
-	//kprintf("get_language: ret is: %s\n", ret);
-	//kprintf("get_language: code is: %s\n", code);
+	//D(bug("get_language: ret is: %s\n", ret));
+	//D(bug("get_language: code is: %s\n", code));
 	return ret;
 }
 
@@ -970,8 +976,8 @@ void enable_blanker(struct Screen *screen, ULONG enable)
 
 			if(screen)
 			{
-				//kprintf("%s blanker\n", enable ? "Enabling" : "Disabling" );
-				SetAttrs(screen, SA_StopBlanker, enable ? FALSE : TRUE, TAG_DONE);				  
+				//D(bug("%s blanker\n", enable ? "Enabling" : "Disabling" ));
+				SetAttrs(screen, SA_StopBlanker, enable ? FALSE : TRUE, TAG_DONE);
 			}
 		}
 	}

@@ -45,7 +45,6 @@ extern "C"
 #include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/utility.h>
-#include <clib/debug_protos.h>
 
 #include "gui.h"
 #include "utils.h"
@@ -69,6 +68,13 @@ struct  MUIP_Process_Launch                 { ULONG MethodID; };
 #else
 #define USE_SHARED_FONTCONFIG 1
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -107,7 +113,7 @@ void fontconfig_testcache(void)
 
     signal(SIGINT, SIG_IGN);
 
-    //kprintf("[fontcache thread] doing stuff\n");
+    //D(bug("[fontcache thread] doing stuff\n"));
 
 #if !USE_SHARED_FONTCONFIG
     fontconfig_progress_callback = myfontconfig_progress_callback;
@@ -120,7 +126,7 @@ void fontconfig_testcache(void)
 		return;
     }
 
-    //kprintf("[fontcache thread] still doing stuff\n");
+    //D(bug("[fontcache thread] still doing stuff\n"));
 
     pat = FcNameParse ((FcChar8 *) ":");
     os = FcObjectSetBuild (FC_FAMILY, FC_STYLE, (char *) 0);
@@ -134,13 +140,13 @@ void fontconfig_testcache(void)
 		// We should fail here
 	}
 
-	//kprintf("[fontcache thread] always doing stuff\n");
+	//D(bug("[fontcache thread] always doing stuff\n"));
 
     if (fs)
     {
 		int	j;
 
-		//kprintf("[fontcache thread] fs->nfont %d\n", fs->nfont);
+		//D(bug("[fontcache thread] fs->nfont %d\n", fs->nfont));
 
 		for (j = 0; j < fs->nfont; j++)
 		{
@@ -150,7 +156,7 @@ void fontconfig_testcache(void)
 			{
 				APTR n;
 
-				//kprintf("[fontcache thread] font file <%s>\n", file);
+				//D(bug("[fontcache thread] font file <%s>\n", file));
 
 				ITERATELIST(n, &family_list)
 				{
@@ -182,7 +188,7 @@ void fontconfig_testcache(void)
 	FcExtRemoveProgressCallback((FcExtProgressCallback)myfontconfig_progress_callback);
 #endif
 
-	//kprintf("[fontcache thread] done\n");
+	//D(bug("[fontcache thread] done\n"));
 }
 
 DEFNEW
@@ -222,7 +228,7 @@ DEFNEW
 	{
 		GETDATA;
 
-		//kprintf("[splashwindow] OM_NEW\n");
+		//D(bug("[splashwindow] OM_NEW\n"));
 
 		g_splash = obj;
 		data->maintask = FindTask(NULL);
@@ -235,7 +241,7 @@ DEFNEW
 					MUIA_Process_AutoLaunch  , FALSE,
 					TAG_DONE);
 
-		//kprintf("[splashwindow] proc = %p\n", data->proc);
+		//D(bug("[splashwindow] proc = %p\n", data->proc));
 	}
 
 	return (IPTR)obj;
@@ -262,7 +268,7 @@ DEFTMETHOD(SplashWindow_Open)
 		return 0;
 	}
 
-	//kprintf("[splashwindow] running fontcache thread %p\n", data->proc);
+	//D(bug("[splashwindow] running fontcache thread %p\n", data->proc));
 
 	if((data->StartupBit = AllocSignal(-1)) != -1)
 	{
@@ -270,7 +276,7 @@ DEFTMETHOD(SplashWindow_Open)
 		{
 			Wait(1L<<data->StartupBit);
 
-			//kprintf("[splashwindow] splashwindow loop\n");
+			//D(bug("[splashwindow] splashwindow loop\n"));
 
 			for(;data->running;)
 			{
@@ -296,7 +302,7 @@ DEFTMETHOD(SplashWindow_Open)
 
 	set(obj, MUIA_Window_Open, FALSE);
 
-	//kprintf("[splashwindow] quitting loop\n");
+	//D(bug("[splashwindow] quitting loop\n"));
 
 	return 0;
 }
@@ -318,7 +324,7 @@ DEFMMETHOD(Process_Process)
 {
 	GETDATA;
 
-	//kprintf("[fontcache thread] running indexation\n");
+	//D(bug("[fontcache thread] running indexation\n"));
 
 	struct Process *myproc = (struct Process *)FindTask(NULL);
 	APTR oldwindowptr = myproc->pr_WindowPtr;
@@ -335,7 +341,7 @@ DEFMMETHOD(Process_Process)
 
 	fontconfig_testcache();
 
-	//kprintf("[fontcache thread] signaling thread end to main task\n");
+	//D(bug("[fontcache thread] signaling thread end to main task\n"));
 
 	myproc->pr_WindowPtr = oldwindowptr;
 

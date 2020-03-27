@@ -28,7 +28,6 @@
  */
 
 #include "config.h"
-#include <clib/debug_protos.h>
 
 #if ENABLE(INSPECTOR)
 

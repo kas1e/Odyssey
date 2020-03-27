@@ -43,7 +43,6 @@
 #include <proto/dos.h>
 #include <dos/dostags.h>
 #include <proto/utility.h>
-#include <clib/debug_protos.h>
 
 #include <stdio.h>
 
@@ -53,7 +52,13 @@
 
 #undef set
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
+
 
 using namespace WebCore;
 
@@ -63,12 +68,12 @@ DownloadDelegateMorphOS::DownloadDelegateMorphOS()
 
 DownloadDelegateMorphOS::~DownloadDelegateMorphOS()
 {
-	D(kprintf("DownloadDelegateMorphOS::~DownloadDelegateMorphOS\n"));
+	D(bug("DownloadDelegateMorphOS::~DownloadDelegateMorphOS\n"));
 }
 
 void DownloadDelegateMorphOS::decideDestinationWithSuggestedFilename(WebDownload *download, const char* fileName)
 {
-	D(kprintf("DownloadDelegateMorphOS::decideDestinationWithSuggestedFilename(%s)\n", fileName));
+	D(bug("DownloadDelegateMorphOS::decideDestinationWithSuggestedFilename(%s)\n", fileName));
 
     if(fileName)
     {
@@ -164,7 +169,7 @@ void DownloadDelegateMorphOS::decideDestinationWithSuggestedFilename(WebDownload
 						}
 					}
 
-					D(kprintf("destination %s overwrite %d resume %d\n", localUri, overwrite, resume));
+					D(bug("destination %s overwrite %d resume %d\n", localUri, overwrite, resume));
 
 					download->setDestination(localUri, overwrite, resume);
 
@@ -177,22 +182,22 @@ void DownloadDelegateMorphOS::decideDestinationWithSuggestedFilename(WebDownload
 
 void DownloadDelegateMorphOS::didCancelAuthenticationChallenge(WebDownload* download, WebURLAuthenticationChallenge* challenge)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didCancelAuthenticationChallenge %p\n", download, challenge));
+    D(bug("DownloadDelegateMorphOS %p - didCancelAuthenticationChallenge %p\n", download, challenge));
 }
 
 void DownloadDelegateMorphOS::didCreateDestination(WebDownload* download, const char *destination)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didCreateDestination %s\n", download, destination));
+    D(bug("DownloadDelegateMorphOS %p - didCreateDestination %s\n", download, destination));
 }
 
 void DownloadDelegateMorphOS::didReceiveAuthenticationChallenge(WebDownload* download, WebURLAuthenticationChallenge* challenge)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didReceiveAuthenticationChallenge %p\n", download, challenge));
+    D(bug("DownloadDelegateMorphOS %p - didReceiveAuthenticationChallenge %p\n", download, challenge));
 }
 
 void DownloadDelegateMorphOS::didReceiveDataOfLength(WebDownload* download, unsigned length)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didReceiveDataOfLength %p %d\n", download, length));
+    D(bug("DownloadDelegateMorphOS %p - didReceiveDataOfLength %p %d\n", download, length));
 
 	WebDownloadPrivate* priv = download->getWebDownloadPrivate();
 
@@ -212,7 +217,7 @@ void DownloadDelegateMorphOS::didReceiveDataOfLength(WebDownload* download, unsi
 
 void DownloadDelegateMorphOS::didReceiveResponse(WebDownload* download, WebURLResponse* response)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didReceiveResponse %p\n", download, response));
+    D(bug("DownloadDelegateMorphOS %p - didReceiveResponse %p\n", download, response));
 
 	WebDownloadPrivate* priv = download->getWebDownloadPrivate();
 
@@ -222,12 +227,12 @@ void DownloadDelegateMorphOS::didReceiveResponse(WebDownload* download, WebURLRe
 
 void DownloadDelegateMorphOS::willResumeWithResponse(WebDownload* download, WebURLResponse* response, long long fromByte)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - willResumeWithResponse %p, %q\n", download, response, fromByte));
+    D(bug("DownloadDelegateMorphOS %p - willResumeWithResponse %p, %q\n", download, response, fromByte));
 }
 
 WebMutableURLRequest* DownloadDelegateMorphOS::willSendRequest(WebDownload* download, WebMutableURLRequest* request, WebURLResponse* redirectResponse)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - willSendRequest %p %p\n", download, request, redirectResponse));
+    D(bug("DownloadDelegateMorphOS %p - willSendRequest %p %p\n", download, request, redirectResponse));
     return request;
 }
 
@@ -238,7 +243,7 @@ bool DownloadDelegateMorphOS::shouldDecodeSourceDataOfMIMEType(WebDownload*, con
 
 void DownloadDelegateMorphOS::didBegin(WebDownload* download)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didBegin\n", download));
+    D(bug("DownloadDelegateMorphOS %p - didBegin\n", download));
     registerDownload(download);
 	
 	DoMethod(app, MM_OWBApp_OpenWindow, MV_OWB_Window_Downloads, FALSE);
@@ -250,7 +255,7 @@ void DownloadDelegateMorphOS::didBegin(WebDownload* download)
 
 void DownloadDelegateMorphOS::didFinish(WebDownload* download)
 {
-    D(kprintf("DownloadDelegateMorphOS %p - didFinish\n", download));
+    D(bug("DownloadDelegateMorphOS %p - didFinish\n", download));
 
 	WebDownloadPrivate* priv = download->getWebDownloadPrivate();
 	char cpath[1024];
@@ -269,13 +274,13 @@ void DownloadDelegateMorphOS::didFinish(WebDownload* download)
 
 	DoMethod(app, MM_OWBApp_DownloadDone, priv->dl);
 
-	D(kprintf("DownloadDelegateMorphOS %p - SetComment(%s, %s)\n", download, (STRPTR) priv->destinationPath.latin1().data(), (STRPTR) priv->requestUri.utf8().data()));
+	D(bug("DownloadDelegateMorphOS %p - SetComment(%s, %s)\n", download, (STRPTR) priv->destinationPath.latin1().data(), (STRPTR) priv->requestUri.utf8().data()));
 
 	SetComment((STRPTR) cpath, (STRPTR) ccomment);
 
 	if(!priv->command.isEmpty())
 	{
-		D(kprintf("Check DownloadDelegateMorphOS %p - Command (%s)\n", download, (STRPTR) priv->command.latin1().data()));
+		D(bug("Check DownloadDelegateMorphOS %p - Command (%s)\n", download, (STRPTR) priv->command.latin1().data()));
 
 		OWBCommand cmd(priv->command, ACTION_AMIGADOS);
 		cmd.execute();
@@ -289,7 +294,7 @@ void DownloadDelegateMorphOS::didFailWithError(WebDownload* download, WebError* 
 {
 	char *errormsg = (char *) error->localizedDescription();
 
-	D(kprintf("DownloadDelegateMorphOS %p - didFailWithError(%s)\n", download, errormsg));
+	D(bug("DownloadDelegateMorphOS %p - didFailWithError(%s)\n", download, errormsg));
 
 	WebDownloadPrivate* priv = download->getWebDownloadPrivate();
 

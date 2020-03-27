@@ -37,8 +37,6 @@
 #include <wtf/OwnArrayPtr.h>
 #include <wtf/text/CString.h>
 
-#include <clib/debug_protos.h>
-
 namespace WebCore {
 
 PluginPackage::~PluginPackage()

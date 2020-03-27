@@ -46,7 +46,13 @@
 #define get(obj,attr,store) GetAttr(attr,obj,(ULONG *)store)
 #endif
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
+
 
 /* public */
 #include <mui/Listtree_mcc.h>
@@ -144,7 +150,7 @@ int parsevarpool(STRPTR var,char *temp,...)
                 {
 					if (pkey==lkey && lkey>0) p[lp-lkey]='\0';
 					else p[lp]='\0';
-					//D(kprintf("Found Key, string is %s\n",&p[0]));
+					//D(bug("Found Key, string is %s\n",&p[0]));
                     switch (type)
                     {
                         case -1 :
@@ -157,7 +163,7 @@ int parsevarpool(STRPTR var,char *temp,...)
 							
 							arg_int=NULL;
                             arg_int = va_arg(pp, int *);
-							//D(kprintf("Valeur int: %ld arg is %08lx\n", l, arg_int));
+							//D(bug("Valeur int: %ld arg is %08lx\n", l, arg_int));
 							if (arg_int)
 							{	
 								*arg_int=l;
@@ -177,7 +183,7 @@ int parsevarpool(STRPTR var,char *temp,...)
                     }
 					if (*var==0)
 					{
-						//D(kprintf("end if string parse var return %ld\n",n));
+						//D(bug("end if string parse var return %ld\n",n));
 						return n;
 					}
 					else next=1;
@@ -191,7 +197,7 @@ int parsevarpool(STRPTR var,char *temp,...)
         }
     }
     va_end(pp);
-	//D(kprintf("parse var return %ld\n",n));
+	//D(bug("parse var return %ld\n",n));
     //if (strlen(temp)) PF("#### Parsevar end with unparse \"%s\"\n",temp);
     return(n);
 }
@@ -224,7 +230,7 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 			break;
 		case MA_Bookmarkgroup_Alias:
 			current=NULL;
-			D(kprintf("Set Alias '%s'\n", tag->ti_Data));
+			D(bug("Set Alias '%s'\n", tag->ti_Data));
 			if (DoMethod(data->lt_linklist, MUIM_List_GetEntry, MUIV_List_GetEntry_Active, &current) && (current))
 			{
 				APTR n;
@@ -281,10 +287,10 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 			if(active)
 			{
 				current=(struct treedata *)active->tn_User;   
-				D(kprintf( "InMenu before is %08lx.\n",(ULONG)current->flags));
+				D(bug( "InMenu before is %08lx.\n",(ULONG)current->flags));
 				if (tag->ti_Data) current->flags = (current->flags & ~NODEFLAG_INMENU) | NODEFLAG_INMENU;
 				else current->flags = current->flags & ~NODEFLAG_INMENU;
-				D(kprintf( "InMenu after is %08lx.\n",(ULONG)current->flags));
+				D(bug( "InMenu after is %08lx.\n",(ULONG)current->flags));
 				line=DoMethod(data->lt_bookmark, MUIM_Listtree_GetNr, active, 0L);
 				DoMethod(data->lt_bookmark, MUIM_List_Redraw, line, NULL);
 				DoMethod(app, MUIM_Application_PushMethod,
@@ -301,7 +307,7 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 			{
 				current=(struct treedata *)active->tn_User;
 				current->treenode = active;
-				D(kprintf( "QLink before is %08lx.\n",(ULONG)current->flags));
+				D(bug( "QLink before is %08lx.\n",(ULONG)current->flags));
 				if (tag->ti_Data!=(current->flags & NODEFLAG_QUICKLINK))
 				{
 					if (tag->ti_Data!=0)
@@ -313,7 +319,7 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 						DoMethod(obj, MM_Bookmarkgroup_RemoveQuickLink, current);
 					}
 				}
-				D(kprintf( "QLink after is %08lx.\n",(ULONG)current->flags));
+				D(bug( "QLink after is %08lx.\n",(ULONG)current->flags));
 			}
 			break;
 	}
@@ -511,10 +517,10 @@ DEFNEW
 DEFDISP
 {
 	//GETDATA;
-	D(kprintf("OWB Bookmark test app: disposing\n"));
+	D(bug("OWB Bookmark test app: disposing\n"));
 	//dosnotify_stop(data->notifyreq);
 	DoMethod(obj, MM_Bookmarkgroup_SaveHtml, BOOKMARK_PATH, MV_Bookmark_SaveHtml_OWB);
-	D(kprintf("OWB Bookmark test app: ok, calling supermethod\n"));
+	D(bug("OWB Bookmark test app: ok, calling supermethod\n"));
 	return DOSUPER;
 }
 
@@ -628,7 +634,7 @@ DEFSMETHOD(Bookmarkgroup_Update)
 	GETDATA;
 	struct MUIS_Listtree_TreeNode *active = NULL, *parent = NULL;
 	struct treedata *current;
-	D(kprintf("Bookmarkgroup_Update %ld\n", msg->from));
+	D(bug("Bookmarkgroup_Update %ld\n", msg->from));
 	if (msg->from & MV_BookmarkGroup_Update_Tree)
 	{
 		active = (struct MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, NULL, MUIV_Listtree_GetEntry_Position_Active, 0);
@@ -719,12 +725,12 @@ DEFSMETHOD(Bookmarkgroup_Update)
 			set(data->bt_removeql,  MUIA_Disabled, FALSE); 	
 			if (current->alias)
 			{
-				D(kprintf("Alias is '%s'\n", current->alias));
+				D(bug("Alias is '%s'\n", current->alias));
 				nnset(data->st_alias, MUIA_String_Contents, current->alias);
 			}
 			else
 			{
-				D(kprintf("Alias is null\n"));
+				D(bug("Alias is null\n"));
 				nnset(data->st_alias, MUIA_String_Contents, "");
 			}
 			if ((data->win) && !(msg->from & MV_BookmarkGroup_Update_Tree)) DoMethod(data->win,	MUIM_Set, MUIA_Window_ActiveObject, data->st_alias);
@@ -758,7 +764,7 @@ DEFSMETHOD(Bookmarkgroup_AddGroup)
 	if (!msg->title) newnode.title="";
 	else newnode.title=(char *) msg->title;
 
-	D(kprintf("AddGroup title %s\n",msg->title));
+	D(bug("AddGroup title %s\n",msg->title));
 
 	active = (struct MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, NULL, MUIV_Listtree_GetEntry_Position_Active, 0);
 
@@ -805,7 +811,7 @@ DEFSMETHOD(Bookmarkgroup_AddGroup)
 		);
 	}
 
-	D(kprintf("entry is %08lx.\n",(ULONG)entry));
+	D(bug("entry is %08lx.\n",(ULONG)entry));
 	
 	set(data->lt_bookmark, MUIA_Listtree_Quiet, FALSE);
 	
@@ -849,12 +855,12 @@ DEFSMETHOD(Bookmarkgroup_AddLink)
 	caddress = newnode.address;
 	calias   = newnode.alias;
 	
-	D(kprintf("AddLink title %s %08lx %08lx\n",msg->title, (ULONG)msg->alias, (ULONG)msg->address));
+	D(bug("AddLink title %s %08lx %08lx\n",msg->title, (ULONG)msg->alias, (ULONG)msg->address));
 	
 	if (!msg->external)
 	{
 		active = (struct MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, NULL, MUIV_Listtree_GetEntry_Position_Active, 0);
-		D(kprintf("Active is %08lx.\n",(ULONG)active));
+		D(bug("Active is %08lx.\n",(ULONG)active));
 	}
 
 	// Disable notifications
@@ -904,7 +910,7 @@ DEFSMETHOD(Bookmarkgroup_AddLink)
 	free(calias);
 	free(caddress);
 
-	D(kprintf( "entry is %08lx.\n",(ULONG)entry));
+	D(bug( "entry is %08lx.\n",(ULONG)entry));
 	set(data->lt_bookmark, MUIA_Listtree_Quiet, FALSE);	
 	if (entry)
 	{
@@ -940,11 +946,11 @@ DEFTMETHOD(Bookmarkgroup_AddSeparator)
 	newnode.iconimg = NULL;
 	newnode.tree    = data->lt_bookmark;
 	
-	D(kprintf("AddSeparator\n"));
+	D(bug("AddSeparator\n"));
 	
 	active = (struct MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, NULL, MUIV_Listtree_GetEntry_Position_Active, 0);
 	
-	D(kprintf("Active is %08lx.\n",(ULONG)active));
+	D(bug("Active is %08lx.\n",(ULONG)active));
 	
 	// Disable notifications
 	set(data->lt_bookmark, MUIA_Listtree_Quiet, TRUE); 	 
@@ -989,7 +995,7 @@ DEFTMETHOD(Bookmarkgroup_AddSeparator)
 		);
 	}
 
-	D(kprintf( "entry is %08lx.\n",(ULONG)entry));
+	D(bug( "entry is %08lx.\n",(ULONG)entry));
 	set(data->lt_bookmark, MUIA_Listtree_Quiet, FALSE);	
 	if (entry)
 	{
@@ -1054,7 +1060,7 @@ DEFTMETHOD(Bookmarkgroup_ReadQLOrder)
 	GETDATA;
 	struct treedata *td;
 	ULONG count,max=0,change=FALSE;
-	D(kprintf("Bookmarkgroup ReadQLOrder\n"));
+	D(bug("Bookmarkgroup ReadQLOrder\n"));
 	get(data->lt_linklist, MUIA_List_Entries, &max);
 	
 	for (count=0;count<max;count++)
@@ -1082,7 +1088,7 @@ DEFTMETHOD(Bookmarkgroup_ReadQLOrder)
 	}
 	else
 	{
-		D(kprintf("ReadQLOrder no change\n"));
+		D(bug("ReadQLOrder no change\n"));
 	}
 	return (0);
 }
@@ -1127,7 +1133,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 			if (p==3)
 			{
 				q=0;
-				D(kprintf( "Parse Link: '%s'\n", ptr[2]));
+				D(bug( "Parse Link: '%s'\n", ptr[2]));
 
 				if (strcmp(ptr[2],"----------------------------------------")==0)
 				{
@@ -1159,7 +1165,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 				if (q==2)
 				{
 					// Alias
-					D(kprintf( "    Alias: '%s'\n", ptr[3]));
+					D(bug( "    Alias: '%s'\n", ptr[3]));
 					newnode.alias=ptr[3];
 					p++;
 				}
@@ -1169,7 +1175,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 					q=parsevarpool(ptr[1], "%.OWBQUICKLINK=\"%s\"", &ptr[3]);
 					if (q==2)
 					{
-						D(kprintf( "QuickLink: '%s'\n", ptr[3]));
+						D(bug( "QuickLink: '%s'\n", ptr[3]));
 						newnode.alias=ptr[3];
 						p++;
 						newnode.flags|=NODEFLAG_QUICKLINK;
@@ -1178,22 +1184,22 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 						if (q==2)
 						{
 							newnode.ql_order=order;
-							D(kprintf("Order: %ld\n",order));
+							D(bug("Order: %ld\n",order));
 						}
 						else
 						{
-							D(kprintf("Fail get order '%s'\n", ptr[1]));
+							D(bug("Fail get order '%s'\n", ptr[1]));
 						}
 
 						q=parsevarpool(ptr[1], "%.OWBQLSHOWALIAS=\"%d\"", &showalias);
 						if (q==2)
 						{
 							newnode.showalias=showalias;
-							D(kprintf("Show Alias: %ld\n",showalias));
+							D(bug("Show Alias: %ld\n",showalias));
 						}
 						else
 						{
-							D(kprintf("Fail get show alias '%s'\n", ptr[1]));
+							D(bug("Fail get show alias '%s'\n", ptr[1]));
 						}
 					}
 					else
@@ -1205,7 +1211,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 				q=parsevarpool(ptr[1], "%.IBHLFLAGS=\"%s\"", &ptr[4]);
 				if (q==2)
 				{
-					D(kprintf( "Flags: '%s'\n", ptr[4]));
+					D(bug( "Flags: '%s'\n", ptr[4]));
 					FreeVecTaskPooled(ptr[4]); ptr[4]=NULL;
 				}
 				else
@@ -1246,7 +1252,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 				p--;
 				if (p==2)
 				{
-					D(kprintf( "Parse Group: '%s'\n", ptr[1]));
+					D(bug( "Parse Group: '%s'\n", ptr[1]));
 					newnode.flags=NODEFLAG_GROUP;
 					newnode.title=ptr[1];
 					newnode.alias=NULL;
@@ -1260,7 +1266,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 					q=parsevarpool(ptr[0], "%.IBHLFLAGS=\"%s\"", &ptr[4]);
 					if (q==2)
 					{
-						D(kprintf( "Flags: '%s'\n", ptr[4]));
+						D(bug( "Flags: '%s'\n", ptr[4]));
 						FreeVecTaskPooled(ptr[4]); ptr[4]=NULL;
 					}
 					else
@@ -1272,7 +1278,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 					q=parsevarpool(ptr[0], "%.OWBQUICKLINK=\"%s\"", &ptr[4]);
 					if (q==2)
 					{
-						D(kprintf( "QuickLink: '%s'\n", ptr[4]));
+						D(bug( "QuickLink: '%s'\n", ptr[4]));
 						newnode.alias=ptr[4];
 						p++;
 						newnode.flags|=NODEFLAG_QUICKLINK;
@@ -1281,22 +1287,22 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 						if (q==2)
 						{
 							newnode.ql_order=order;
-							D(kprintf("Order: %ld\n",order));
+							D(bug("Order: %ld\n",order));
 						}
 						else
 						{
-							D(kprintf("Fail get order '%s'\n", ptr[0]));
+							D(bug("Fail get order '%s'\n", ptr[0]));
 						}
 
 						q=parsevarpool(ptr[1], "%.OWBQLSHOWALIAS=\"%d\"", &showalias);
 						if (q==2)
 						{
 							newnode.showalias=showalias;
-							D(kprintf("Show Alias: %ld\n",showalias));
+							D(bug("Show Alias: %ld\n",showalias));
 						}
 						else
 						{
-							D(kprintf("Fail get show alias '%s'\n", ptr[1]));
+							D(bug("Fail get show alias '%s'\n", ptr[1]));
 						}
 					}
 					else
@@ -1330,7 +1336,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 			{
 				if (strstr(line, "</UL>"))
 				{
-					D(kprintf( "Parse End Group\n"));
+					D(bug( "Parse End Group\n"));
 					if(group != NULL)
 					{
 						group = (MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, group, MUIV_Listtree_GetEntry_Position_Parent, 0);
@@ -1467,7 +1473,7 @@ DEFSMETHOD(Bookmarkgroup_SaveHtml)
 	{
 		if (msg->type==MV_Bookmark_SaveHtml_OWB)
 		{
-			D(kprintf("Save OWB bookmark in %s\n", msg->file));
+			D(bug("Save OWB bookmark in %s\n", msg->file));
 			FPuts(html,"<!-- OWB MorphOS Bookmark V1 -->\n");
 			FPuts(html,"<HTML>\n");
 			FPuts(html,"<HEAD><TITLE>OWB MorphOS Bookmark</TITLE></HEAD>\n");
@@ -1521,7 +1527,7 @@ DEFTMETHOD(Bookmarkgroup_AutoSave)
 	}
 	else
 	{
-		D(kprintf("Dual call to auto save\n"));
+		D(bug("Dual call to auto save\n"));
 	}
 	return (0);
 }
@@ -1565,13 +1571,13 @@ BOOL MyStrCpyOnly(STRPTR *d, STRPTR s)
 {
     if (!s)
     {
-		D(kprintf("## Source is NULL!\n"));
+		D(bug("## Source is NULL!\n"));
         return(FALSE);
     }
     *d=(char *)malloc(strlen(s)+1);
     if (*d==NULL)
     {
-		D(kprintf("## No memory for Destination!\n"));
+		D(bug("## No memory for Destination!\n"));
         return(FALSE);
     }
     strcpy(*d,s);
@@ -1604,7 +1610,7 @@ static void build_menu(Object *menu, Object *lt, struct MUIS_Listtree_TreeNode *
 
 						if(submenu)
 						{
-							D(kprintf("Add sub menu\n"));
+							D(bug("Add sub menu\n"));
 							DoMethod(menu, MUIM_Family_AddTail, submenu);
 							build_menu(submenu, lt, tn);
 						}
@@ -1621,7 +1627,7 @@ static void build_menu(Object *menu, Object *lt, struct MUIS_Listtree_TreeNode *
 						if(node->flags & NODEFLAG_BAR)
 						{
 							// Add separator
-							D(kprintf("Add separator\n"));
+							D(bug("Add separator\n"));
 							item = MenuitemObject,
 			                    MUIA_Menuitem_Title,  NM_BARLABEL,
 								MUIA_UserData, NULL,
@@ -1643,7 +1649,7 @@ static void build_menu(Object *menu, Object *lt, struct MUIS_Listtree_TreeNode *
 							if (node->address) MyStrCpyOnly(&address,node->address);
 							else MyStrCpyOnly(&address,"");
 							
-							D(kprintf("Add link\n"));
+							D(bug("Add link\n"));
 
 							// truncate title
 							truncatedTitle = title;
@@ -1739,7 +1745,7 @@ struct  MUIP_Family_GetChild                { ULONG MethodID; LONG nr; Object *r
 DEFTMETHOD(Bookmarkgroup_UpdateMenu)
 {
 	GETDATA;
-	D(kprintf("Bookmark UpdateMenu\n"));
+	D(bug("Bookmark UpdateMenu\n"));
 
 	FORCHILD(app, MUIA_Application_WindowList)
 	{
@@ -1788,7 +1794,7 @@ DEFSMETHOD(Bookmarkgroup_AddQuickLink)
 	struct MUIS_Listtree_TreeNode *tn;
 	struct treedata *node=NULL;
 
-	D(kprintf("\nBookmarkGroup AddQuickLink in pos %ld\n",msg->pos));
+	D(bug("\nBookmarkGroup AddQuickLink in pos %ld\n",msg->pos));
 	if (msg->node)
 	{
 		// Use the one provided
@@ -1807,7 +1813,7 @@ DEFSMETHOD(Bookmarkgroup_AddQuickLink)
 	if ((node) && (node->flags & NODEFLAG_NOTATTACHED))
 	{
 		// Link from other add to bookmark
-		D(kprintf("External node, add it to bookmark\n"));
+		D(bug("External node, add it to bookmark\n"));
 		node=(struct treedata *)DoMethod(obj, MM_Bookmarkgroup_AddLink, node->title, node->alias, node->address, TRUE, TRUE, FALSE);
 	}
 
@@ -1831,7 +1837,7 @@ DEFSMETHOD(Bookmarkgroup_AddQuickLink)
 				temp[size-3]='.';
 				temp[size-4]='.';
 			}
-			D(kprintf("Alias new name '%s'\n",temp));
+			D(bug("Alias new name '%s'\n",temp));
 
 			if (node->alias) FreeVecTaskPooled(node->alias);
 			node->alias=(STRPTR)AllocVecTaskPooled(strlen(temp)+1);
@@ -1855,7 +1861,7 @@ DEFSMETHOD(Bookmarkgroup_AddQuickLink)
 			if (qn->obj)
 			{
 				DoMethod(qn->obj, MM_QuickLinkGroup_InitChange, MV_QuickLinkGroup_Change_Add);
-				D(kprintf("Add node to qlgroup %08lx\n", qn->obj));
+				D(bug("Add node to qlgroup %08lx\n", qn->obj));
 				DoMethod(qn->obj, MM_QuickLinkGroup_Add, node);
 				DoMethod(qn->obj, MM_QuickLinkGroup_ExitChange, MV_QuickLinkGroup_Change_Add);
 			}
@@ -1866,7 +1872,7 @@ DEFSMETHOD(Bookmarkgroup_AddQuickLink)
 			obj, 1 | MUIV_PushMethod_Delay(500) | MUIF_PUSHMETHOD_SINGLE,
 			MM_Bookmarkgroup_AutoSave);
 	}
-	D(kprintf("End AddQuickLink\n"));
+	D(bug("End AddQuickLink\n"));
 	return (0);
 }
 
@@ -1901,7 +1907,7 @@ DEFSMETHOD(Bookmarkgroup_RemoveQuickLink)
 	if (node)
 	{
 		APTR n;
-		D(kprintf("Remove QuickLink %ld\n", pos));
+		D(bug("Remove QuickLink %ld\n", pos));
 		node->flags = node->flags & ~NODEFLAG_QUICKLINK;
 
 		DoMethod(data->lt_linklist, MUIM_List_Remove, pos);
@@ -1923,7 +1929,7 @@ DEFSMETHOD(Bookmarkgroup_RemoveQuickLink)
         DoMethod(app, MUIM_Application_PushMethod,
 				obj, 1 | MUIV_PushMethod_Delay(500) | MUIF_PUSHMETHOD_SINGLE,
 				MM_Bookmarkgroup_AutoSave);
-		D(kprintf("Remove QuickLink End\n"));
+		D(bug("Remove QuickLink End\n"));
 	}
 	return (0);
 }
@@ -1932,7 +1938,7 @@ DEFTMETHOD(Bookmarkgroup_DosNotify)
 {
 	GETDATA;
 	// Start reload
-	D(kprintf("DosNotification on bookmarks.html\n"));
+	D(bug("DosNotification on bookmarks.html\n"));
 	// get active for reset after ?
 	set(data->lt_bookmark, MUIA_Listtree_Quiet, TRUE);
 	set(data->lt_linklist, MUIA_List_Quiet, TRUE);
@@ -1965,7 +1971,7 @@ DEFSMETHOD(Bookmarkgroup_RegisterQLGroup)
 
 		DoMethod(qn->obj, MM_QuickLinkGroup_InitChange, MV_QuickLinkGroup_Change_Add);
 
-		D(kprintf("RegisterQLGroup Build QuickLink\n"));
+		D(bug("RegisterQLGroup Build QuickLink\n"));
 		for(pos=0; ; pos++)
 		{
 			if( (tn=(struct MUIS_Listtree_TreeNode *)DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, MUIV_Listtree_GetEntry_ListNode_Root, pos, 0)) )
@@ -1974,13 +1980,13 @@ DEFSMETHOD(Bookmarkgroup_RegisterQLGroup)
 				node->treenode = tn;
 				if ( (node) && (node->flags & NODEFLAG_QUICKLINK) )
 				{
-					D(kprintf("Add link\n"));
+					D(bug("Add link\n"));
 					DoMethod(msg->group, MM_QuickLinkGroup_Add, node);
 				}
 			}
 			else break;
 		}
-		D(kprintf("End\n"));
+		D(bug("End\n"));
 		DoMethod(qn->obj, MM_QuickLinkGroup_ExitChange, MV_QuickLinkGroup_Change_Add);
 	}
 	return (0);
@@ -2053,7 +2059,7 @@ DEFMMETHOD(HandleInput)
 					LONG pos=0;
 
 					get(data->win, MUIA_Window_ActiveObject, &active);
-					D(kprintf("Handle %08lx Obj %08lx\n", msg->imsg->Code, active));
+					D(bug("Handle %08lx Obj %08lx\n", msg->imsg->Code, active));
 					if (active==data->st_alias)
 					{
 						if (msg->imsg->Code==0x4d)

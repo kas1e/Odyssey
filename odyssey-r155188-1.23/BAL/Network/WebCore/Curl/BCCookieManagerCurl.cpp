@@ -42,23 +42,29 @@
 #include <wtf/text/WTFString.h>
 
 #include "../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
-#include <clib/debug_protos.h>
 #include <stdio.h>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #if ENABLE_COOKIE_SUPER_VERBOSE_DEBUG
 //#define CookieLog(format, ...) do { char buffer[1024]; snprintf(buffer, sizeof(buffer), __VA_ARGS__); DoMethod(app, MM_OWBApp_AddConsoleMessage, buffer); } while (0)
-#define CookieLog kprintf
+#define CookieLog bug
 #undef LOG_ERROR
-#define LOG_ERROR kprintf
+#define LOG_ERROR bug
 #else
 #define CookieLog(format, ...)
 #endif // ENABLE_COOKIE_SUPER_VERBOSE_DEBUG
 
 #if ENABLE_COOKIE_LIMIT_DEBUG
 //#define CookieLimitLog(format, ...) do { char buffer[1024]; snprintf(buffer, sizeof(buffer), __VA_ARGS__); DoMethod(app, MM_OWBApp_AddConsoleMessage, buffer); } while (0)
-#define CookieLimitLog kprintf
+#define CookieLimitLog bug
 #undef LOG_ERROR
-#define LOG_ERROR kprintf
+#define LOG_ERROR bug
 #else
 #define CookieLimitLog(format, ...)
 #endif // ENABLE_COOKIE_LIMIT_DEBUG

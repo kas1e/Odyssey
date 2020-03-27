@@ -42,7 +42,12 @@
 #include "runtime_object.h"
 #include "runtime_array.h"
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace JSC;
 
@@ -184,7 +189,7 @@ JSObject* BALValue::toJSObject(ExecState* exec) const
 
 JSValue BALValue::toJSValue(ExecState* exec) const
 {
-    kprintf("BALValue::toJSValue() called\n");
+    D(bug("BALValue::toJSValue() called\n"));
     if (isJSObject() || isBALObject())
         return toJSObject(exec);
     else if (isArray())
@@ -250,13 +255,11 @@ void BALValue::balArray(BALArray* array)
     m_array = array;
 }
 
-#include <clib/debug_protos.h>
-
 void BALValue::balException(short code, const String& name, const String& description)
 {
-  kprintf("BALValue::balException\n");
+  D(bug("BALValue::balException\n"));
 #warning "bug bug bug"
-    kprintf("!!!! balException skipped %d %s %s\n", code, name.utf8().data(), description.utf8().data());
+    D(bug("!!!! balException skipped %d %s %s\n", code, name.utf8().data(), description.utf8().data()));
 
     /*
     // FIXME: This is stupid to convert the String to a char* (and strdup it!) to have it converted again in DOMCoreException but WebCore does not let us any choice here.

@@ -33,7 +33,6 @@
 #include <wtf/CurrentTime.h>
 #if OS(MORPHOS)
 #include <proto/dos.h>
-#include <clib/debug_protos.h>
 #undef Lock
 #endif
 

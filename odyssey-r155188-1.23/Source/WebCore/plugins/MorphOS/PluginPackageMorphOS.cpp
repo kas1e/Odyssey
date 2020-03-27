@@ -33,8 +33,12 @@
 #include "npruntime_impl.h"
 #include "PluginDebug.h"
 #include "../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
-#include <clib/debug_protos.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 #define MIN_PLUGIN_VERSION 2
@@ -110,7 +114,7 @@ bool PluginPackage::fetchInfo()
 
 		//determineQuirks(mimeData[0]);
 
-		D(kprintf("PluginPackage: Adding mimetype: %s|%s|%s\n", mimeData[0].latin1().data(), extensions[0].latin1().data(), description.latin1().data()));
+		D(bug("PluginPackage: Adding mimetype: %s|%s|%s\n", mimeData[0].latin1().data(), extensions[0].latin1().data(), description.latin1().data()));
 
 		m_mimeToExtensions.add(mimeData[0], extensions);
         m_mimeToDescriptions.add(mimeData[0], description);
@@ -130,7 +134,7 @@ bool PluginPackage::load()
 
 	stccpy(cmodule, m_path.latin1().data(), sizeof(cmodule));
 
-	D(kprintf("PluginPackage: OpenLibrary(%s)\n", cmodule));
+	D(bug("PluginPackage: OpenLibrary(%s)\n", cmodule));
 
 	m_module = (struct Library *) OpenLibrary(cmodule, MIN_PLUGIN_VERSION);
 
@@ -159,7 +163,7 @@ bool PluginPackage::load()
 	}
 	else
 	{
-		D(kprintf("PluginPackageLoading: Opening %s failed\n", cmodule));
+		D(bug("PluginPackageLoading: Opening %s failed\n", cmodule));
 		return false;
 	}
 

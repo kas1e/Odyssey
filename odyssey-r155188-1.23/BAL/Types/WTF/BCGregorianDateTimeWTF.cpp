@@ -33,8 +33,6 @@
 #include <time.h>
 #endif
 
-#include <clib/debug_protos.h>
-
 namespace WTF {
 
 void GregorianDateTime::setToCurrentLocalTime()

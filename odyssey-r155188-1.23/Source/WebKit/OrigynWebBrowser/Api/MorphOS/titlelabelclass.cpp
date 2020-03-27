@@ -33,10 +33,14 @@
 
 #include <clib/macros.h>
 #include <proto/dos.h>
-#include <clib/debug_protos.h>
 
 #include "gui.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 /******************************************************************
@@ -372,7 +376,7 @@ DEFTMETHOD(Title_Redraw)
 
 	if(muiRenderInfo(obj))
 	{
-		D(kprintf("Title_Redraw <%s>\n", (STRPTR) getv(browser, MA_OWBBrowser_URL)));
+		D(bug("Title_Redraw <%s>\n", (STRPTR) getv(browser, MA_OWBBrowser_URL)));
 
 		MUI_Redraw(obj, MADF_DRAWOBJECT);
 

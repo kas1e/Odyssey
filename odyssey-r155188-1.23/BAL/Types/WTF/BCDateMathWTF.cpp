@@ -108,7 +108,6 @@
 #endif
 
 #if OS(MORPHOS)
-#include <clib/debug_protos.h>
 extern long get_DST_offset(void);
 extern long get_GMT_offset(void);
 #endif

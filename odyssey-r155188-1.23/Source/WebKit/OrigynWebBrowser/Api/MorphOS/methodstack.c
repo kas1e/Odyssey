@@ -30,6 +30,11 @@
 
 #include <stdarg.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 STATIC struct SignalSemaphore semaphore;
@@ -135,7 +140,7 @@ void methodstack_check(void)
 {
 	ULONG not_empty = TRUE;
 
-	//D(kprintf("[MethodStack] methodstack_check()\n"));
+	//D(bug("[MethodStack] methodstack_check()\n"));
 
 	do
 	{

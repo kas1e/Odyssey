@@ -33,8 +33,6 @@
 #include <WTFString.h>
 #include <HistoryItem.h>
 
-#include <clib/debug_protos.h>
-
 using namespace WebCore;
 
 static HashMap<HistoryItem*, WebHistoryItem*>& historyItemWrappers()

@@ -45,11 +45,15 @@
 #include <proto/dos.h>   
 #include <proto/intuition.h>
 #include <clib/macros.h>
-#include <clib/debug_protos.h>
 #include <dos/dostags.h>
 
 #include <unistd.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 namespace WebCore {
@@ -76,7 +80,7 @@ static TimerHandle *timer_handle;
 
 void fireTimerIfNeeded()
 {
-  D(kprintf("[SharedTimer] fireTimerIfNeeded()\n"));
+  D(bug("[SharedTimer] fireTimerIfNeeded()\n"));
   if(sharedTimerFiredFunction)
   {
 	  sharedTimerFiredFunction();
@@ -106,7 +110,7 @@ static void TimerFunc(void)
 
 	TimerMP = CreateMsgPort();
 
-	D(kprintf("[SharedTimer] Entering Timer thread\n"));
+	D(bug("[SharedTimer] Entering Timer thread\n"));
 
 	if(TimerMP)
 	{
@@ -130,7 +134,7 @@ static void TimerFunc(void)
 				ULONG Signals;
 
 				/* Signal the parent we are ready */
-				D(kprintf("[SharedTimer Thread] Signal main task that Timer thread is ready to accept orders\n"));
+				D(bug("[SharedTimer Thread] Signal main task that Timer thread is ready to accept orders\n"));
 				Signal(Handle->CallerTask, 1 << Handle->TaskSigBit);
 
 				StartSignal = 1 << Handle->StartSigBit;
@@ -139,14 +143,14 @@ static void TimerFunc(void)
 
 				do
 				{
-					D(kprintf("[SharedTimer Thread] Wait for start or end signal\n"));
+					D(bug("[SharedTimer Thread] Wait for start or end signal\n"));
 					Signals = Wait(StartSignal | TermSignal);
 restart:
 					if (Signals & StartSignal)
 					{
-						D(kprintf("[SharedTimer Thread] Received start signal\n"));
+						D(bug("[SharedTimer Thread] Received start signal\n"));
 
-						D(kprintf("[SharedTimer Thread] Adding timerequest for %d µs\n", Handle->Interval));
+						D(bug("[SharedTimer Thread] Adding timerequest for %d µs\n", Handle->Interval));
 
 						TimerIO.tr_node.io_Command = TR_ADDREQUEST;
 						TimerIO.tr_time.tv_secs    = Handle->Interval / 1000000;
@@ -161,19 +165,19 @@ restart:
 							Signals = Wait(TimerSignal | StartSignal | StopSignal | TermSignal);
 							if (Signals & TermSignal)
 							{
-								D(kprintf("[SharedTimer Thread] Termination signal received\n"));
+								D(bug("[SharedTimer Thread] Termination signal received\n"));
 								break;
 							}
 							else if(Signals & StopSignal)
 							{
-								D(kprintf("[SharedTimer Thread] Stop signal with pending request received\n"));
+								D(bug("[SharedTimer Thread] Stop signal with pending request received\n"));
 								AbortIO(&TimerIO.tr_node);
 								WaitIO(&TimerIO.tr_node);
                                 TimerPending = FALSE;
 
 								if (sharedTimerFiredFunction)
 								{
-									D(kprintf("[SharedTimer Thread] Signaling main task 0x%p\n", Handle->CallerTask));
+									D(bug("[SharedTimer Thread] Signaling main task 0x%p\n", Handle->CallerTask));
 									Signal(Handle->CallerTask, SIGBREAKF_CTRL_E);
 								}
 
@@ -186,7 +190,7 @@ restart:
 							}
 							else if(Signals & StartSignal)
 							{
-								D(kprintf("[SharedTimer Thread] Start signal with pending request received, restart\n"));
+								D(bug("[SharedTimer Thread] Start signal with pending request received, restart\n"));
 								AbortIO(&TimerIO.tr_node);
 								WaitIO(&TimerIO.tr_node);
                                 TimerPending = FALSE;
@@ -204,12 +208,12 @@ restart:
 							}
 							else if((Signals & TimerSignal) && CheckIO(&TimerIO.tr_node))
 							{
-								D(kprintf("[SharedTimer Thread] Timersignal and IO completed\n"));
+								D(bug("[SharedTimer Thread] Timersignal and IO completed\n"));
                                 TimerPending = FALSE;
 									
 								if (sharedTimerFiredFunction)
 								{
-									D(kprintf("[SharedTimer Thread] Signaling main task 0x%p\n", Handle->CallerTask));
+									D(bug("[SharedTimer Thread] Signaling main task 0x%p\n", Handle->CallerTask));
 									Signal(Handle->CallerTask, SIGBREAKF_CTRL_E);
 								}	 
 								break;
@@ -219,7 +223,7 @@ restart:
 				} while (!(Signals & TermSignal));
 			} /* AllocSignal */
 
-			D(kprintf("[SharedTimer Thread] Freeing signals\n"));
+			D(bug("[SharedTimer Thread] Freeing signals\n"));
 
 			FreeSignal(Handle->StartSigBit);
 			FreeSignal(Handle->StopSigBit);
@@ -237,7 +241,7 @@ restart:
 		DeleteMsgPort(TimerMP);
 	}
 
-	D(kprintf("[SharedTimer Thread] Signaling end of thread to main task\n"));
+	D(bug("[SharedTimer Thread] Signaling end of thread to main task\n"));
 	Forbid();
 	Signal(Handle->CallerTask, 1 << Handle->TaskSigBit);
 }
@@ -317,10 +321,10 @@ void TimerDelete(struct TimerHandle *Handle)
 {
 	if (Handle)
 	{
-		D(kprintf("[SharedTimer] Signaling Timer thread to quit\n"));
+		D(bug("[SharedTimer] Signaling Timer thread to quit\n"));
 		Signal(Handle->TimerTask, 1 << Handle->TermSigBit);
 
-		D(kprintf("[SharedTimer] Waiting for Timer thread end\n"));
+		D(bug("[SharedTimer] Waiting for Timer thread end\n"));
 		Wait(1 << Handle->TaskSigBit);
 
 		FreeSignal(Handle->TaskSigBit);
@@ -331,14 +335,14 @@ void TimerDelete(struct TimerHandle *Handle)
 
 static void cleanup(void)
 {
-	D(kprintf("[SharedTimer] Cleanup\n"));
+	D(bug("[SharedTimer] Cleanup\n"));
 	TimerDelete(timer_handle);
-	D(kprintf("[SharedTimer] Done\n"));
+	D(bug("[SharedTimer] Done\n"));
 }
 
 void setSharedTimerFiredFunction(void (*f)()) 
 {
-	//kprintf("[SharedTimer] setSharedTimerFiredFunction(%p)\n", f);
+	//D(bug("[SharedTimer] setSharedTimerFiredFunction(%p)\n", f));
 	if ( NULL == sharedTimerFiredFunction )
 	{
         sharedTimerFiredFunction = f;
@@ -358,7 +362,7 @@ void setSharedTimerFireInterval(double interval)
 {
     assert(sharedTimerFiredFunction);
 
-    //kprintf("[SharedTimer] setSharedTimerFireInterval(%f)\n", interval);
+    //D(bug("[SharedTimer] setSharedTimerFireInterval(%f)\n", interval));
     unsigned long intervalInUS = static_cast<unsigned long>(interval * 1000 * 1000);
     if (intervalInUS < 1000) // min. time 1000 usec.
         intervalInUS = 1000;
@@ -371,7 +375,7 @@ void setSharedTimerFireInterval(double interval)
 
 void stopSharedTimer() 
 {
-	//kprintf("[SharedTimer] stopSharedTimer()\n");
+	//D(bug("[SharedTimer] stopSharedTimer()\n"));
 	TimerStop(timer_handle);
 }
 

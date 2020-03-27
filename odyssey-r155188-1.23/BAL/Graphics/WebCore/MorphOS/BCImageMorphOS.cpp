@@ -29,7 +29,6 @@
 #include "SharedBuffer.h"
 #include "WTFString.h"
 #include "CString.h"
-#include <clib/debug_protos.h>
 
 namespace WebCore {
 

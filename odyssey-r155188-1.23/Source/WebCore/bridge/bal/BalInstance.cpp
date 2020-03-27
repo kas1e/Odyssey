@@ -47,7 +47,12 @@
 #include "runtime_method.h"
 #include "runtime_object.h"
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -276,7 +281,7 @@ void BalInstance::getPropertyNames(ExecState* exec, PropertyNameArray& nameArray
 
 RuntimeObject* BalInstance::newRuntimeObject(ExecState* exec)
 {
-    kprintf("BalInstance::newRuntimeObject\n");
+    D(bug("BalInstance::newRuntimeObject\n"));
     //JSLock lock(exec);
     RuntimeObject* object = static_cast<RuntimeObject*>(cachedObjects.get(this));
     if (!object) {

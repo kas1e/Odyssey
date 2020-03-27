@@ -49,9 +49,14 @@
 #undef get
 #undef String
 #undef PageGroup
-#include <clib/debug_protos.h>
-#define D(x)
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 using namespace WTF;
@@ -273,7 +278,7 @@ void WebIconDatabase::didRemoveAllIcons()
 
 void WebIconDatabase::didImportIconURLForPageURL(const char* pageURL)
 {   
-	D(kprintf("WebIconDatabase::didImportIconURLForPageURL(%s)\n", pageURL));
+	D(bug("WebIconDatabase::didImportIconURLForPageURL(%s)\n", pageURL));
 
     MutexLocker locker(m_webIconDatabaseClient->m_notificationMutex);
     m_notificationQueue.push_back(String(pageURL));
@@ -284,14 +289,14 @@ void WebIconDatabase::didImportIconURLForPageURL(const char* pageURL)
 
 void WebIconDatabase::didImportIconDataForPageURL(const char* pageURL)
 {
-	D(kprintf("WebIconDatabase::didImportIconDataForPageURL(%s)\n", pageURL));
+	D(bug("WebIconDatabase::didImportIconDataForPageURL(%s)\n", pageURL));
     // WebKit1 only has a single "icon did change" notification.
     didImportIconURLForPageURL(pageURL);
 }
 
 void WebIconDatabase::didChangeIconForPageURL(const char* pageURL)
 {
-	D(kprintf("WebIconDatabase::didChangeIconForPageURL(%s)\n", pageURL));
+	D(bug("WebIconDatabase::didChangeIconForPageURL(%s)\n", pageURL));
     // WebKit1 only has a single "icon did change" notification.
     didImportIconURLForPageURL(pageURL);
 }
@@ -339,7 +344,7 @@ static void postDidAddIconNotification(String pageURL, WebIconDatabase* iconDB)
 {
 #if OS(MORPHOS)
 	SetAttrs(app, MA_OWBApp_DidReceiveFavIcon, pageURL.utf8().data(), TAG_DONE);
-	D(kprintf("postDidAddIconNotification(%s)\n", pageURL.utf8().data()));
+	D(bug("postDidAddIconNotification(%s)\n", pageURL.utf8().data()));
 #endif
     WebCore::ObserverServiceData::createObserverService()->notifyObserver(WebIconDatabase::iconDatabaseDidAddIconNotification(), pageURL, iconDB);
 }
@@ -377,7 +382,7 @@ bool operator<(BalPoint p1, BalPoint p2)
 #if OS(MORPHOS)
 void WebIconDatabase::didFinishURLIconImport()
 {
-	D(kprintf("WebIconDatabase::didFinishURLIconImport()\n"));
+	D(bug("WebIconDatabase::didFinishURLIconImport()\n"));
 	SetAttrs(app, MA_OWBApp_FavIconImportComplete, TRUE, TAG_DONE);
 	//allowDatabaseCleanup();
 }

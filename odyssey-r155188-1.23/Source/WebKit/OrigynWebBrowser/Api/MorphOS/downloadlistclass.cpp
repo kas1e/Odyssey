@@ -47,6 +47,12 @@
 #include "gui.h"
 #include "utils.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -94,22 +100,22 @@ static void create_icon_if_needed(Object *obj, struct downloadnode *dl, ULONG ty
 
 		if(type == MV_DownloadList_Type_InProgress) // Check against given mimetype
 		{
-			//kprintf ("we in the type == MV_DownloadList_Type_InProgress\n");
+			//D(bug("we in the type == MV_DownloadList_Type_InProgress\n"));
 			if(dl->mimetype)
 			{
-				//kprintf("we in the dl->mimetype\n");				
+				//D(bug("we in the dl->mimetype\n"));
 				String mimetype = dl->mimetype;
 
-				//kprintf ("dl->mimetype is: %s\n", dl->mimetype);
+				//D(bug("dl->mimetype is: %s\n", dl->mimetype));
 				//iconPath = "
 				
 				command = "GetDeficonPath MIMETYPE=\"" + mimetype + "\"";
-				//kprintf("command is = %s\n", command.utf8().data());
+				//D(bug("command is = %s\n", command.utf8().data()));
 				
 				if(rexx_send((char *) "AMBIENT", (char *) command.utf8().data()))
 				{
 					iconPath = String(rexx_result());
-					//kprintf("iconPath in dl->mimetype with x-: %s\n", iconPath.utf8().data());
+					//D(bug("iconPath in dl->mimetype with x-: %s\n", iconPath.utf8().data()));
 				}
 				else // Try again without "x-" prefix, ambient is not always compliant with naming
 				{
@@ -118,7 +124,7 @@ static void create_icon_if_needed(Object *obj, struct downloadnode *dl, ULONG ty
 					if(rexx_send((char *) "AMBIENT", (char *) command.utf8().data()))
 				    {
 						iconPath = String(rexx_result());
-						//kprintf("iconPath in dl->mimetype without x-: %s\n", iconPath.utf8().data());
+						//D(bug("iconPath in dl->mimetype without x-: %s\n", iconPath.utf8().data()));
 					}
 				}
 			}
@@ -129,7 +135,7 @@ static void create_icon_if_needed(Object *obj, struct downloadnode *dl, ULONG ty
 			int len = strlen(dl->filename) + strlen(dl->path) + 2;
 			char *path = (char *) malloc(len);
 
-			//kprintf("we in else and check for the file mimetype\n");
+			//D(bug("we in else and check for the file mimetype\n"));
 			
 			if(path)
 			{
@@ -147,14 +153,14 @@ static void create_icon_if_needed(Object *obj, struct downloadnode *dl, ULONG ty
 					
 					if(lock)
 					{
-						//kprintf("so we in lock!\n");
+						//D(bug("so we in lock!\n"));
 						
 						UnLock(lock);
 						command = "GetDeficonPath PATH=\"" + String(path) + "\"";
 						if(rexx_send((char *) "AMBIENT", (char *) command.utf8().data()))
 					    {
 							iconPath = String(rexx_result());
-							//kprintf("iconPath in lock: %s\n", iconPath.utf8().data());
+							//D(bug("iconPath in lock: %s\n", iconPath.utf8().data()));
 						}
 					}
 
@@ -168,7 +174,7 @@ static void create_icon_if_needed(Object *obj, struct downloadnode *dl, ULONG ty
 		if((type == MV_DownloadList_Type_InProgress && dl->mimetype) || type != MV_DownloadList_Type_InProgress)
 		{
 		
-			//kprintf(" we in the type == MV_DownloadList_Type_InProgress && dl->mimetype) || type != MV_DownloadList_Type_InProgress\n");
+			//D(bug(" we in the type == MV_DownloadList_Type_InProgress && dl->mimetype) || type != MV_DownloadList_Type_InProgress\n"));
 						
 			dl->iconobj  = NewObject(geticonclass(), NULL,
 								    MA_Icon_Path, iconPath.utf8().data(),
@@ -177,7 +183,7 @@ static void create_icon_if_needed(Object *obj, struct downloadnode *dl, ULONG ty
 			
 			
 
-			//kprintf("final MA_Icon_Path is: %s\n", iconPath.utf8().data());
+			//D(bug("final MA_Icon_Path is: %s\n", iconPath.utf8().data()));
 			
 			if(dl->iconobj)
 			{

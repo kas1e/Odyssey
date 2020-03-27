@@ -43,13 +43,20 @@
 //#include <proto/application.h>
 #include <proto/dos.h>
 
-#include <clib/debug_protos.h>
 #include <clib/macros.h>
 
 #include "gui.h"
 #include "utils.h"
 
 #include <stdio.h>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 
 using namespace WebCore;
 
@@ -323,7 +330,7 @@ DEFNEW
 
 	cycles_init();
 
-//	  kprintf("<%s> <%s> <%s>\n", dltitles[PAGE_IN_PROGRESS], dltitles[PAGE_FINISHED], dltitles[PAGE_FAILED]);
+//	  D(bug("<%s> <%s> <%s>\n", dltitles[PAGE_IN_PROGRESS], dltitles[PAGE_FINISHED], dltitles[PAGE_FAILED]));
 
 	obj = (Object *) DoSuperNew(cl, obj,
 			Child, gr_pages = VGroup,

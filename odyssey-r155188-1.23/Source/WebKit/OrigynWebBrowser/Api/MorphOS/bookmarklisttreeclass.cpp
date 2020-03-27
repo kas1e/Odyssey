@@ -43,6 +43,15 @@
 
 #define LOC(a,b) (b)
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
+
+
 struct Data
 {
 	APTR activetype;
@@ -72,10 +81,10 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 			if ( (data->drop) && !(data->drop->tn_Flags & TNF_LIST))
 			{
 				Object *window = NULL;
-				//kprintf("Double click open new tab or current ?\n", data->drop);
+				//D(bug("Double click open new tab or current ?\n", data->drop));
 				// Open link
 				td=((struct treedata *)data->drop->tn_User);
-				//kprintf("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" ); // address can be NULL
+				//D(bug("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" )); // address can be NULL
 
 				window = (Object *) getv(app, MA_OWBApp_ActiveWindow);
 				if(window)
@@ -96,7 +105,7 @@ MUI_HOOK(bookmarklisttree_constructfunc, APTR pool, APTR t)
 	struct treedata * td;
 	struct treedata * tempnode = (struct treedata *) t;
 
-	//kprintf( "Listtree construct hook title %08lx alias %08lx address %08lx.\n", (ULONG)tempnode->title, (ULONG)tempnode->alias, (ULONG)tempnode->address);
+	//D(bug( "Listtree construct hook title %08lx alias %08lx address %08lx.\n", (ULONG)tempnode->title, (ULONG)tempnode->alias, (ULONG)tempnode->address));
 	if ((td = (struct treedata *) AllocPooled(pool, sizeof(struct treedata))))
 	{
 		td->flags    = tempnode->flags;
@@ -127,7 +136,7 @@ MUI_HOOK(bookmarklisttree_constructfunc, APTR pool, APTR t)
 			if (td->address) strcpy(td->address, tempnode->address);
 		}
 	}
-	//kprintf( "End of construct\n");
+	//D(bug( "End of construct\n"));
 	return (ULONG) (td);
 }
 
@@ -449,28 +458,28 @@ DEFMMETHOD(DragReport)
 							// Don't allow
 							DoMethod(obj, MUIM_Listtree_SetDropMark, r.tpr_ListEntry, MUIV_Listtree_SetDropMark_Values_None);
 							data->drop=NULL;
-							//kprintf("###### Lock\n");
+							//D(bug("###### Lock\n"));
 							return MUIV_DragReport_Lock;
 						}
 						else
 						{
-							//kprintf("###### Draw\n");
+							//D(bug("###### Draw\n"));
 							data->drop = tn;
 							DoMethod(obj, MUIM_Listtree_SetDropMark, r.tpr_ListEntry, r.tpr_Flags);
 						}
 					}
 					else
-					{//kprintf("###### DragReport: no td\n");
+					{//D(bug("###### DragReport: no td\n"));
 					}
 				}
 				else
-				{//kprintf("###### DragReport: not en entry\n");
+				{//D(bug("###### DragReport: not en entry\n"));
 				}
 			}
 		}
 		else
 		{
-			//kprintf("###### DragReport: not en entry\n");
+			//D(bug("###### DragReport: not en entry\n"));
 			//put under
 		}
 	}
@@ -544,7 +553,7 @@ DEFMMETHOD(ContextMenuBuild)
 	struct treedata *td;
 	Object *item;
 
-	//kprintf("Bookmark Context menu build\n");
+	//D(bug("Bookmark Context menu build\n"));
 
 	if (data->cMenu)
 	{
@@ -667,17 +676,17 @@ DEFMMETHOD(ContextMenuChoice)
 	ULONG udata = muiUserData(msg->item);
 	struct treedata *td;
  
-	//kprintf("Bookmark menu trig: %lx\n",udata);
+	//D(bug("Bookmark menu trig: %lx\n",udata));
 	switch (udata)
     {
 		case POPMENU_OPEN_CURRENT:
-			//kprintf("Open link in current view\n");
+			//D(bug("Open link in current view\n"));
 			if (data->drop)	
 			{
 				Object *window;
 
 				td=((struct treedata *)data->drop->tn_User);
-				//kprintf("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" );
+				//D(bug("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" ));
 
 				window = (Object *) getv(app, MA_OWBApp_ActiveWindow);
 				if(window)
@@ -687,39 +696,39 @@ DEFMMETHOD(ContextMenuChoice)
 			}
 			break;
 		case POPMENU_OPEN_NEWTAB:
-			//kprintf("Open link in new tab\n");
+			//D(bug("Open link in new tab\n"));
 			if (data->drop)	
 			{
 				td=((struct treedata *)data->drop->tn_User);
-				//kprintf("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" );
+				//D(bug("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" ));
 				DoMethod(app, MM_OWBApp_AddBrowser, NULL, td->address, FALSE, NULL, FALSE, FALSE, TRUE);
 			}
 			break;
 		case POPMENU_OPEN_NEWWIN:
-			//kprintf("Open link in new window\n");
+			//D(bug("Open link in new window\n"));
 			if (data->drop)
 			{
 				td=((struct treedata *)data->drop->tn_User);
-				//kprintf("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" );
+				//D(bug("URL: %s\n", (td->address) ? td->address : (STRPTR)"(NULL)" ));
 				DoMethod(app, MM_OWBApp_AddWindow, td->address, FALSE, NULL, FALSE, NULL, FALSE);
 			}
 			break;
 		case POPMENU_OPEN:
-			//kprintf("Unfold group\n");
+			//D(bug("Unfold group\n"));
 			if (data->drop)	DoMethod(obj, MUIM_Listtree_Open, MUIV_Listtree_Open_ListNode_Root, data->drop, 0);
 			break;
 		case POPMENU_OPEN_ALL:
-			//kprintf("Unfold all group\n");
+			//D(bug("Unfold all group\n"));
 			if (data->drop) DoMethod(obj, MUIM_Listtree_Open, MUIV_Listtree_Open_ListNode_Root, MUIV_Listtree_Open_TreeNode_All, 0);
 			break;
 		case POPMENU_CLOSE:
-			//kprintf("Fold group\n");
+			//D(bug("Fold group\n"));
 			if (data->drop)
 			{
 				if (!(data->drop->tn_Flags & TNF_LIST))
 				{
 					struct MUIS_Listtree_TreeNode *parent=(struct MUIS_Listtree_TreeNode *) DoMethod(obj, MUIM_Listtree_GetEntry, data->drop, MUIV_Listtree_GetEntry_Position_Parent, 0);
-					//kprintf("Parent %08lx\n",parent);
+					//D(bug("Parent %08lx\n",parent));
 					if (parent) DoMethod(obj, MUIM_Listtree_Close, MUIV_Listtree_Close_ListNode_Root, parent, 0);
 				}
 				else
@@ -729,12 +738,12 @@ DEFMMETHOD(ContextMenuChoice)
 			}
 			break;
 		case POPMENU_CLOSE_ALL:
-			//kprintf("Fold all group\n");
+			//D(bug("Fold all group\n"));
 			if (data->drop) DoMethod(obj, MUIM_Listtree_Close, MUIV_Listtree_Close_ListNode_Root, MUIV_Listtree_Close_TreeNode_All, 0);
 			break;
 		default:
 			;
-			//kprintf("Bad Context menu return\n");
+			//D(bug("Bad Context menu return\n"));
     }
 	data->drop=NULL;
     return (ULONG)NULL;

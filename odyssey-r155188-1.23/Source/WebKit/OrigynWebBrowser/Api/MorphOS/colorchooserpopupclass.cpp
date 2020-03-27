@@ -33,10 +33,14 @@
 #include "ColorChooserController.h"
 
 #include <mui/Calltips_mcc.h>
-#include <clib/debug_protos.h>
 
 #include "gui.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 using namespace WebCore;

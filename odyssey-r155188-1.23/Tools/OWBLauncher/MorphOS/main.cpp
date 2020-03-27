@@ -52,14 +52,10 @@
 #include <locale.h>
 #include <setjmp.h>
 
-#include <clib/debug_protos.h>
-
 #include "gui.h"
 #include "../../../Source/WebKit/OrigynWebBrowser/Api/MorphOS/alocale.h"
 
 #undef accept
-
-#define D(x)
 
 #include <proto/intuition.h>
 #include <proto/codesets.h>
@@ -70,6 +66,12 @@
 #include <reaction/reaction_macros.h>
 #include <diskfont/diskfonttag.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 void close_dictionary();
 void destroy_application(void);
@@ -92,7 +94,7 @@ extern "C"
 {
 	int raise(int sig)
 	{
-		kprintf("raise(%d) was called, dumping stackframe...\n", sig);
+		D(bug("raise(%d) was called, dumping stackframe...\n", sig));
 		#ifndef __amigaos4__
 		DumpTaskState(FindTask(NULL));
 		#endif
@@ -102,7 +104,7 @@ extern "C"
 	/*
 	void abort(void)
 	{
-		kprintf("abort was called, dumping stackframe...\n");
+		D(bug("abort was called, dumping stackframe...\n"));
 
 		DumpTaskState(FindTask(NULL));
 
@@ -505,7 +507,7 @@ void main_loop(void)
 		/*
 		if(signals & dosnotifysig )
 		{
-			//kprintf("DosNotify Trig\n");
+			//D(bug("DosNotify Trig\n"));
 			//DoMethod(getv(app, MA_OWBApp_BookmarkGroup), MM_Bookmarkgroup_DosNotify);
 		}
 		*/

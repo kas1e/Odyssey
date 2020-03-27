@@ -75,9 +75,14 @@
 #include "CString.h"
 #include "gui.h"
 #include "utils.h"
-#include <clib/debug_protos.h>
-#define D(x)
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -106,7 +111,7 @@ DragDestinationAction WebDragClient::actionMaskForDrag(DragData* dragData)
 void WebDragClient::willPerformDragDestinationAction(DragDestinationAction action, DragData* dragData)
 {
 #if OS(MORPHOS)
-	D(kprintf("willPerformDragDestinationAction action %d dragData %p\n", action, dragData));
+	D(bug("willPerformDragDestinationAction action %d dragData %p\n", action, dragData));
 #endif
     //Default delegate for willPerformDragDestinationAction has no side effects
     //so we just call the delegate, and don't worry about whether it's implemented
@@ -118,7 +123,7 @@ void WebDragClient::willPerformDragDestinationAction(DragDestinationAction actio
 DragSourceAction WebDragClient::dragSourceActionMaskForPoint(const IntPoint& windowPoint)
 {
 #if OS(MORPHOS)
-    D(kprintf("dragSourceActionMaskForPoint (%d %d)\n", windowPoint.x(), windowPoint.y()));
+    D(bug("dragSourceActionMaskForPoint (%d %d)\n", windowPoint.x(), windowPoint.y()));
     return DragSourceActionAny;
 #else
     return DragSourceActionAny;
@@ -128,7 +133,7 @@ DragSourceAction WebDragClient::dragSourceActionMaskForPoint(const IntPoint& win
 void WebDragClient::willPerformDragSourceAction(DragSourceAction action, const IntPoint& startPos, Clipboard*)
 {
 #if OS(MORPHOS)
-	D(kprintf("willPerformDragSourceAction %d (%d %d)\n", action, startPos.x(), startPos.y()));
+	D(bug("willPerformDragSourceAction %d (%d %d)\n", action, startPos.x(), startPos.y()));
 #endif
     // FIXME: Implement this!
     // See WebKit/win/WebCoreSupport/WebDragClient.cpp for how to implement it.
@@ -138,14 +143,14 @@ void WebDragClient::startDrag(DragImageRef image, const IntPoint& imageOrigin, c
 {
     RefPtr<Frame> frameProtector = frame;
 #if OS(MORPHOS)
-    D(kprintf("startDrag image %p islink %d imageOrigin (%d %d) dragPoint (%d %d) clipboard %p\n", image, isLink, imageOrigin.x(), imageOrigin.y(), dragPoint.x(), dragPoint.y(), clipboard));
+    D(bug("startDrag image %p islink %d imageOrigin (%d %d) dragPoint (%d %d) clipboard %p\n", image, isLink, imageOrigin.x(), imageOrigin.y(), dragPoint.x(), dragPoint.y(), clipboard));
 
     BalWidget *widget = m_webView->viewWindow();
 
     if(clipboard && widget)
     {
 	RefPtr<DataObjectMorphOS> dataObject = clipboard->pasteboard().dataObject();
-	D(kprintf("dataObject %p\n", dataObject.get()));
+	D(bug("dataObject %p\n", dataObject.get()));
 
 	if(!isLink)
 	{
@@ -174,10 +179,10 @@ void WebDragClient::startDrag(DragImageRef image, const IntPoint& imageOrigin, c
 
         DoMethod(widget->browser, MUIM_DoDrag, 0x80000000,0x80000000, 0);
 
-	D(kprintf("dragEnded\n"));
+	D(bug("dragEnded\n"));
 	core(m_webView)->dragController().dragEnded();
 
-	D(kprintf("after MUIM_DoDrag, resetting drag data\n"));
+	D(bug("after MUIM_DoDrag, resetting drag data\n"));
         set(widget->browser, MA_OWBBrowser_DragURL, "");
 	set(widget->browser, MA_OWBBrowser_DragImage, 0);
 	set(widget->browser, MA_OWBBrowser_DragData, 0);
@@ -189,7 +194,7 @@ void WebDragClient::startDrag(DragImageRef image, const IntPoint& imageOrigin, c
 DragImageRef WebDragClient::createDragImageForLink(KURL& url, const String& inLabel, Frame*)
 {
 #if OS(MORPHOS)
-	D(kprintf("createDragImageForLink %s %s\n", url.string().latin1().data(), inLabel.latin1().data()));
+	D(bug("createDragImageForLink %s %s\n", url.string().latin1().data(), inLabel.latin1().data()));
 
 	BalWidget *widget = m_webView->viewWindow();
 	if(widget)

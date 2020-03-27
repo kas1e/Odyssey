@@ -142,8 +142,8 @@ cmake .. \
     -DENABLE_YARR:BOOL=ON
 
 
-Then while we in that "build" directory, we just do "make -f Makefile Odyssey -j4" (-j4 is to use 4 cores to speed the
-compilation process).
+Then while we in that "build" directory, we just do "make Odyssey -j4" (-j4 is to use 4 cores to speed the compilation
+process).
 
 If all will go fine, you will end up with the "Odyssey" binary placed in the build/bin directory. Take a release archive
 from os4depot, and replace the binary with a new one to do tests.

@@ -36,7 +36,14 @@
 #include <intuition/intuition.h>
 #include <devices/rawkeycodes.h>
 #include <devices/inputevent.h>
-#include <clib/debug_protos.h>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 
 namespace WebCore {
 
@@ -97,7 +104,7 @@ PlatformWheelEvent::PlatformWheelEvent(BalEventScroll* event)
 	}
 	else if (shiftKey())
 	{
-		// kprintf("window (%d, %d)\n", event->IDCMPWindow->Width, event->IDCMPWindow->Height);
+		// D(bug("window (%d, %d)\n", event->IDCMPWindow->Width, event->IDCMPWindow->Height));
         m_granularity = ScrollByPageWheelEvent;
 		deltax = (int)deltax * event->IDCMPWindow->Width / 50;
 		deltay = (int)deltay * event->IDCMPWindow->Height / 50;

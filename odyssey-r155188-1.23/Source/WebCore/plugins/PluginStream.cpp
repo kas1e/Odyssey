@@ -39,7 +39,12 @@
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/WTFString.h>
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 // We use -2 here because some plugins like to return -1 to indicate error
 // and this way we won't clash with them.
@@ -230,7 +235,7 @@ void PluginStream::cancelAndDestroyStream(NPReason reason)
 
     if(!this)
       {
-	kprintf("PluginStream::destroyStream() this == NULL, it hurts!\n");
+	D(bug("PluginStream::destroyStream() this == NULL, it hurts!\n"));
 	return;
       }  
 
@@ -315,7 +320,7 @@ void PluginStream::destroyStream()
             m_stream.url = 0;
         }
 
-		//kprintf("PluginStream::destroyStream invoking urlnotify %p\n", m_pluginFuncs->urlnotify);
+		//D(bug("PluginStream::destroyStream invoking urlnotify %p\n", m_pluginFuncs->urlnotify));
 		//m_pluginFuncs->urlnotify(m_instance, m_resourceRequest.url().string().utf8().data(), m_reason, m_notifyData);
         if (m_loader)
             m_loader->setDefersLoading(false);

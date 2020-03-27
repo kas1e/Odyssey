@@ -70,12 +70,18 @@
 #include "gui.h"
 #include "utils.h"
 #include <proto/intuition.h>
-#include <clib/debug_protos.h>
 #include <proto/asl.h>
 #include "asl.h"
 #undef get
 #undef String
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #include <cstdio>
 
@@ -157,11 +163,11 @@ Page* WebChromeClient::createWindow(Frame*, const FrameLoadRequest& frameLoadReq
     
 	if (features.dialog)
 	{
-		kprintf("%s: features.dialog not implemented on MorphOS.\n", __PRETTY_FUNCTION__);
+		D(bug("%s: features.dialog not implemented on MorphOS.\n", __PRETTY_FUNCTION__));
 		return 0;
 	}
 
-	//kprintf("WebChromeClient::createWindow(url: <%s> framename: <%s> empty: %d)\n", frameLoadRequest.resourceRequest().url().string().utf8().data(), frameLoadRequest.frameName().utf8().data(),  frameLoadRequest.isEmpty());
+	//D(bug("WebChromeClient::createWindow(url: <%s> framename: <%s> empty: %d)\n", frameLoadRequest.resourceRequest().url().string().utf8().data(), frameLoadRequest.frameName().utf8().data(),  frameLoadRequest.isEmpty()));
 
 	ULONG frame = frameLoadRequest.isEmpty();
 	ULONG privatebrowsing = getv(m_webView->viewWindow()->browser, MA_OWBBrowser_PrivateBrowsing);
@@ -276,7 +282,7 @@ bool WebChromeClient::canRunBeforeUnloadConfirmPanel()
 
 bool WebChromeClient::runBeforeUnloadConfirmPanel(const String& message, Frame* frame)
 {
-    kprintf("runBeforeUnloadConfirmPanel: %s\n", message.utf8().data());
+    D(bug("runBeforeUnloadConfirmPanel: %s\n", message.utf8().data()));
     return false;
 }
 
@@ -392,28 +398,28 @@ void WebChromeClient::registerProtocolHandler(const String& scheme, const String
 void WebChromeClient::invalidateRootView(const IntRect& windowRect, bool immediate)
 {
     ASSERT(core(m_webView->topLevelFrame()));
-    //kprintf("WebChromeClient::invalidateRootView([%d, %d, %d, %d], immediate %d)\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), immediate);
+    //D(bug("WebChromeClient::invalidateRootView([%d, %d, %d, %d], immediate %d)\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), immediate));
     m_webView->repaint(windowRect, false /*contentChanged*/, immediate, false /*repaintContentOnly*/);
 }
 
 void WebChromeClient::invalidateContentsAndRootView(const IntRect& windowRect, bool immediate)
 {
     ASSERT(core(m_webView->topLevelFrame()));
-    //kprintf("WebChromeClient::invalidateContentsAndRootView([%d, %d, %d, %d], immediate %d)\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), immediate);
+    //D(bug("WebChromeClient::invalidateContentsAndRootView([%d, %d, %d, %d], immediate %d)\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), immediate));
     m_webView->repaint(windowRect, true /*contentChanged*/, immediate /*immediate*/, false /*repaintContentOnly*/);
 }
 
 void WebChromeClient::invalidateContentsForSlowScroll(const IntRect& windowRect, bool immediate)
 {
     ASSERT(core(m_webView->topLevelFrame()));
-    //kprintf("WebChromeClient::invalidateContentsForSlowScroll([%d, %d, %d, %d], immediate %d)\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), immediate);
+    //D(bug("WebChromeClient::invalidateContentsForSlowScroll([%d, %d, %d, %d], immediate %d)\n", windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height(), immediate));
     m_webView->repaint(windowRect, true /*contentChanged*/, immediate, true /*repaintContentOnly*/);
 }
 
 void WebChromeClient::scroll(const IntSize& delta, const IntRect& scrollViewRect, const IntRect& clipRect)
 {
     ASSERT(core(m_webView->topLevelFrame()));
-    //kprintf("WebChromeClient::scroll(delta[%d, %d], scrollViewRect[%d, %d, %d, %d], clipRect[%d, %d, %d, %d])\n", delta.width(), delta.height(), scrollViewRect.x(), scrollViewRect.y(), scrollViewRect.width(), scrollViewRect.height(), clipRect.x(), clipRect.y(), clipRect.width(), clipRect.height());
+    //D(bug("WebChromeClient::scroll(delta[%d, %d], scrollViewRect[%d, %d, %d, %d], clipRect[%d, %d, %d, %d])\n", delta.width(), delta.height(), scrollViewRect.x(), scrollViewRect.y(), scrollViewRect.width(), scrollViewRect.height(), clipRect.x(), clipRect.y(), clipRect.width(), clipRect.height()));
     m_webView->scrollBackingStore(core(m_webView->topLevelFrame())->view(), delta.width(), delta.height(), scrollViewRect, clipRect);
 }
 
@@ -524,7 +530,7 @@ PassOwnPtr<ColorChooser> WebChromeClient::createColorChooser(ColorChooserClient*
 PassRefPtr<DateTimeChooser> WebChromeClient::openDateTimeChooser(DateTimeChooserClient* chooserClient, const DateTimeChooserParameters& parameters)
 {
     /*
-    kprintf("WebChromeClient::openDateTimeChooser\n");
+    D(bug("WebChromeClient::openDateTimeChooser\n"));
 
     RefPtr<DateTimeChooserController> controller = adoptRef(new DateTimeChooserController(this, chooserClient, parameters));
     controller->openUI();
@@ -559,7 +565,7 @@ void WebChromeClient::runOpenPanel(Frame*, PassRefPtr<FileChooser> prpFileChoose
 			ULONG i;
 			for(i = 0; i < count; i++)
 			{
-				//kprintf("file = %s\n", files[i]);
+				//D(bug("file = %s\n", files[i]));
 				names.append(String(files[i]));
 			}
 
@@ -577,7 +583,7 @@ void WebChromeClient::runOpenPanel(Frame*, PassRefPtr<FileChooser> prpFileChoose
 
 		if(file)
 		{
-			//kprintf("file = %s\n", file);
+			//D(bug("file = %s\n", file));
 			chooser->chooseFile(String(file));
 			FreeVecTaskPooled(file);
 		}
@@ -674,13 +680,13 @@ void WebChromeClient::exitFullscreenForNode(WebCore::Node*)
 
 bool WebChromeClient::supportsFullScreenForElement(const WebCore::Element* element, bool)
 {
-	//kprintf("supportsFullScreenForElement %d %d\n", element && element->isMediaElement(), element && element->isMediaElement());
+	//D(bug("supportsFullScreenForElement %d %d\n", element && element->isMediaElement(), element && element->isMediaElement()));
     return element && element->isMediaElement();
 }
 
 void WebChromeClient::enterFullScreenForElement(WebCore::Element* element)
 {
-	//kprintf("enterFullScreenForElement\n");
+	//D(bug("enterFullScreenForElement\n"));
     element->document().webkitWillEnterFullScreenForElement(element);
     m_webView->enterFullScreenForElement(element);
     element->document().webkitDidEnterFullScreenForElement(element);
@@ -689,7 +695,7 @@ void WebChromeClient::enterFullScreenForElement(WebCore::Element* element)
 
 void WebChromeClient::exitFullScreenForElement(WebCore::Element*)
 {
-	//kprintf("exitFullScreenForElement\n");
+	//D(bug("exitFullScreenForElement\n"));
 
     // The element passed into this function is not reliable, i.e. it could
     // be null. In addition the parameter may be disappearing in the future.

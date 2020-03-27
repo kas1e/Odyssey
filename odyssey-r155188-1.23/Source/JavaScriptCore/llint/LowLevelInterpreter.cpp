@@ -26,8 +26,6 @@
 #include "config.h"
 #include "LowLevelInterpreter.h"
 
-#include <clib/debug_protos.h>
-
 #if ENABLE(LLINT)
 
 #include "LLIntOfflineAsmConfig.h"

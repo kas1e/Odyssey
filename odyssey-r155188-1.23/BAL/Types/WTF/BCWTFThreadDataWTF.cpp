@@ -29,8 +29,12 @@
 
 #include <wtf/text/AtomicStringTable.h>
 
-#define kprintf IExec->DebugPrintF
-#define D(x) x
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #if USE(WEB_THREAD)
 #include <wtf/MainThread.h>

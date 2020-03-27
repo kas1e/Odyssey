@@ -35,7 +35,6 @@
 #include <math.h>
 #include <intuition/intuition.h>
 #include <proto/intuition.h>
-#include <clib/debug_protos.h>
 
 namespace WebCore {
 

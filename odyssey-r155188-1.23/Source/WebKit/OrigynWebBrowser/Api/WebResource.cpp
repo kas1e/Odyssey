@@ -30,7 +30,12 @@
 #include "WebResource.h"
 
 #include <WTFString.h>
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -55,7 +60,7 @@ WebResource* WebResource::createInstance(PassRefPtr<WebCore::SharedBuffer> data,
 
 void WebResource::initWithData( PassRefPtr<WebCore::SharedBuffer> data, String url, String mimeType, String textEncodingName, String frameName)
 {
-    kprintf("WebResource::initWithData\n");
+    D(bug("WebResource::initWithData\n"));
     m_data = data;
     m_url = KURL(ParsedURLString, String(url));
     m_mimeType = String(mimeType);

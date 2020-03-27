@@ -48,7 +48,6 @@
 
 #if OS(MORPHOS)
 #include "gui.h"
-#include <clib/debug_protos.h>
 #undef String
 #endif
 

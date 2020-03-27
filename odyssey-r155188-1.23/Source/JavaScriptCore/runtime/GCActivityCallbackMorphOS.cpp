@@ -22,8 +22,11 @@
 #include "Heap.h"
 #include "VM.h"
 
-#include <clib/debug_protos.h>
-#include <proto/exec.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
 
 static char *noperiodicCollect = (char *) getenv("OWB_NO_PERIODIC_COLLECT"); 
@@ -39,7 +42,7 @@ DefaultGCActivityCallback::DefaultGCActivityCallback(Heap* heap)
 
 void DefaultGCActivityCallback::doWork()
 {
-    D(kprintf("DefaultGCActivityCallback::doWork\n"));
+    D(bug("DefaultGCActivityCallback::doWork\n"));
     JSLock lock();
     
     if(!noperiodicCollect)
@@ -51,18 +54,18 @@ void DefaultGCActivityCallback::doWork()
 
 void DefaultGCActivityCallback::didAllocate(size_t bytesAllocated)
 {
-    D(kprintf("DefaultGCActivityCallback::didAllocate(%lu) %f\n", bytesAllocated, m_vm->heap.lastGCLength()));
+    D(bug("DefaultGCActivityCallback::didAllocate(%lu) %f\n", bytesAllocated, m_vm->heap.lastGCLength()));
 
     if (m_timer.isActive())
         return;
     if(!noperiodicCollect)
     {
         double nextTime = 5*60; //m_globalData->heap.lastGCLength() * 200;
-	D(kprintf("next collect in %f s\n", nextTime));
+	D(bug("next collect in %f s\n", nextTime));
 
 	if((AvailMem(MEMF_ANY) + 32*1024*1024 < prev_availmem) || (AvailMem(MEMF_ANY) < 16*1024*1024))
 	{
-	    D(kprintf(">32MB memory was eaten since last collect, let's do it now\n"));
+	    D(bug(">32MB memory was eaten since last collect, let's do it now\n"));
 	    nextTime = 1;
 	}
 
@@ -72,14 +75,14 @@ void DefaultGCActivityCallback::didAllocate(size_t bytesAllocated)
 
 void DefaultGCActivityCallback::willCollect()
 {
-    D(kprintf("DefaultGCActivityCallback::willCollect\n"));
+    D(bug("DefaultGCActivityCallback::willCollect\n"));
     if(!noperiodicCollect)
         cancel();
 }
 
 void DefaultGCActivityCallback::cancel()
 {
-    D(kprintf("DefaultGCActivityCallback::cancel\n"));
+    D(bug("DefaultGCActivityCallback::cancel\n"));
     if(!noperiodicCollect)
         m_timer.stop();
 }

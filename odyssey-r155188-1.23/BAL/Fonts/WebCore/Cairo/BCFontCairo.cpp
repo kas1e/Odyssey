@@ -42,6 +42,14 @@
 #include "ShadowBlur.h"
 #include "SimpleFontData.h"
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
+
 namespace WebCore {
 
 static void drawGlyphsToContext(cairo_t* context, const SimpleFontData* font, GlyphBufferGlyph* glyphs, int numGlyphs)
@@ -95,8 +103,6 @@ static void drawGlyphsShadow(GraphicsContext* graphicsContext, const FloatPoint&
 }
 
 #if OS(MORPHOS)
-#include <clib/debug_protos.h>
-
 bool Font::canReturnFallbackFontsForComplexText()
 {
     return false;
@@ -116,7 +122,7 @@ void Font::drawComplexText(GraphicsContext* context, const TextRun& run, const F
 void Font::drawEmphasisMarksForComplexText(GraphicsContext* /* context */, const TextRun& /* run */, const AtomicString& /* mark */, const FloatPoint& /* point */, int /* fm */, int /* to */) const
 {
 #warning "not implemented"
-    kprintf("Font::drawEmphasisMarksForComplexText not implemented\n");
+    D(bug("Font::drawEmphasisMarksForComplexText not implemented\n"));
 }
 
 float Font::floatWidthForComplexText(const TextRun& run, HashSet<const SimpleFontData*>* fallbackFonts, GlyphOverflow* glyphOverflow) const

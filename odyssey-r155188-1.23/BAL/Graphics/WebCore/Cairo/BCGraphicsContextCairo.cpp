@@ -64,8 +64,6 @@
 #include <cairo-win32.h>
 #endif
 
-#include <clib/debug_protos.h>
-
 using namespace std;
 
 namespace WebCore {

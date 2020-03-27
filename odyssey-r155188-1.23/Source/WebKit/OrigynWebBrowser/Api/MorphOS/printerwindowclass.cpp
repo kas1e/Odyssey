@@ -41,8 +41,14 @@
 #include "OWBPrintContext.h"
 #include "gui.h"
 
-#define D(x)
 #define USE_THREAD 0
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 using namespace WebCore;
 
@@ -477,16 +483,16 @@ DEFTMETHOD(PrinterWindow_Start)
 							Catalog *catalog = pctx->doc->getCatalog();
 							pctx->cairo_dev->startDoc(pctx->doc->getXRef(), catalog);
 
-							kprintf("PrinterName = '%s', Version=%u, Revision=%u\n",
+							D(bug("PrinterName = '%s', Version=%u, Revision=%u\n",
 							   PD->pd_SegmentData->ps_PED.ped_PrinterName, PD->pd_SegmentData->ps_Version,
-							   PD->pd_SegmentData->ps_Revision);
-						   kprintf("PrinterClass=%u, ColorClass=%u\n",
-							   PD->pd_SegmentData->ps_PED.ped_PrinterClass, PD->pd_SegmentData->ps_PED.ped_ColorClass);
-						   kprintf("MaxColumns=%u, NumCharSets=%u, NumRows=%u\n",
-							   PD->pd_SegmentData->ps_PED.ped_MaxColumns, PD->pd_SegmentData->ps_PED.ped_NumCharSets, PD->pd_SegmentData->ps_PED.ped_NumRows);
-						   kprintf("MaxXDots=%lu, MaxYDots=%lu, XDotsInch=%u, YDotsInch=%u\n",
+							   PD->pd_SegmentData->ps_Revision));
+							D(bug("PrinterClass=%u, ColorClass=%u\n",
+							   PD->pd_SegmentData->ps_PED.ped_PrinterClass, PD->pd_SegmentData->ps_PED.ped_ColorClass));
+							D(bug("MaxColumns=%u, NumCharSets=%u, NumRows=%u\n",
+							   PD->pd_SegmentData->ps_PED.ped_MaxColumns, PD->pd_SegmentData->ps_PED.ped_NumCharSets, PD->pd_SegmentData->ps_PED.ped_NumRows));
+							D(bug("MaxXDots=%lu, MaxYDots=%lu, XDotsInch=%u, YDotsInch=%u\n",
 							   PD->pd_SegmentData->ps_PED.ped_MaxXDots, PD->pd_SegmentData->ps_PED.ped_MaxYDots,
-							   PD->pd_SegmentData->ps_PED.ped_XDotsInch, PD->pd_SegmentData->ps_PED.ped_YDotsInch);
+							   PD->pd_SegmentData->ps_PED.ped_XDotsInch, PD->pd_SegmentData->ps_PED.ped_YDotsInch));
 
 
 							struct RastPort MyRastPort;
@@ -499,11 +505,11 @@ DEFTMETHOD(PrinterWindow_Start)
 							int width = round((pdfpage->getMediaWidth()/72.0)*25.4)*dpi_x/25.4;
 							int height = round((pdfpage->getMediaHeight()/72.0)*25.4)*dpi_y/25.4;
 
-							//kprintf("CairoOutputDev init ok: %d %d\n", 4960, 7015);
+							//D(bug("CairoOutputDev init ok: %d %d\n", 4960, 7015));
 
 							_cairo_surface *surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24, width, height);
 
-							//kprintf("cairo_image_surface_create init ok\n");
+							//D(bug("cairo_image_surface_create init ok\n"));
 							pctx->cairo = cairo_create(pctx->surface);
 							cairo_save(pctx->cairo);
 							cairo_set_source_rgb(pctx->cairo,  1., 1., 1);
@@ -511,9 +517,9 @@ DEFTMETHOD(PrinterWindow_Start)
 							cairo_restore(pctx->cairo);
 							pctx->cairo_dev->setCairo(pctx->cairo);
 
-							//kprintf(" setCairo ok\n");
+							//D(bug(" setCairo ok\n"));
 							pctx->doc->displayPage(pctx->cairo_dev, page, dpi_x, dpi_y, 0, gTrue, gFalse, gTrue);
-							//kprintf(" displayPage ok\n");
+							//D(bug(" displayPage ok\n"));
 
 							InitRastPort(&MyRastPort);
 							MyRastPort.BitMap = &MyBitMap;

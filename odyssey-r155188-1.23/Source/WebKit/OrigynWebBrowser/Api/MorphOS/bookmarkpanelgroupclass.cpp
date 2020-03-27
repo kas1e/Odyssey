@@ -43,6 +43,13 @@
 #include <proto/dos.h>
 #include <clib/macros.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 
 /* private */
 
@@ -104,10 +111,10 @@ static void doset(Object *obj, struct Data *data, struct TagItem *tags)
 			if(active)
 			{
 				current = (struct treedata *)active->tn_User;
-				D(kprintf( "InMenu before is %08lx.\n",(ULONG)current->flags));
+				D(bug( "InMenu before is %08lx.\n",(ULONG)current->flags));
 				if (tag->ti_Data) current->flags = (current->flags & ~NODEFLAG_INMENU) | NODEFLAG_INMENU;
 				else current->flags = current->flags & ~NODEFLAG_INMENU;
-				D(kprintf( "InMenu after is %08lx.\n",(ULONG)current->flags));
+				D(bug( "InMenu after is %08lx.\n",(ULONG)current->flags));
 				line = DoMethod(data->lt_bookmark, MUIM_Listtree_GetNr, active, 0L);
 				DoMethod(data->lt_bookmark, MUIM_List_Redraw, line, NULL);
 			}
@@ -300,7 +307,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 			if (p == 3)
 			{
 				q=0;
-				D(kprintf( "Parse Link: '%s'\n", ptr[2]));
+				D(bug( "Parse Link: '%s'\n", ptr[2]));
 
 				if (strcmp(ptr[2],"----------------------------------------")==0)
 				{
@@ -330,7 +337,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 				if (q == 2)
 				{
 					// Alias
-					D(kprintf( "    Alias: '%s'\n", ptr[3]));
+					D(bug( "    Alias: '%s'\n", ptr[3]));
 					newnode.alias = ptr[3];
 					p++;
 				}
@@ -340,7 +347,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 					q = parsevarpool(ptr[1], "%.OWBQUICKLINK=\"%s\"", &ptr[3]);
 					if (q == 2)
 					{
-						D(kprintf( "QuickLink: '%s'\n", ptr[3]));
+						D(bug( "QuickLink: '%s'\n", ptr[3]));
 						newnode.alias = ptr[3];
 						p++;
 						newnode.flags |= NODEFLAG_QUICKLINK;
@@ -349,11 +356,11 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 						if (q == 2)
 						{
 							newnode.ql_order = order;
-							D(kprintf("Order: %ld\n",order));
+							D(bug("Order: %ld\n",order));
 						}
 						else
 						{
-							D(kprintf("Fail get order '%s'\n", ptr[1]));
+							D(bug("Fail get order '%s'\n", ptr[1]));
 						}
 					}
 					else newnode.alias = NULL;
@@ -362,7 +369,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 				q = parsevarpool(ptr[1], "%.IBHLFLAGS=\"%s\"", &ptr[4]);
 				if (q == 2)
 				{
-					D(kprintf( "Flags: '%s'\n", ptr[4]));
+					D(bug( "Flags: '%s'\n", ptr[4]));
 					FreeVecTaskPooled(ptr[4]); ptr[4] = NULL;
 				}
 				else newnode.flags |= NODEFLAG_INMENU;
@@ -385,7 +392,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 				p--;
 				if (p == 2)
 				{
-					D(kprintf( "Parse Group: '%s'\n", ptr[1]));
+					D(bug( "Parse Group: '%s'\n", ptr[1]));
 					newnode.flags    = NODEFLAG_GROUP;
 					newnode.title    = ptr[1];
 					newnode.alias    = NULL;
@@ -398,14 +405,14 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 					q = parsevarpool(ptr[0], "%.IBHLFLAGS=\"%s\"", &ptr[4]);
 					if (q == 2)
 					{
-						D(kprintf( "Flags: '%s'\n", ptr[4]));
+						D(bug( "Flags: '%s'\n", ptr[4]));
 						FreeVecTaskPooled(ptr[4]); ptr[4] = NULL;
 					}
 					else newnode.flags |= NODEFLAG_INMENU;
  
 					if (group)
 					{
-						D(kprintf("Only one level of group supported, add group at root\n"));
+						D(bug("Only one level of group supported, add group at root\n"));
 					}
 
 					// Add group
@@ -425,7 +432,7 @@ DEFSMETHOD(Bookmarkgroup_LoadHtml)
 			{
 				if (strstr(line, "</UL>"))
 				{
-					D(kprintf( "Parse End Group\n"));
+					D(bug( "Parse End Group\n"));
 					if(group != NULL)
 					{
 						group = (MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, group, MUIV_Listtree_GetEntry_Position_Parent, 0);
@@ -460,12 +467,12 @@ DEFSMETHOD(Bookmarkgroup_AddLink)
 	newnode.iconimg  = NULL;
 	newnode.tree     = data->lt_bookmark;
 
-	D(kprintf("AddLink title %s %08lx %08lx\n",msg->title, (ULONG)msg->alias, (ULONG)msg->address));
+	D(bug("AddLink title %s %08lx %08lx\n",msg->title, (ULONG)msg->alias, (ULONG)msg->address));
 
 	if (!msg->external)
 	{
 		active = (struct MUIS_Listtree_TreeNode *) DoMethod(data->lt_bookmark, MUIM_Listtree_GetEntry, NULL, MUIV_Listtree_GetEntry_Position_Active, 0);
-		D(kprintf("Active is %08lx.\n",(ULONG)active));
+		D(bug("Active is %08lx.\n",(ULONG)active));
 	}
 
 	// Disable notifications
@@ -524,7 +531,7 @@ DEFSMETHOD(Bookmarkgroup_AddLink)
 		);
 	}
 
-	D(kprintf( "entry is %08lx.\n",(ULONG)entry));
+	D(bug( "entry is %08lx.\n",(ULONG)entry));
 	set(data->lt_bookmark, MUIA_Listtree_Quiet, FALSE);
 
 	return (0);

@@ -23,6 +23,7 @@
 #ifndef WTF_GRefPtr_h
 #define WTF_GRefPtr_h
 
+#include "config.h"
 #include "AlwaysInline.h"
 #include "PlatformRefPtr.h"
 #include <algorithm>
@@ -33,14 +34,19 @@ typedef void* gpointer;
 extern "C" void g_object_unref(gpointer object); 
 extern "C" gpointer g_object_ref_sink(gpointer object); 
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 namespace WTF {
 
 
 template <typename T> inline T* refPlatformPtr(T* ptr)
 {
-    kprintf("refPlatformPtr for g_object called\n");
+    D(bug("refPlatformPtr for g_object called\n"));
     if (ptr)
         g_object_ref_sink(ptr);
     return ptr;
@@ -48,7 +54,7 @@ template <typename T> inline T* refPlatformPtr(T* ptr)
 
 template <typename T> inline void derefPlatformPtr(T* ptr)
 {
-    kprintf("derefPlatformPtr for g_object called\n");
+    D(bug("derefPlatformPtr for g_object called\n"));
     if (ptr)
         g_object_unref(ptr);
 }

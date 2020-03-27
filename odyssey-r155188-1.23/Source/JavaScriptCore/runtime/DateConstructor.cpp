@@ -48,10 +48,6 @@ extern "C" time_t time(time_t* timer); // Provided by libce.
 #include <sys/timeb.h>
 #endif
 
-#if OS(MORPHOS)
-#include <clib/debug_protos.h>
-#endif
-
 using namespace WTF;
 
 namespace JSC {

@@ -36,7 +36,13 @@
 #include <proto/intuition.h>
 #include <clib/macros.h>
 
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 
 #include "gui.h"
 #include "asl.h"
@@ -136,7 +142,7 @@ ULONG asl_run_multiple(STRPTR p, struct TagItem *tags, char *** files, ULONG rem
 							if((*files)[i])
 							{
 								strcpy((*files)[i], buf);
-								//kprintf("selected file %d <%s>\n", i, (*files)[i]);
+								//D(bug("selected file %d <%s>\n", i, (*files)[i]));
 							}
 						}
 					}

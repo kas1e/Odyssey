@@ -94,10 +94,16 @@
 #include "utils.h"
 #include <proto/dos.h>
 #include <proto/intuition.h>
-#include <clib/debug_protos.h>
 #undef get
 #undef String
 #endif
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #include <cstdio>
 
@@ -239,7 +245,7 @@ void WebFrameLoaderClient::dispatchDidReceiveResponse(DocumentLoader* loader, un
 {
 	//WebView* webView = m_webFrame->webView();
 
-	//kprintf("dispatchDidReceiveResponse:: loader %p webView %p\n", loader, webView);
+	//D(bug("dispatchDidReceiveResponse:: loader %p webView %p\n", loader, webView));
 	/*
     SharedPtr<WebResourceLoadDelegate> resourceLoadDelegate = webView->webResourceLoadDelegate();
     if (!resourceLoadDelegate)
@@ -255,7 +261,7 @@ void WebFrameLoaderClient::dispatchDidReceiveContentLength(DocumentLoader* loade
 {
 	//WebView* webView = m_webFrame->webView();
 
-	//kprintf("dispatchDidReceiveContentLength:: loader %p webView %p\n", loader, webView);
+	//D(bug("dispatchDidReceiveContentLength:: loader %p webView %p\n", loader, webView));
 	/*
     SharedPtr<WebResourceLoadDelegate> resourceLoadDelegate = webView->webResourceLoadDelegate();
     if (!resourceLoadDelegate)
@@ -269,7 +275,7 @@ void WebFrameLoaderClient::dispatchDidFinishLoading(DocumentLoader* loader, unsi
 {
 	//WebView* webView = m_webFrame->webView();
 
-	//kprintf("dispatchDidFinishLoading:: loader %p webView %p\n", loader, webView);
+	//D(bug("dispatchDidFinishLoading:: loader %p webView %p\n", loader, webView));
 	/*
     SharedPtr<WebResourceLoadDelegate> resourceLoadDelegate = webView->webResourceLoadDelegate();
     if (!resourceLoadDelegate)
@@ -283,10 +289,10 @@ void WebFrameLoaderClient::dispatchDidFailLoading(DocumentLoader* loader, unsign
 {
 	//WebView* webView = m_webFrame->webView();
 
-	//kprintf("dispatchDidFailLoading:: loader %p webView %p\n", loader, webView);
+	//D(bug("dispatchDidFailLoading:: loader %p webView %p\n", loader, webView));
 	/*
 	SharedPtr<WebResourceLoadDelegate> resourceLoadDelegate = webView->webResourceLoadDelegate();
-	kprintf("dispatchDidFailLoading:: resourceLoadDelegate %p\n", resourceLoadDelegate);
+	D(bug("dispatchDidFailLoading:: resourceLoadDelegate %p\n", resourceLoadDelegate));
     if (!resourceLoadDelegate)
         return;
 
@@ -896,14 +902,14 @@ bool WebFrameLoaderClient::canShowMIMEType(const String& type) const
 	  MIMETypeRegistry::isSupportedMediaMIMEType(ltype) ||
 	  PluginDatabase::installedPlugins()->isMIMETypeRegistered(ltype);
 
-	//kprintf("WebView::canShowMIMEType(%s): %s\n", ltype.utf8().data(), show ? "yes" : "no");
+	//D(bug("WebView::canShowMIMEType(%s): %s\n", ltype.utf8().data(), show ? "yes" : "no"));
 
 	return show;
 }
 
 bool WebFrameLoaderClient::canShowMIMETypeAsHTML(const WTF::String& MIMEType) const
 {
-	//kprintf("canShowMIMETypeAsHTML(%s)\n", MIMEType.latin1().data());
+	//D(bug("canShowMIMETypeAsHTML(%s)\n", MIMEType.latin1().data()));
 	return true;
 }
 

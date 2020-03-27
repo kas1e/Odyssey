@@ -38,7 +38,13 @@
 #include "WTFString.h"
 
 #include "gui.h"
-#include <clib/debug_protos.h>
+
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 /*
 
@@ -374,8 +380,8 @@ int TopSitesManager::requiredVisitCount()
 		minVisitCount = select.getColumnInt(0);
 	}	
 	
-	//kprintf("requiredVisitCount %d\n", minVisitCount);
-	//kprintf("entries < maxEntries %d\n",entries() < maxEntries());
+	//D(bug("requiredVisitCount %d\n", minVisitCount));
+	//D(bug("entries < maxEntries %d\n",entries() < maxEntries()));
 	
 	return (entries() < maxEntries()) ? 1 : minVisitCount;
 }
@@ -393,7 +399,7 @@ void TopSitesManager::update(WebView *webView, KURL &url, String &title)
 			String query = url.string().substring(index + 1);
 			if(!query.isEmpty())
 			{
-				//kprintf("query : <%s>\n", query.utf8().data());
+				//D(bug("query : <%s>\n", query.utf8().data()));
 
 				if(query.startsWith("remove="))
 				{
@@ -484,7 +490,7 @@ bool TopSitesManager::addOrUpdate(WebView *webView, KURL &url, String &title)
 	Vector<char> screenshot;
 	bool found = false;
 
-	//kprintf("addOrUpdate <%s>\n", url.string().utf8().data());
+	//D(bug("addOrUpdate <%s>\n", url.string().utf8().data()));
 
 	SQLiteStatement select(m_topSitesDB, "SELECT visitCount, screenshot, lastAccessed FROM topsites WHERE url=?1;");
 	if(select.prepare())
@@ -500,7 +506,7 @@ bool TopSitesManager::addOrUpdate(WebView *webView, KURL &url, String &title)
 		lastAccessed = select.getColumnDouble(2);		
 	}	
 
-	//kprintf("visitCount %d required : %d screenshot %d timestamp %f lastaccessed %d\n", visitCount, requiredVisitCount(), screenshot.size(), timestamp, lastAccessed);
+	//D(bug("visitCount %d required : %d screenshot %d timestamp %f lastaccessed %d\n", visitCount, requiredVisitCount(), screenshot.size(), timestamp, lastAccessed));
 	bool generateScreenshot = !m_disableScreenShots && (visitCount >= requiredVisitCount()) && (screenshot.size() == 0 || (timestamp >= lastAccessed + SCREENSHOT_UPDATE_DELAY));
 
 	if(found)
@@ -543,7 +549,7 @@ bool TopSitesManager::addOrUpdate(WebView *webView, KURL &url, String &title)
 		int height;
 		Vector<char> imageData;
 
-		//kprintf("Generate screenshot for <%s>\n", url.string().utf8().data());
+		//D(bug("Generate screenshot for <%s>\n", url.string().utf8().data()));
 		webView->screenshot(width, height, &imageData);
 		
 		SQLiteStatement updateScreenShotStmt(m_topSitesDB, "UPDATE topsites SET screenshot=?1 WHERE url=?2;");

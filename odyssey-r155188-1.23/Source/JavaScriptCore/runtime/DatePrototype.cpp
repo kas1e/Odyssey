@@ -66,7 +66,6 @@
 #include <unicode/udat.h>
 #endif
 
-#include <clib/debug_protos.h>
 #include <proto/exec.h>
 
 using namespace WTF;

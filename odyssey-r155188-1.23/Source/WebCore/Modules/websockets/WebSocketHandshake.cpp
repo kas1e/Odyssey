@@ -31,9 +31,12 @@
 
 #include "config.h"
 
-#include <proto/exec.h>
-#define kprintf IExec->DebugPrintF 
-#define D(x) //#define D(x) x  to enalbed debug 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #if ENABLE(WEB_SOCKETS)
 
@@ -302,7 +305,7 @@ int WebSocketHandshake::readServerHandshake(const char* header, size_t len)
         m_mode = Failed; // m_failureReason is set inside readStatusLine().
         return len;
     }
-    D(kprintf("WebSocketHandshake %p readServerHandshake() Status code is %d\n", this, statusCode));
+    D(bug("WebSocketHandshake %p readServerHandshake() Status code is %d\n", this, statusCode));
 
     m_serverHandshakeResponse = ResourceResponse();
     m_serverHandshakeResponse.setHTTPStatusCode(statusCode);
@@ -321,12 +324,12 @@ int WebSocketHandshake::readServerHandshake(const char* header, size_t len)
     }
     const char* p = readHTTPHeaders(header + lineLength, header + len);
     if (!p) {
-        D(kprintf("WebSocketHandshake %p readServerHandshake() readHTTPHeaders() failed\n", this));
+        D(bug("WebSocketHandshake %p readServerHandshake() readHTTPHeaders() failed\n", this));
         m_mode = Failed; // m_failureReason is set inside readHTTPHeaders().
         return len;
     }
     if (!checkResponseHeaders()) {
-        D(kprintf("WebSocketHandshake %p readServerHandshake() checkResponseHeaders() failed\n", this));
+        D(bug("WebSocketHandshake %p readServerHandshake() checkResponseHeaders() failed\n", this));
         m_mode = Failed;
         return p - header;
     }

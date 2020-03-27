@@ -30,9 +30,12 @@
 
 #include "config.h"
 
-#include <proto/exec.h>
-#define kprintf IExec->DebugPrintF 
-#define D(x) //#define D(x) x  to enalbed debug 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
 
 #include "WebSocketDeflater.h"
 
@@ -76,7 +79,7 @@ WebSocketDeflater::~WebSocketDeflater()
 {
     int result = deflateEnd(m_stream.get());
     if (result != Z_OK)
-        D(kprintf("WebSocketDeflater %p Destructor deflateEnd() failed: %d is returned\n", this, result));
+        D(bug("WebSocketDeflater %p Destructor deflateEnd() failed: %d is returned\n", this, result));
 }
 
 static void setStreamParameter(z_stream* stream, const char* inputData, size_t inputLength, char* outputData, size_t outputLength)
@@ -153,7 +156,7 @@ WebSocketInflater::~WebSocketInflater()
 {
     int result = inflateEnd(m_stream.get());
     if (result != Z_OK)
-        D(kprintf("WebSocketInflater %p Destructor inflateEnd() failed: %d is returned\n", this, result));
+        D(bug("WebSocketInflater %p Destructor inflateEnd() failed: %d is returned\n", this, result));
 }
 
 bool WebSocketInflater::addBytes(const char* data, size_t length)

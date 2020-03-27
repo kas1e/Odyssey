@@ -21,6 +21,13 @@
 
 #include <glib.h>
 
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
+#define D(x)
+
 namespace WTF {
 
 template <> GHashTable* refPlatformPtr(GHashTable* ptr)
@@ -56,13 +63,13 @@ typedef struct _GVariant {
 
 template <> GVariant* refPlatformPtr(GVariant* ptr)
 {
-    kprintf("refPlatformPtr for GVariant called\n");
+    D(bug("refPlatformPtr for GVariant called\n"));
     return ptr;
 }
 
 template <> void derefPlatformPtr(GVariant* ptr)
 {
-    kprintf("derefPlatformPtr for GVariantcalled\n");
+    D(bug("derefPlatformPtr for GVariantcalled\n"));
 }
 
 #endif

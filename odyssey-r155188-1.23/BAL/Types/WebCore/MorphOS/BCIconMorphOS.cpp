@@ -37,7 +37,6 @@
 #include "BitmapImage.h"
 
 #include <cstdio>
-#include <clib/debug_protos.h>
 #include "../../../../WebKit/OrigynWebBrowser/Api/MorphOS/utils.h"
 
 namespace WebCore {

@@ -35,10 +35,12 @@
 #include <wtf/HashSet.h>
 #include <wtf/WTFThreadData.h>
 
-#if OS(MORPHOS)
-#include <clib/debug_protos.h>
+/* Debug output to serial handled via D(bug("....."));
+*  See Base/debug.h for details.
+*  D(x)    - to disable debug
+*  D(x) x  - to enable debug
+*/
 #define D(x)
-#endif
 
 namespace JSC {
 
@@ -111,7 +113,7 @@ void IncrementalSweeper::doWork()
 
 void IncrementalSweeper::doSweep(double sweepBeginTime)
 {
-    D(kprintf("IncrementalSweeper %d\n", m_blocksToSweep.size()));
+    D(bug("IncrementalSweeper %d\n", m_blocksToSweep.size()));
     while (m_currentBlockToSweepIndex < m_blocksToSweep.size()) {
         sweepNextBlock();
 
@@ -135,7 +137,7 @@ void IncrementalSweeper::sweepNextBlock()
         if (!block->needsSweeping())
             continue;
 
-	D(kprintf("block sweep\n"));
+	D(bug("block sweep\n"));
         block->sweep();
         m_vm->heap.objectSpace().freeOrShrinkBlock(block);
         return;
