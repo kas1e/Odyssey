@@ -32,4 +32,3 @@ openssl     - v1.1.1c (libssl, libcrypto)
 ffmpeg      - v2.2.16 Frank's amiga shared libraries implementation: https://sourceforge.net/projects/ffmpeg-amigasharedlibraries/
 webp        - v1.1.0
 bz2         - v1.0.5
-aos4deps    - sttcpy() and DoSuperNew() realisations.
