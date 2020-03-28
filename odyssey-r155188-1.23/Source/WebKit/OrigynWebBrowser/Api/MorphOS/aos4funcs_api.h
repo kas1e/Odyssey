@@ -22,6 +22,7 @@ extern "C" {
 
 Object * VARARGS68K DoSuperNew(struct IClass *cl, Object *obj, ...);
 int stccpy(char *p, const char *q, int n);
+ULONG WritePixelArrayAlpha(APTR src, UWORD srcx, UWORD srcy, UWORD srcmod, struct RastPort *rp, UWORD destx, UWORD desty, UWORD width, UWORD height, ULONG globalalpha);
 
 #ifdef __cplusplus
 }

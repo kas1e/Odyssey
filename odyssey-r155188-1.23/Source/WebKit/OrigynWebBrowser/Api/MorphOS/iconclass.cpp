@@ -39,10 +39,9 @@
 
 #define SYSTEM_PRIVATE 1
 
-#include <cybergraphx/cybergraphics.h>
 #include <proto/alib.h>
-#include <proto/cybergraphics.h>
 #include <proto/utility.h>
+#include <proto/graphics.h>
 
 #include "gui.h"
 

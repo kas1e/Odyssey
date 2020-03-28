@@ -37,8 +37,8 @@
 #include "Widget.h"
 #include <proto/intuition.h>
 #include <proto/graphics.h>
-#include <proto/cybergraphics.h>
-#include <cybergraphx/cybergraphics.h>
+//#include <proto/cybergraphics.h>
+//#include <cybergraphx/cybergraphics.h>
 #include <libraries/mui.h>
 #include <proto/muimaster.h>     
 #include <proto/alib.h>

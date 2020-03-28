@@ -1,5 +1,3 @@
-#include <cybergraphx/cybergraphics.h>
-#include <proto/cybergraphics.h>
 #include <proto/graphics.h>
 
 #ifndef POP_BRIGHTEN

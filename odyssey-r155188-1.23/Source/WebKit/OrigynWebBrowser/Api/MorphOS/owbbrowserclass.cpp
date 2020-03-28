@@ -99,7 +99,7 @@
 extern "C"
 {
 	#include "../../../../BAL/Media/WebCore/MorphOS/acinerella.h"
-	extern struct Library *CGXVideoBase;
+	//extern struct Library *CGXVideoBase;
 }
 #endif
 
@@ -116,11 +116,6 @@ extern "C"
 #include <proto/keymap.h>
 #include <clib/macros.h>
 #include <mui/Calltips_mcc.h>
-
-#include <cybergraphx/cybergraphics.h>
-#include <cybergraphx/cgxvideo.h>
-#include <proto/cybergraphics.h>
-#include <proto/cgxvideo.h>
 
 #define min(a,b) ((a)<(b) ? (a) : (b))
 
@@ -303,7 +298,7 @@ struct Data
 
 #if ENABLE(VIDEO)
 	/* media  */
-	VLayerHandle     *video_handle;
+	//VLayerHandle     *video_handle;
 	HTMLMediaElement *video_element; // XXX: we can have several media instances per browser but this one is the vlayer video element (there can be only one at once).
 	ULONG video_fullscreen;
 	ULONG video_mode;
@@ -1494,6 +1489,7 @@ DEFMMETHOD(Show)
 		{
 			struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
 
+#ifndef __amigaos4__
 			if(window && data->video_handle)
 			{
 				IntSize size = data->video_element->player()->naturalSize();
@@ -1521,6 +1517,7 @@ DEFMMETHOD(Show)
 								  VOA_BottomIndent, window->Height - window->BorderBottom -1 - _mbottom(obj) + data->video_y_offset,
 								  TAG_DONE);
 			}
+#endif
 		}
 #endif
 	}
@@ -1646,7 +1643,7 @@ DEFSMETHOD(OWBBrowser_Update)
 
 		if(src && data->rp_offscreen.BitMap)
 		{
-			WritePixelArray(src, data->update_x, data->update_y, stride, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height, RECTFMT_ARGB);
+			WritePixelArray(src, data->update_x, data->update_y, stride, PIXF_A8R8G8B8, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height);
 		}
 	}
 
@@ -1736,8 +1733,7 @@ DEFMMETHOD(Draw)
 #else
 			if(src && data->rp_offscreen.BitMap)
 			{
-				WritePixelArrayAlpha(src, data->plugin_update_x, data->plugin_update_y, stride, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height, 0xffffffff);
-				//WritePixelArray(src, data->plugin_update_x, data->plugin_update_y, stride, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height, RECTFMT_ARGB);
+				WritePixelArray(src, data->plugin_update_x, data->plugin_update_y, stride, PIXF_A8R8G8B8, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height);
 				BltBitMapRastPort(data->rp_offscreen.BitMap, data->update_x, data->update_y, _rp(obj), _mleft(obj) + data->update_x, _mtop(obj) + data->update_y, data->update_width, data->update_height, 0xC0);
 			}
 #endif
@@ -1772,7 +1768,7 @@ DEFMMETHOD(Draw)
 
 				if(src)
 				{
-					WritePixelArray(src, 0, 0, stride, &data->rp_offscreen, 0, 0, data->width, data->height, RECTFMT_ARGB);
+					WritePixelArray(src, 0, 0, stride, PIXF_A8R8G8B8, &data->rp_offscreen, 0, 0, data->width, data->height);
 				}
 
 				data->dirty = FALSE;
@@ -3260,7 +3256,7 @@ static void fix_scanline(struct RastPort *rp, int y, int width, int minalpha)
 	unsigned char buff[width * 4]; /* this will never be bigger than DRAGSIZE * 4 */
 	int i;
 
-	ReadPixelArray(buff, 0, 0, 0, rp, 0, y, width, 1, RECTFMT_RGBA);
+	ReadPixelArray(rp, 0, y, buff, 0, 0, 0, PIXF_A8R8G8B8, width, 1);
 
 	for(i=0; i<width; i++)
 	{
@@ -3270,7 +3266,7 @@ static void fix_scanline(struct RastPort *rp, int y, int width, int minalpha)
 		buff[i * 4 + 3] = a;
 	}
 
-	WritePixelArray(buff, 0, 0, 0, rp, 0, y, width, 1, RECTFMT_RGBA);
+	WritePixelArray(buff, 0, 0, 0, PIXF_A8R8G8B8, rp, 0, y, width, 1);
 }
 
 DEFMMETHOD(CreateDragImage)
@@ -3319,7 +3315,7 @@ DEFMMETHOD(CreateDragImage)
 
 			InitRastPort(&rp);
 			rp.BitMap = di->bm;
-			WritePixelArray(src, 0,0, stride, &rp, 0, 0, width, height, RECTFMT_ARGB);
+			WritePixelArray(src, 0,0, stride, PIXF_A8R8G8B8, &rp, 0, 0, width, height);
 		}
 		// Else, generate some text (XXX: consider more relevant data using MA_OWBBrowser_DragData)
 #if 0
@@ -3748,56 +3744,28 @@ DEFMMETHOD(Backfill)
 	{
 		if (IsValidRect(&b1))
 		{
-			FillPixelArray(_rp(obj), b1.MinX, b1.MinY,
-			               b1.MaxX - b1.MinX + 1, b1.MaxY - b1.MinY + 1,
-			               0x00000000);
+			RectFillColor(_rp(obj), b1.MinX, b1.MinY,
+							b1.MaxX - b1.MinX + 1, b1.MaxY - b1.MinY + 1,
+							0x00000000);
 		}
 
 		if (IsValidRect(&b2))
 		{
-			FillPixelArray(_rp(obj), b2.MinX, b2.MinY,
-			               b2.MaxX - b2.MinX + 1, b2.MaxY - b2.MinY + 1,
-			               0x00000000);
+			RectFillColor(_rp(obj), b2.MinX, b2.MinY,
+							b2.MaxX - b2.MinX + 1, b2.MaxY - b2.MinY + 1,
+							0x00000000);
 		}
 	}
 
 	if (IsValidRect(&k))
 	{
-		FillPixelArray(_rp(obj), k.MinX, k.MinY,
-		               k.MaxX - k.MinX + 1, k.MaxY - k.MinY + 1,
-					   data->video_colorkey);
+		RectFillColor(_rp(obj), k.MinX, k.MinY,
+						k.MaxX - k.MinX + 1, k.MaxY - k.MinY + 1,
+						data->video_colorkey);
 	}
 
 	return (TRUE);
 }
-
-/*
-DEFSMETHOD(OWBBrowser_VideoEnterFullWindow)
-{
-	GETDATA;
-
-	if(msg->enable)
-	{
-		struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
-
-		if(window)
-		{
-			SetVLayerAttrTags(data->video_handle,
-				   VOA_LeftIndent,   window->BorderLeft + data->video_x_offset,
-				   VOA_RightIndent,  window->Width - window->BorderRight - 1 + data->video_x_offset,
-			  	   VOA_TopIndent,    window->BorderTop + data->video_y_offset,
-				   VOA_BottomIndent, window->Height - window->BorderBottom -1 + data->video_y_offset,
-				   TAG_DONE);
-		}
-	}
-	else
-	{
-	
-	}
-
-	return 0;
-}
-*/
 
 DEFSMETHOD(OWBBrowser_VideoEnterFullPage)
 {
@@ -3812,6 +3780,7 @@ DEFSMETHOD(OWBBrowser_VideoEnterFullPage)
 
 	if(element)
 	{
+#ifndef __amigaos4__
 		if(CGXVideoBase)
 		{
 			struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
@@ -3909,7 +3878,7 @@ DEFSMETHOD(OWBBrowser_VideoEnterFullPage)
 					{
 						DeleteVLayerHandle(data->video_handle);
 						data->video_handle = NULL;
-					}			 
+					}
 				}
 				else
 				{
@@ -3950,7 +3919,7 @@ DEFSMETHOD(OWBBrowser_VideoEnterFullPage)
 				data->video_handle = NULL;
 			}
 		}
-
+#endif
 		// Redraw the page
 		data->view->webView->addToDirtyRegion(IntRect(0, 0, data->width, data->height));
 		data->dirty = TRUE;
@@ -3967,7 +3936,7 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 	GETDATA;
 
 	//D(bug("blitoverlay %d %d %d\n", msg->width, msg->height, msg->linesize));
-
+#ifndef __amigaos4__
 	if(data->video_handle && msg->src && msg->stride && LockVLayer(data->video_handle))
 	{
 		int w = msg->width & -8;
@@ -4068,9 +4037,9 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 		}
 
 		UnlockVLayer(data->video_handle);
-        SwapVLayerBuffer(data->video_handle);
+		SwapVLayerBuffer(data->video_handle);
 	}
-
+#endif
 	return 0;
 }
 
