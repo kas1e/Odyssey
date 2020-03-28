@@ -1733,7 +1733,7 @@ DEFMMETHOD(Draw)
 #else
 			if(src && data->rp_offscreen.BitMap)
 			{
-				WritePixelArray(src, data->plugin_update_x, data->plugin_update_y, stride, PIXF_A8R8G8B8, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height);
+				WritePixelArrayAlpha(src, data->plugin_update_x, data->plugin_update_y, stride, &data->rp_offscreen, data->update_x, data->update_y, data->update_width, data->update_height, 0xffffffff);
 				BltBitMapRastPort(data->rp_offscreen.BitMap, data->update_x, data->update_y, _rp(obj), _mleft(obj) + data->update_x, _mtop(obj) + data->update_y, data->update_width, data->update_height, 0xC0);
 			}
 #endif
