@@ -61,6 +61,7 @@
 #include <proto/codesets.h>
 #include <proto/diskfont.h>
 #include <proto/locale.h>
+#include <proto/timer.h>
 
 #include <classes/requester.h>
 #include <reaction/reaction_macros.h>
@@ -117,6 +118,24 @@ unsigned long __stack = 2*1024*1024;
 jmp_buf bailout_env;
 
 
+struct Library 			*IntuitionBase	= NULL;
+struct IntuitionIFace	*IIntuition 	= NULL;
+
+struct Library			*GfxBase		= NULL;
+struct GraphicsIFace	*IGraphics 		= NULL;
+
+struct Library			*WorkbenchBase	= NULL;
+struct WorkbenchIFace	*IWorkbench		= NULL;
+
+struct Library			*LocaleBase		= NULL;
+struct LocaleIFace		*ILocale		= NULL;
+
+struct Library			*RexxSysBase	= NULL;
+struct RexxSysIFace		*IRexxSys		= NULL;
+
+struct Library			*IFFParseBase	= NULL;
+struct IFFParseIFace	*IIFFParse		= NULL;
+
 struct Library			*ApplicationBase	= NULL;
 struct ApplicationIFace *IApplication		= NULL;
 
@@ -129,8 +148,8 @@ struct MUIMasterIFace	*IMUIMaster		= NULL;
 struct Library			*CodesetsBase	= NULL;
 struct CodesetsIFace	*ICodesets		= NULL; 
 
-struct Library			*DiskFontBase	= NULL;
-struct DiskFontIFace	*IDiskFont		= NULL;
+struct Library			*DiskfontBase	= NULL;
+struct DiskfontIFace	*IDiskfont		= NULL;
 
 struct Library			*IconBase		= NULL;
 struct IconIFace		*IIcon			= NULL;
@@ -140,6 +159,12 @@ struct ExpatIFace		*IExpat			= NULL;
 
 struct Library			*OpenURLBase	= NULL;
 struct OpenURLIFace		*IOpenURL		= NULL;
+
+struct Device			*TimerBase		= NULL;
+struct TimerIFace		*ITimer			= NULL;
+struct MsgPort			*TimerMP		= NULL;
+struct TimeRequest		*TimerIO		= NULL;
+
 
 /* Dos notify stuff */
 
@@ -267,14 +292,50 @@ ULONG open_libs(void)
 		return FALSE;
 	}
 
+	if(!(IntuitionBase = OpenLibrary("intuition.library", 37))) {
+		fprintf(stderr, "Failed to open intuition.library.\n");
+		return FALSE;
+	}
+	IIntuition = (struct IntuitionIFace *)GetInterface(IntuitionBase, "main", 1, NULL); 
+
+	if(!(GfxBase = OpenLibrary("graphics.library", 37))) {
+		fprintf(stderr, "Failed to open graphics.library.\n");
+		return FALSE;
+	}
+	IGraphics = (struct GraphicsIFace *)GetInterface(GfxBase, "main", 1, NULL); 
+
+	if(!(WorkbenchBase = OpenLibrary("workbench.library", 37))) {
+		fprintf(stderr, "Failed to open workbench.library.\n");
+		return FALSE;
+	}
+	IWorkbench = (struct WorkbenchIFace *)GetInterface(WorkbenchBase, "main", 1, NULL); 
+
+	if(!(LocaleBase = OpenLibrary("locale.library", 37))) {
+		fprintf(stderr, "Failed to open locale.library.\n");
+		return FALSE;
+	}
+	ILocale = (struct LocaleIFace *)GetInterface(LocaleBase, "main", 1, NULL); 
+
+	if(!(RexxSysBase = OpenLibrary("rexxsyslib.library", 37))) {
+		fprintf(stderr, "Failed to open rexxsyslib.library.\n");
+		return FALSE;
+	}
+	IRexxSys = (struct RexxSysIFace *)GetInterface(RexxSysBase, "main", 1, NULL); 
+
+	if(!(IFFParseBase = OpenLibrary("iffparse.library", 37))) {
+		fprintf(stderr, "Failed to open iffparse.library.\n");
+		return FALSE;
+	}
+	IIFFParse = (struct IFFParseIFace *)GetInterface(IFFParseBase, "main", 1, NULL); 
+
 	// application.library (to register app, to enable/disable blankers, etc).
-	if (!(ApplicationBase = OpenLibrary("application.library", 52))) {	
+	if (!(ApplicationBase = OpenLibrary("application.library", 52))) {
 		fprintf(stderr,"Failed to open application.library\n");
 		return FALSE;
 	}	 
 	IApplication  = (struct ApplicationIFace *)GetInterface(ApplicationBase, "application", 2, NULL);
 
-	// register an app for aplication library	
+	// register an app for aplication library
 	appID = RegisterApplication("Odyssey",
 				REGAPP_URLIdentifier, "none",
 				REGAPP_Description, "Odyssey Web Browser",
@@ -286,11 +347,11 @@ ULONG open_libs(void)
 	}
 	ICodesets = (struct CodesetsIFace *)GetInterface(CodesetsBase, "main", 1, NULL); 
 
-	if(!(DiskFontBase = OpenLibrary("diskfont.library", 37))) {
+	if(!(DiskfontBase = OpenLibrary("diskfont.library", 37))) {
 		fprintf(stderr, "Failed to open diskfont.library.\n");
 		return FALSE;
 	}
-	IDiskFont = (struct DiskFontIFace *)GetInterface(DiskFontBase, "main", 1, NULL); 
+	IDiskfont = (struct DiskfontIFace *)GetInterface(DiskfontBase, "main", 1, NULL); 
 
 	if(!(IconBase = OpenLibrary("icon.library", 39))) {
 		fprintf(stderr, "Failed to open icon.library.\n");
@@ -304,10 +365,21 @@ ULONG open_libs(void)
 	}
 	IExpat = (struct ExpatIFace *)GetInterface(ExpatBase, "main", 1, NULL); 
 
-// handle openurl differently: dind't exit if can't open, just skip it (use it only as fallback if URLOpen didn't works).
-	
+	// handle openurl differently: dind't exit if can't open, just skip it (use it only as fallback if URLOpen didn't works).
 	if(OpenURLBase = OpenLibrary("openurl.library", 0)) {
 		IOpenURL = (struct OpenURLIFace *)GetInterface(OpenURLBase, "main", 1, NULL); 
+	}
+
+	//timer
+	TimerMP = (struct MsgPort *)AllocSysObjectTags(ASOT_PORT, ASOPORT_Name, "Timer port", TAG_DONE);
+	TimerIO = (struct TimeRequest *)AllocSysObjectTags(ASOT_IOREQUEST,ASOIOR_Size, sizeof(struct TimeRequest),ASOIOR_ReplyPort, TimerMP,TAG_DONE);
+
+	if(!(OpenDevice("timer.device", UNIT_MICROHZ, (struct IORequest *)TimerIO, 0))) {
+		TimerBase = TimerIO->Request.io_Device;
+		ITimer = (struct TimerIFace *)GetInterface((struct Library *)TimerBase, "main", 1, NULL); 
+	} else {
+		fprintf(stderr, "Failed to open timer device.\n");
+		return FALSE;
 	}
 
 	extern void init_useragent();
@@ -336,11 +408,47 @@ void close_libs(void)
 		MUIMasterBase = NULL;
 	}
 
+	if (IntuitionBase) {
+		DropInterface((struct Interface*)IIntuition);
+		CloseLibrary(IntuitionBase);
+		IntuitionBase = NULL;
+	}
+
+	if (GfxBase) {
+		DropInterface((struct Interface*)IGraphics);
+		CloseLibrary(GfxBase);
+		GfxBase = NULL;
+	}
+
+	if (WorkbenchBase) {
+		DropInterface((struct Interface*)IWorkbench);
+		CloseLibrary(WorkbenchBase);
+		WorkbenchBase = NULL;
+	}
+
+	if (LocaleBase) {
+		DropInterface((struct Interface*)ILocale);
+		CloseLibrary(LocaleBase);
+		LocaleBase = NULL;
+	}
+
+	if (RexxSysBase) {
+		DropInterface((struct Interface*)IRexxSys);
+		CloseLibrary(RexxSysBase);
+		RexxSysBase = NULL;
+	}
+
+	if (IFFParseBase) {
+		DropInterface((struct Interface*)IIFFParse);
+		CloseLibrary(IFFParseBase);
+		IFFParseBase = NULL;
+	}
+
 	if (ApplicationBase) {
 		UnregisterApplication(appID, NULL);
 		DropInterface((struct Interface*)IApplication);
 		CloseLibrary(ApplicationBase);
-		ApplicationBase	= NULL;
+		ApplicationBase = NULL;
 	}
 
 	if(CodesetsBase) {
@@ -349,10 +457,10 @@ void close_libs(void)
 		CodesetsBase = NULL;
 	}
 
-	if(DiskFontBase) {
-		DropInterface((struct Interface*)IDiskFont);
-		CloseLibrary(DiskFontBase);
-		DiskFontBase = NULL;
+	if(DiskfontBase) {
+		DropInterface((struct Interface*)IDiskfont);
+		CloseLibrary(DiskfontBase);
+		DiskfontBase = NULL;
 	}
 
 	if(IconBase) {
@@ -371,6 +479,14 @@ void close_libs(void)
 		DropInterface((struct Interface*)IOpenURL);
 		CloseLibrary(OpenURLBase);
 		OpenURLBase = NULL;
+	}
+
+	if(TimerBase) {
+		DropInterface((struct Interface *)ITimer);
+		CloseDevice((struct IORequest *)TimerIO);
+		FreeSysObject(ASOT_IOREQUEST, TimerIO);
+		FreeSysObject(ASOT_PORT, TimerMP);
+		TimerBase = NULL;
 	}
 }
 
