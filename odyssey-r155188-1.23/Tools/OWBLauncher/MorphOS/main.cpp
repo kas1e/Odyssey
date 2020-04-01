@@ -136,6 +136,9 @@ struct RexxSysIFace		*IRexxSys		= NULL;
 struct Library			*IFFParseBase	= NULL;
 struct IFFParseIFace	*IIFFParse		= NULL;
 
+struct Library			*LayersBase		= NULL;
+struct LayersIFace		*ILayers		= NULL;
+
 struct Library			*ApplicationBase	= NULL;
 struct ApplicationIFace *IApplication		= NULL;
 
@@ -328,6 +331,12 @@ ULONG open_libs(void)
 	}
 	IIFFParse = (struct IFFParseIFace *)GetInterface(IFFParseBase, "main", 1, NULL); 
 
+	if(!(LayersBase = OpenLibrary("layers.library", 37))) {
+		fprintf(stderr, "Failed to open layers.library.\n");
+		return FALSE;
+	}
+	ILayers = (struct LayersIFace *)GetInterface(LayersBase, "main", 1, NULL); 
+
 	// application.library (to register app, to enable/disable blankers, etc).
 	if (!(ApplicationBase = OpenLibrary("application.library", 52))) {
 		fprintf(stderr,"Failed to open application.library\n");
@@ -442,6 +451,12 @@ void close_libs(void)
 		DropInterface((struct Interface*)IIFFParse);
 		CloseLibrary(IFFParseBase);
 		IFFParseBase = NULL;
+	}
+
+	if (LayersBase) {
+		DropInterface((struct Interface*)ILayers);
+		CloseLibrary(LayersBase);
+		LayersBase = NULL;
 	}
 
 	if (ApplicationBase) {
