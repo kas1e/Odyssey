@@ -1,6 +1,5 @@
 /*
  * Copyright 2009-2010 Fabien Coeurjoly <fabien.coeurjoly@wanadoo.fr>
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -99,7 +98,6 @@
 extern "C"
 {
 	#include "../../../../BAL/Media/WebCore/MorphOS/acinerella.h"
-	//extern struct Library *CGXVideoBase;
 }
 #endif
 
@@ -117,6 +115,11 @@ extern "C"
 #include <clib/macros.h>
 #include <mui/Calltips_mcc.h>
 
+#ifdef __amigaos4__
+#include <graphics/blitattr.h>
+#include <graphics/composite.h>
+#endif
+
 #define min(a,b) ((a)<(b) ? (a) : (b))
 
 /* Local */
@@ -130,8 +133,6 @@ extern "C"
 *  D(x) x  - to enable debug
 */
 #define D(x)
-
-
 
 extern CONST_STRPTR * get_user_agent_strings();
 
@@ -153,7 +154,6 @@ static __inline IPTR _CALLFUNC2(IPTR (*func)(IPTR,IPTR), IPTR arg1, IPTR arg2) {
 #define CALLFUNC2(f,a1,a2) _CALLFUNC2((IPTR (*)(IPTR,IPTR))(f),(IPTR)(a1),(IPTR)(a2))
 
 #else
-
 
 #include <emul/emulinterface.h>
 #include <emul/emulregs.h>
@@ -241,6 +241,7 @@ struct Data
 	/* draw mode */
 	int draw_mode;
 
+
 #if !USE_MORPHOS_SURFACE
 	/* offscreen bitmap */
 	struct RastPort rp_offscreen;
@@ -298,7 +299,6 @@ struct Data
 
 #if ENABLE(VIDEO)
 	/* media  */
-	//VLayerHandle     *video_handle;
 	HTMLMediaElement *video_element; // XXX: we can have several media instances per browser but this one is the vlayer video element (there can be only one at once).
 	ULONG video_fullscreen;
 	ULONG video_mode;
@@ -307,6 +307,13 @@ struct Data
 	ULONG video_colorkey;
 	double video_lastclick;
 #endif
+#ifdef __amigaos4__
+	int compositing;
+	struct BitMap *srcbm;
+	struct BitMap *dstbm;
+	struct Rectangle rect;
+#endif
+
 
 #if !defined(__AROS__)
 	/* popup Menu */
@@ -775,8 +782,8 @@ static void doset(APTR obj, struct Data *data, struct TagItem *tags)
 
 					if (muiRenderInfo(obj))
 					{
-						SetWindowPointer(_window(obj), WA_Pointer, tag->ti_Data, TAG_DONE);												
-					}	
+						SetWindowPointer(_window(obj), WA_Pointer, tag->ti_Data, TAG_DONE);
+					}
 				}
 			}
 		
@@ -1485,12 +1492,11 @@ DEFMMETHOD(Show)
 
 #if ENABLE(VIDEO)
 		// Video: recompute vlayer offset whenever window size changes
-		if (data->video_element)
+		if(data->video_element)
 		{
 			struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
 
-#ifndef __amigaos4__
-			if(window && data->video_handle)
+			if(window && data->compositing==1)
 			{
 				IntSize size = data->video_element->player()->naturalSize();
 				//D(bug("naturalsize %dx%d\n", size.width(), size.height()));
@@ -1509,15 +1515,7 @@ DEFMMETHOD(Show)
 					data->video_y_offset /= 2;
 					data->video_x_offset = 0;
 				}
-
-				SetVLayerAttrTags(data->video_handle,
-								  VOA_LeftIndent,   _mleft(obj) - window->BorderLeft + data->video_x_offset,
-								  VOA_RightIndent,  window->Width - window->BorderRight - 1 - _mright(obj) + data->video_x_offset,
-								  VOA_TopIndent,    _mtop(obj) - window->BorderTop + data->video_y_offset,
-								  VOA_BottomIndent, window->Height - window->BorderBottom -1 - _mbottom(obj) + data->video_y_offset,
-								  TAG_DONE);
 			}
-#endif
 		}
 #endif
 	}
@@ -1898,11 +1896,11 @@ static void autoscroll_add(Object *obj, struct Data *data, IntuiMessage *im)
 			data->autoscroll_added = TRUE;
 		}
 		
-		#ifdef __amigaos4__		
-		set(_win(obj), MUIA_PointerType, MUIV_PointerType_ScrollAll);	
+		#ifdef __amigaos4__
+		set(_win(obj), MUIA_PointerType, MUIV_PointerType_ScrollAll);
 		//SetWindowAttrs(_window(obj), WA_PointerType, MUIV_PointerType_ScrollAll, TAG_DONE); 
-		#else		
-	    set(_window(obj), WA_PointerType, POINTERTYPE_MOVE);
+		#else
+		set(_window(obj), WA_PointerType, POINTERTYPE_MOVE);
 		#endif
 	}
 }
@@ -1918,10 +1916,10 @@ static void autoscroll_remove(Object *obj, struct Data *data)
 			DoMethod(_app(obj), MUIM_Application_RemInputHandler, (IPTR)&data->ihnode);
 			data->autoscroll_added = FALSE;
 		}
-		#ifdef __amigaos4__		
+		#ifdef __amigaos4__
 		set(_win(obj), MUIA_PointerType, MUIV_PointerType_Normal);
 		//SetWindowAttrs(_window(obj), WA_PointerType, MUIV_PointerType_Normal, TAG_DONE);
-		#else 		
+		#else
 		set(_window(obj), WA_PointerType, data->pointertype);
 		#endif
 	}
@@ -2042,7 +2040,7 @@ DEFMMETHOD(HandleEvent)
 										set(mediacontrolsgroup, MA_MediaControlsGroup_Browser, obj);
 										set(mediacontrolsgroup, MUIA_ShowMe, TRUE);
 									}
-								}							 
+								}
 							}
 							break;
 						}
@@ -2115,9 +2113,9 @@ DEFMMETHOD(HandleEvent)
 
 				#ifdef __amigaos4__
 				if(getv(app, MA_OWBApp_EnablePointers))
-				{					
-					SetWindowPointer(_window(obj), WA_Pointer, mouse_inside ? data->pointertype : NULL, TAG_DONE);  
-				}				
+				{
+					SetWindowPointer(_window(obj), WA_Pointer, mouse_inside ? data->pointertype : NULL, TAG_DONE);
+				}
 				#else
 				if(is_morphos2() && getv(app, MA_OWBApp_EnablePointers))
 				{
@@ -2299,14 +2297,13 @@ DEFMMETHOD(HandleEvent)
 						mouse_inside = 1;
 					}
 				}
-	        }
-	        break;
-			
-#ifdef __amigaos4__			
-			
+			}
+			break;
+
+#ifdef __amigaos4__
 			case IDCMP_EXTENDEDMOUSE:
-			{				
-				bool forwardtoWebview = false; 				
+			{
+				bool forwardtoWebview = false;
 				
 				// convert the wheel data in any case
 				if(Code & IMSGCODE_INTUIWHEELDATA)
@@ -2330,16 +2327,16 @@ DEFMMETHOD(HandleEvent)
 						data->view->webView->onScroll(im);
 				}
 				else
-				{						
-						forwardtoWebview = true;						
+				{
+						forwardtoWebview = true;
 						rc = MUI_EventHandlerRC_Eat;
 				}
 				
 				if(forwardtoWebview)
-				{				
+				{
 					if (Code & IECODE_UP_PREFIX)
 						data->view->webView->onKeyUp(im);
-                    else
+					else
 						data->view->webView->onKeyDown(im);
 				}
 
@@ -2347,8 +2344,8 @@ DEFMMETHOD(HandleEvent)
 			break;
 #endif 
 
-            case IDCMP_RAWKEY:
-			{			
+			case IDCMP_RAWKEY:
+			{
 				bool forwardtoWebview = false;
 
 				switch(Code)
@@ -2357,20 +2354,20 @@ DEFMMETHOD(HandleEvent)
 					{
 						Object *active = (Object *) getv(_win(obj), MUIA_Window_ActiveObject);
 						if(active == obj && data->is_active == 0)
-					    {
+						{
 							/* WebView Object got activated in the event chain */
 							data->view->webView->clearFocusNode();
-                            data->view->webView->setInitialFocus(true);
+							data->view->webView->setInitialFocus(true);
 							data->is_active = TRUE;
 							data->view->webView->updateFocusedAndActiveState();
 							rc = MUI_EventHandlerRC_Eat;
 							break;
-					    }
+						}
 						else if(active != obj && data->is_active == 0)
-					    {
+						{
 							/* Ignore tab events if object is not active */
 							break;
-					    }
+						}
 
 						/* Override active object if needed, so toggling between page
 						 * elements won't interfere with MUI object cycle */
@@ -2378,7 +2375,7 @@ DEFMMETHOD(HandleEvent)
 						{
 							set(_win(obj), MUIA_Window_ActiveObject, MUIV_Window_ActiveObject_None);
 							forwardtoWebview = true;
-                            rc = MUI_EventHandlerRC_Eat;
+							rc = MUI_EventHandlerRC_Eat;
 						}
 						
 						break;
@@ -2397,7 +2394,7 @@ DEFMMETHOD(HandleEvent)
 						else
 						{
 							forwardtoWebview = true;
-                            rc = MUI_EventHandlerRC_Eat;
+							rc = MUI_EventHandlerRC_Eat;
 						}
 
 						break;
@@ -2464,8 +2461,8 @@ DEFMMETHOD(HandleEvent)
 				#ifdef __amigaos4__
 				if(getv(app, MA_OWBApp_EnablePointers))
 				{
-					SetWindowPointer(_window(obj), WA_Pointer, mouse_inside ? data->pointertype : NULL, TAG_DONE); 					
-				}				
+					SetWindowPointer(_window(obj), WA_Pointer, mouse_inside ? data->pointertype : NULL, TAG_DONE);
+				}
 				#else
 				if(is_morphos2() && getv(app, MA_OWBApp_EnablePointers))
 				{
@@ -2483,24 +2480,24 @@ DEFMMETHOD(HandleEvent)
 
 DEFMMETHOD(GoActive)
 {
-	/*
+/*
 	GETDATA;
 	D(bug("GoActive\n"));
 	data->is_active = TRUE;
 	data->view->webView->updateFocusedAndActiveState();
 	_flags(obj) &= ~MADF_KNOWSACTIVE;
-	*/
+*/
 	return DOSUPER;
 }
 
 DEFMMETHOD(GoInactive)
 {
-	/*
+/*
 	GETDATA;
 	D(bug("GoInactive\n"));
 	data->is_active = FALSE;
 	data->view->webView->updateFocusedAndActiveState();
-	*/
+*/
 	return DOSUPER;
 }
 
@@ -2657,7 +2654,7 @@ DEFSMETHOD(OWBBrowser_PopupMenu)
 	    for (int i = 0; i < (itemCount + 24) / 25; i++)
 	    {
 		Object *menu = (Object *) NewObject(getmenuclass(), NULL, MUIA_Menu_Title, NULL, End;
-						    
+
 		if(menu)
 		{
 		    int j;
@@ -3686,23 +3683,58 @@ static inline LONG IsValidRect(const struct Rectangle *rect)
 {
 	return rect->MinX <= rect->MaxX && rect->MinY <= rect->MaxY;
 }
+typedef struct CompositeHookData_s {
+	struct BitMap *srcBitMap; // The source bitmap
+	struct BitMap *dstBitMap;
+	int32 srcWidth, srcHeight; // The source dimensions
+	int32 top;
+	int32 bottom;
+	int32 left;
+	int32 right;
+	uint32 retCode; // The return code from CompositeTags()
+} CompositeHookData;
+
+
+ULONG compositeHookFunc(struct Hook *hook, struct RastPort *rastPort, struct BackFillMessage *msg)
+{
+	CompositeHookData *hookData = (CompositeHookData*)hook->h_Data;
+	float destwidth,destheight;
+	int32 scalex,scaley;
+	destwidth = (hookData->right - hookData->left);
+	destheight = (hookData->bottom - hookData->top);
+	scalex = COMP_FLOAT_TO_FIX(destwidth/hookData->srcWidth);
+	scaley = COMP_FLOAT_TO_FIX(destheight/hookData->srcHeight);
+	hookData->retCode = CompositeTags(COMPOSITE_Src_Over_Dest,hookData->srcBitMap,rastPort->BitMap,
+					COMPTAG_SrcX, 0,
+					COMPTAG_SrcY,0,
+					COMPTAG_SrcWidth,hookData->srcWidth,
+					COMPTAG_SrcHeight,hookData->srcHeight,
+					COMPTAG_OffsetX,hookData->left,
+					COMPTAG_OffsetY,hookData->top,
+					COMPTAG_ScaleX, scalex,
+					COMPTAG_ScaleY,scaley,
+					COMPTAG_DestWidth,hookData->right,
+					COMPTAG_DestHeight,hookData->bottom,
+					COMPTAG_Flags,COMPFLAG_HardwareOnly | COMPFLAG_SrcFilter,
+					TAG_DONE);
+	return hookData->retCode;
+}
+
 
 DEFMMETHOD(Backfill)
 {
 	GETDATA;
 	WORD left = msg->left, top = msg->top, right = msg->right, bottom = msg->bottom;
-	struct Rectangle b1, b2, k;
+	struct Rectangle b1, b2;
 	struct Rectangle bounds = { left, top, right, bottom };
 
 //	  D(bug("backfill %d %d %d %d x_offset %d y_offset %d\n", left, top, right, bottom, mygui->x_offset, mygui->y_offset));
 
-	/* key rect */
-	k.MinX = left + data->video_x_offset;
-	k.MinY = top + data->video_y_offset;
-	k.MaxX = right - data->video_x_offset;
-	k.MaxY = bottom - data->video_y_offset;
-
-	AndRectRect(&k, &bounds);
+	data->rect.MinX = left + data->video_x_offset;
+	data->rect.MinY = top + data->video_y_offset;
+	data->rect.MaxX = right - data->video_x_offset;
+	data->rect.MaxY = bottom - data->video_y_offset;
+	AndRectRect(&data->rect, &bounds);
 
 	if (data->video_x_offset || data->video_y_offset)
 	{
@@ -3745,23 +3777,25 @@ DEFMMETHOD(Backfill)
 		if (IsValidRect(&b1))
 		{
 			RectFillColor(_rp(obj), b1.MinX, b1.MinY,
-							b1.MaxX - b1.MinX + 1, b1.MaxY - b1.MinY + 1,
-							0x00000000);
+							b1.MaxX + 1, b1.MaxY + 1,
+							0xFF000000);
 		}
 
 		if (IsValidRect(&b2))
 		{
 			RectFillColor(_rp(obj), b2.MinX, b2.MinY,
-							b2.MaxX - b2.MinX + 1, b2.MaxY - b2.MinY + 1,
-							0x00000000);
+							b2.MaxX + 1, b2.MaxY + 1,
+							0xFF000000);
 		}
 	}
 
-	if (IsValidRect(&k))
+	if (IsValidRect(&data->rect))
 	{
-		RectFillColor(_rp(obj), k.MinX, k.MinY,
-						k.MaxX - k.MinX + 1, k.MaxY - k.MinY + 1,
-						data->video_colorkey);
+			RectFillColor(_rp(obj), data->rect.MinX, data->rect.MinY,
+						data->rect.MaxX + 1, data->rect.MaxY + 1,
+						0xFF000000); // we don't need color key for compositing
+						
+			//printf("after FillPixelArray k.MinX = %d, k.MinY = %d, k.MaxY = %d, k.MaxX = %d\n", k.MinX, k.MinY,k.MaxY, k.MaxX);
 	}
 
 	return (TRUE);
@@ -3774,117 +3808,96 @@ DEFSMETHOD(OWBBrowser_VideoEnterFullPage)
 	Element *e = (Element *) msg->element;
 	HTMLMediaElement *element = (HTMLMediaElement *) msg->element;
 
-	if(e && !e->isMediaElement()) return 0;
+	if(e && !e->isMediaElement()) {
+		return 0;
+	};
 
-	if(data->video_element == element && data->video_fullscreen == msg->fullscreen) return 0;
+	if(data->video_element == element && data->video_fullscreen == msg->fullscreen) {
+		return 0;
+	};
 
 	if(element)
 	{
-#ifndef __amigaos4__
-		if(CGXVideoBase)
+		struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
+
+		if(window)
 		{
-			struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
+			IntSize size = element->player()->naturalSize();
+			//D(bug("naturalsize %dx%d\n", size.width(), size.height()));
+			ULONG vlayer_width  = size.width() & -8;
+			ULONG vlayer_height = size.height() & -2;
+			data->video_mode = PIXF_YUV420P;
+			data->srcbm = AllocBitMapTags(vlayer_width,vlayer_height,32,
+					BMATags_UserPrivate, TRUE,
+					BMATags_PixelFormat, PIXF_YUV420P,
+					TAG_DONE);
+			data->dstbm = AllocBitMapTags(vlayer_width,vlayer_height,32,
+					BMATags_Displayable, TRUE,
+					BMATags_PixelFormat, PIXF_YUV420P,
+					TAG_DONE);
 
-			if(window)
+			if(data->srcbm && data->dstbm)
 			{
-				IntSize size = element->player()->naturalSize();
-				//D(bug("naturalsize %dx%d\n", size.width(), size.height()));
-
-				ULONG vlayer_width  = size.width() & -8;
-				ULONG vlayer_height = size.height() & -2;
-
-				data->video_mode = SRCFMT_YCbCr420;
-
-				data->video_handle = CreateVLayerHandleTags(window->WScreen,
-										VOA_SrcType,      data->video_mode,
-										VOA_UseColorKey,  TRUE,
-										VOA_UseBackfill,  FALSE,
-										VOA_SrcWidth,     vlayer_width,
-										VOA_SrcHeight,    vlayer_height,
-										VOA_DoubleBuffer, TRUE,
-									    TAG_DONE);
-
-				if(!data->video_handle)
+				if ( ( (float) size.width() / (float) size.height()) < ( (float) _mwidth(obj) / (float) _mheight(obj)) )
 				{
-					DoMethod(app, MM_OWBApp_AddConsoleMessage, "[MediaPlayer] Couldn't create planar overlay layer, trying chunky instead");
-
-					data->video_mode = SRCFMT_YCbCr16;
-
-					data->video_handle = CreateVLayerHandleTags(window->WScreen,
-											VOA_SrcType,      data->video_mode,
-											VOA_UseColorKey,  TRUE,
-											VOA_UseBackfill,  FALSE,
-											VOA_SrcWidth,     vlayer_width,
-											VOA_SrcHeight,    vlayer_height,
-											VOA_DoubleBuffer, TRUE,
-										    TAG_DONE);
-				}
-
-				if(data->video_handle)
-				{
-					if ( ( (float) size.width() / (float) size.height()) < ( (float) _mwidth(obj) / (float) _mheight(obj)) )
-					{
-						// Width is too big
-						data->video_y_offset = 0;
-						data->video_x_offset = _mwidth(obj) - (ULONG) (_mheight(obj) * ( (float) size.width() / (float) size.height()));
-						data->video_x_offset /= 2;
-					}
-					else
-					{
-						// Height too big
-						data->video_y_offset = _mheight(obj) - (ULONG) (_mwidth(obj) * ( (float) size.height() / (float) size.width()));
-						data->video_y_offset /= 2;
-						data->video_x_offset = 0;
-					}
-
-					if(0 == AttachVLayerTags(data->video_handle, window,
-											  VOA_LeftIndent,   _mleft(obj) - window->BorderLeft + data->video_x_offset,
-											  VOA_RightIndent,  window->Width - window->BorderRight - 1 - _mright(obj) + data->video_x_offset,
-										 	  VOA_TopIndent,    _mtop(obj) - window->BorderTop + data->video_y_offset,
-									    	  VOA_BottomIndent, window->Height - window->BorderBottom -1 - _mbottom(obj) + data->video_y_offset,
-								              TAG_DONE))
-					{
-						data->video_fullscreen = msg->fullscreen;
-						data->video_element    = element;
-						data->video_colorkey   = GetVLayerAttr(data->video_handle, VOA_ColorKey);
-
-						enable_blanker(_screen(obj), FALSE);
-
-						// Change backfill behaviour
-						set(obj, MUIA_FillArea,       TRUE);
-						set(obj, MUIA_CustomBackfill, TRUE);
-						DoMethod(obj, MUIM_Backfill, _mleft(obj), _mtop(obj), _mright(obj), _mbottom(obj), 0, 0, 0);
-
-						if(data->video_mode == SRCFMT_YCbCr16)
-						{
-							element->player()->setOutputPixelFormat(AC_OUTPUT_YUV422);
-						}
-						else if(data->video_mode == SRCFMT_YCbCr420)
-						{                            
-							element->player()->setOutputPixelFormat(AC_OUTPUT_YUV420P);
-						}
-
-						set(data->hbargroup, MUIA_ShowMe, FALSE);
-						set(data->vbar, MUIA_ShowMe, FALSE);
-
-						Object *mediacontrolsgroup = (Object *) getv(_parent(_parent(obj)), MA_OWBGroup_MediaControlsGroup);
-						if(mediacontrolsgroup)
-						{
-							set(mediacontrolsgroup, MA_MediaControlsGroup_Browser, obj);
-							set(mediacontrolsgroup, MUIA_ShowMe, TRUE);
-						}
-					}
-					else
-					{
-						DeleteVLayerHandle(data->video_handle);
-						data->video_handle = NULL;
-					}
+					// Width is too big
+					data->video_y_offset = 0;
+					data->video_x_offset = _mwidth(obj) - (ULONG) (_mheight(obj) * ( (float) size.width() / (float) size.height()));
+					data->video_x_offset /= 2;
 				}
 				else
 				{
-					DoMethod(app, MM_OWBApp_AddConsoleMessage, "[MediaPlayer] Couldn't create overlay layer");
+					// Height too big
+					data->video_y_offset = _mheight(obj) - (ULONG) (_mwidth(obj) * ( (float) size.height() / (float) size.width()));
+					data->video_y_offset /= 2;
+					data->video_x_offset = 0;
 				}
-			}	 
+				data->video_fullscreen = msg->fullscreen;
+				data->video_element    = element;
+				
+				data->compositing = 1;
+				
+				enable_blanker(_screen(obj), FALSE);
+				// Change backfill behaviour
+				set(obj, MUIA_FillArea,       TRUE);
+				set(obj, MUIA_CustomBackfill, TRUE);
+				DoMethod(obj, MUIM_Backfill, _mleft(obj), _mtop(obj), _mright(obj), _mbottom(obj), 0, 0, 0);
+
+				if(data->video_mode == PIXF_YUV422)
+				{
+					// Not implemented
+					element->player()->setOutputPixelFormat(AC_OUTPUT_YUV422);
+				}
+				else if(data->video_mode == PIXF_YUV420P)
+				{
+					element->player()->setOutputPixelFormat(AC_OUTPUT_YUV420P);
+				}
+
+				set(data->hbargroup, MUIA_ShowMe, FALSE);
+				set(data->vbar, MUIA_ShowMe, FALSE);
+
+				Object *mediacontrolsgroup = (Object *) getv(_parent(_parent(obj)), MA_OWBGroup_MediaControlsGroup);
+				if(mediacontrolsgroup)
+				{
+					set(mediacontrolsgroup, MA_MediaControlsGroup_Browser, obj);
+					set(mediacontrolsgroup, MUIA_ShowMe, TRUE);
+				}
+			}
+			else
+			{
+				DoMethod(app, MM_OWBApp_AddConsoleMessage, "[MediaPlayer] Couldn't create overlay layer");
+				if(data->srcbm)
+				{
+					FreeBitMap(data->srcbm);
+					data->srcbm = NULL;
+				}
+				if(data->dstbm)
+				{
+					FreeBitMap(data->dstbm);
+					data->dstbm = NULL;
+				}
+				data->compositing = 0;
+			}
 		}
 	}
 	else
@@ -3910,24 +3923,24 @@ DEFSMETHOD(OWBBrowser_VideoEnterFullPage)
 		data->video_fullscreen = FALSE;
 
 		// Destroy vlayer
-		if (CGXVideoBase)
+		if(data->srcbm)
 		{
-			if (data->video_handle)
-			{
-				DetachVLayer(data->video_handle);
-				DeleteVLayerHandle(data->video_handle);
-				data->video_handle = NULL;
-			}
+			FreeBitMap(data->srcbm);
+			data->srcbm = NULL;
 		}
-#endif
+		if(data->dstbm)
+		{
+			FreeBitMap(data->dstbm);
+			data->dstbm = NULL;
+		}
+		data->compositing = 0;
+
 		// Redraw the page
 		data->view->webView->addToDirtyRegion(IntRect(0, 0, data->width, data->height));
 		data->dirty = TRUE;
 		DoMethod(obj, MM_OWBBrowser_Expose, FALSE);
-
 		enable_blanker(_screen(obj), TRUE);
 	}
-
 	return 0;
 }
 
@@ -3935,50 +3948,34 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 {
 	GETDATA;
 
+	struct Window *window = (struct Window *) getv(_win(obj), MUIA_Window);
+
+	APTR memory;
+	uint32 bytesPerRow;
+	struct PlanarYUVInfo yuvInfo;
+
+	APTR lock = LockBitMapTags(data->srcbm,
+		LBM_BaseAddress, &memory,
+		LBM_BytesPerRow, &bytesPerRow,
+		LBM_PlanarYUVInfo, &yuvInfo,
+		TAG_END);
+
 	//D(bug("blitoverlay %d %d %d\n", msg->width, msg->height, msg->linesize));
-#ifndef __amigaos4__
-	if(data->video_handle && msg->src && msg->stride && LockVLayer(data->video_handle))
+
+	if(data->compositing ==1 && msg->src && msg->stride && lock !=NULL )
 	{
 		int w = msg->width & -8;
 		int h = msg->height & -2;
-		int x = 0;
-		int y = 0;
 
 		switch(data->video_mode)
 		{
-			case SRCFMT_YCbCr16:
+			case PIXF_YUV422:
 			{
-				UBYTE *dYUV;
-				UBYTE *sYUV;
-				ULONG dtYUV, stYUV;
-
-				sYUV = msg->src[0];
-				stYUV = msg->stride[0];
-
-				if(!sYUV || !stYUV)
-					break;
-
-				dtYUV = GetVLayerAttr(data->video_handle, VOA_Modulo);
-				dYUV = (UBYTE *)GetVLayerAttr(data->video_handle, VOA_BaseAddress);
-				dYUV += (y * dtYUV) + x;
-
-				if (stYUV == dtYUV && w == msg->width)
-				{
-					CopyMem(sYUV, dYUV, dtYUV * h);
-				}
-				else do
-				{
-					CopyMem(sYUV, dYUV, w);
-					dYUV += dtYUV;
-					sYUV += stYUV;
-				} while (--h > 0);
-			
-				break;
+				// NOT IMPLEMENTED
 			}
 
-			case SRCFMT_YCbCr420:
+			case PIXF_YUV420P:
 			{
-				UBYTE *pY, *pCb, *pCr;
 				UBYTE *sY, *sCb, *sCr;
 				ULONG ptY, stY, ptCb, stCb, ptCr, stCr;
 				ULONG w2 = w >> 1;
@@ -3995,14 +3992,13 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 				if(!(sY && sCb && sCr && stY && stCb && stCr))
 					break;
 
-				ptY = GetVLayerAttr(data->video_handle, VOA_Modulo) >> 1;
-				ptCr = ptCb = ptY >> 1;
-				pY = (UBYTE *)GetVLayerAttr(data->video_handle, VOA_BaseAddress);
-				pCb = pY + (ptY * msg->height);
-				pCr = pCb + ((ptCb * msg->height) >> 1);
-				pY += (y * ptY) + x;
-				pCb += ((y * ptCb) >> 1) + (x >> 1);
-				pCr += ((y * ptCr) >> 1) + (x >> 1);
+				ptY  = yuvInfo.YBytesPerRow;
+				ptCr = yuvInfo.UBytesPerRow;
+				ptCb = yuvInfo.VBytesPerRow;
+			
+				uint8* pY  = (uint8 *)yuvInfo.YMemory;
+				uint8* pCb = (uint8 *)yuvInfo.UMemory;
+				uint8* pCr = (uint8 *)yuvInfo.VMemory;
 
 				if (stY == ptY && w == msg->width)
 				{
@@ -4035,16 +4031,37 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 				break;
 			}
 		}
+		UnlockBitMap(lock);
+		BltBitMap(data->srcbm, 0, 0, data->dstbm, 0, 0, msg->width, msg->height, 0xC0, 0xFF, NULL);
+		WaitTOF();
+		struct Hook hook;
 
-		UnlockVLayer(data->video_handle);
-		SwapVLayerBuffer(data->video_handle);
+		CompositeHookData hookData;
+
+		hookData.srcBitMap = data->dstbm;
+		hookData.srcWidth = msg->width;
+		hookData.srcHeight = msg->height;
+		hookData.left = data->rect.MinX;
+		hookData.top = data->rect.MinY;
+		hookData.right = data->rect.MaxX + 1;
+		hookData.bottom = data->rect.MaxY + 1;
+		hookData.retCode = COMPERR_Success;
+
+		hook.h_Entry = (HOOKFUNC)compositeHookFunc;
+		hook.h_Data = &hookData;
+
+		DoHookClipRects(&hook, window->RPort, &data->rect);
+		if(hookData.retCode !=0) {
+			data->compositing =0;
+			data->video_element->exitFullscreen();
+		}
+
+		return hookData.retCode;
 	}
-#endif
+
 	return 0;
 }
-
 #endif
-
 /*****************************************************************************/
 
 /* Plugin Methods */
@@ -4379,4 +4396,3 @@ DECSMETHOD(Plugin_Message)
 ENDMTABLE
 
 DECSUBCLASS_NC(MUIC_Area, owbbrowserclass)
-

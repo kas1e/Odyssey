@@ -3264,11 +3264,12 @@ void MediaPlayerPrivate::playerPaint(void *c)
 	if(ctx && ctx->mediaplayer)
 	{
 		Object *browser = NULL;
+		BalWidget *widget = NULL;
 		FrameView* frameView = ctx->mediaplayer->player()->frameView();
 
 		if(frameView)
 		{
-			BalWidget *widget = frameView->hostWindow()->platformPageClient();
+			widget = frameView->hostWindow()->platformPageClient();
 
 			if(widget)
 			{
@@ -3290,7 +3291,10 @@ void MediaPlayerPrivate::playerPaint(void *c)
 				AVFrame *frame = ac_get_frame(ctx->video);
 				if(frame)
 				{
-					DoMethod(browser, MM_OWBBrowser_VideoBlit, frame->data, frame->linesize, ctx->width, ctx->height);
+					if(widget->window && ((Object *)getv(widget->window, MA_OWBWindow_ActiveBrowser)) == widget->browser) 
+					{
+						DoMethod(browser, MM_OWBBrowser_VideoBlit, frame->data, frame->linesize, ctx->width, ctx->height);
+					}
 				}
 
 				BENCHMARK_EVALUATE;
