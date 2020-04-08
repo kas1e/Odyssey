@@ -75,6 +75,12 @@ ULONG locale_init(void)
 
 void locale_cleanup(void)
 {
-	CloseLocale(locale);
-	CloseCatalog(catalog);
+	if(catalog) {
+		CloseCatalog(catalog);
+		catalog = NULL;
+	}
+	if(locale) {
+		CloseLocale(locale);
+		locale = NULL;
+	}
 }
