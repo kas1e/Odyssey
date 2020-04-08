@@ -61,6 +61,7 @@
 #include <proto/codesets.h>
 #include <proto/diskfont.h>
 #include <proto/locale.h>
+#include <proto/asyncio.h>
 #include <proto/timer.h>
 
 #include <classes/requester.h>
@@ -159,6 +160,9 @@ struct IconIFace		*IIcon			= NULL;
 
 struct Library			*ExpatBase		= NULL;
 struct ExpatIFace		*IExpat			= NULL;
+
+struct AsyncIOBase		*AsyncIOBase	= NULL; 
+struct AsyncIOIFace		*IAsyncIO		= NULL;
 
 struct Library			*OpenURLBase	= NULL;
 struct OpenURLIFace		*IOpenURL		= NULL;
@@ -374,6 +378,12 @@ ULONG open_libs(void)
 	}
 	IExpat = (struct ExpatIFace *)GetInterface(ExpatBase, "main", 1, NULL); 
 
+	if(!(AsyncIOBase = (struct AsyncIOBase *)OpenLibrary("asyncio.library", 0))) {
+		fprintf(stderr, "Failed to open asyncio.library.\n");
+		return FALSE;
+	}
+	IAsyncIO = (struct AsyncIOIFace *)GetInterface((struct Library *)AsyncIOBase, "main", 1, NULL); 
+
 	// handle openurl differently: dind't exit if can't open, just skip it (use it only as fallback if URLOpen didn't works).
 	if(OpenURLBase = OpenLibrary("openurl.library", 0)) {
 		IOpenURL = (struct OpenURLIFace *)GetInterface(OpenURLBase, "main", 1, NULL); 
@@ -488,6 +498,12 @@ void close_libs(void)
 		DropInterface((struct Interface*)IExpat);
 		CloseLibrary(ExpatBase);
 		ExpatBase = NULL;
+	}
+
+	if(AsyncIOBase) {
+		DropInterface((struct Interface*)IAsyncIO);
+		CloseLibrary((struct Library *)AsyncIOBase);
+		AsyncIOBase = NULL;
 	}
 
 	if(OpenURLBase) {

@@ -48,16 +48,6 @@
 */
 #define D(x)
 
-#ifdef __amigaos4__
-
-#include <proto/exec.h>
-
-	struct AsyncIOBase *AsyncIOBase = NULL; 
-	struct AsyncIOIFace *IAsyncIO;
-
-#endif
-
-
 namespace WebCore {
 
 OWBFile::OWBFile(const String path)
@@ -76,16 +66,6 @@ OWBFile::~OWBFile()
 
 int OWBFile::open(char openType)
 {
-
-#ifdef __amigaos4__
-       if(!(AsyncIOBase = (struct AsyncIOBase *)OpenLibrary("asyncio.library",0L)))
-        {
-		fprintf(stderr, "Failed to open asyncio.library.\n");
-		exit(0); //return FALSE;
-
-        }
-        IAsyncIO = (struct AsyncIOIFace *) GetInterface((struct Library *)AsyncIOBase,"main",1,TAG_DONE);
-#endif 
 
 	struct AsyncFile *fd = 0;
 	char name[PATH_MAX];
@@ -220,3 +200,5 @@ int OWBFile::getSize()
 }
 
 }
+
+
