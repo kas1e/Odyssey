@@ -270,8 +270,9 @@ STATIC STRPTR useragents_labels[] =
 
 	"Nintendo WiiU",
 
-	"IPhone 6",
-	"IPhone 13",
+	"IPhone 6.0",
+	"IPhone 12.4",
+	"IPhone 13.0",
 	
 	"IPad 6.1",
 	"IPad 13.2.3",
@@ -359,6 +360,7 @@ STATIC STRPTR useragents_strings[] =
 	"Mozilla/5.0 (Nintendo WiiU) AppleWebKit/536.30 (KHTML, like Gecko) NX/3.0.4.2.13 NintendoBrowser/4.3.2.11274.US",
 
 	"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25",
+	"Mozilla/5.0 (iPhone; CPU iPhone OS 12_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile / 15E148 KAKAOTALK 8.7.8",
 	"Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/66.6 Mobile/14A5297c Safari/602.1",
 	
 	"Mozilla/5.0 (iPad; U; CPU OS 6_1 like Mac OS X; en-us) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10B141 Safari/8536.25",
