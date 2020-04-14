@@ -3715,8 +3715,8 @@ ULONG compositeHookFunc(struct Hook *hook, struct RastPort *rastPort, struct Bac
 					COMPTAG_DestY,msg->Bounds.MinY,
 					COMPTAG_ScaleX, scalex,
 					COMPTAG_ScaleY,scaley,
-					COMPTAG_DestWidth,hookData->right,
-					COMPTAG_DestHeight,hookData->bottom,
+					COMPTAG_DestWidth, msg->Bounds.MaxX - msg->Bounds.MinX + 1,
+					COMPTAG_DestHeight, msg->Bounds.MaxY - msg->Bounds.MinY + 1,
 					COMPTAG_Flags,COMPFLAG_HardwareOnly | COMPFLAG_SrcFilter,
 					TAG_DONE);
 	return hookData->retCode;
