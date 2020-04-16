@@ -280,6 +280,7 @@ struct Data
 	ULONG formautofill;
 
 	ULONG use_partial_content;
+	ULONG use_mp4;
 	ULONG use_webm;
 	ULONG use_flv;
 	ULONG use_ogg;
@@ -1469,6 +1470,12 @@ DEFGET
 		}
 		return TRUE;
 
+		case MA_OWBApp_EnableMP4:
+		{
+			*msg->opg_Storage = (ULONG) data->use_mp4;
+		}
+		return TRUE;
+
 		case MA_OWBApp_EnableVP8:
 		{
 			*msg->opg_Storage = (ULONG) data->use_webm;
@@ -2292,6 +2299,7 @@ void prefs_update(Object *obj, struct Data *data)
 	stccpy(data->certificate_path, (char *) getv(data->prefswin, MA_OWBApp_CertificatePath), sizeof(data->certificate_path));
 	data->ignoreSSLErrors = getv(data->prefswin, MA_OWBApp_IgnoreSSLErrors);
 
+	data->use_mp4 = getv(data->prefswin, MA_OWBApp_EnableMP4);
 	data->use_webm = getv(data->prefswin, MA_OWBApp_EnableVP8);
 	data->use_flv = getv(data->prefswin, MA_OWBApp_EnableFLV);
 	data->use_ogg = getv(data->prefswin, MA_OWBApp_EnableOgg);

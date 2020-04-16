@@ -211,6 +211,7 @@ enum {
 	MA_OWBApp_EnablePlugins,
 	//MA_OWBApp_AnimationPolicy,
 
+	MA_OWBApp_EnableMP4,
 	MA_OWBApp_EnableVP8,
 	MA_OWBApp_EnableFLV,
 	MA_OWBApp_EnableOgg,

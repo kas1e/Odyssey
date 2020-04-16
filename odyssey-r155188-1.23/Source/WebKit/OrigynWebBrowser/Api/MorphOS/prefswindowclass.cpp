@@ -567,6 +567,7 @@ struct Data
 	/**/
 	Object *cy_loopfilter;
 	Object *ch_partialcontent;
+	Object *ch_mp4;
 	Object *ch_webm;
 	Object *ch_flv;
 	Object *ch_ogg;
@@ -603,7 +604,7 @@ DEFNEW
 
 	Object *ch_ignoresslerrors, *str_certificatepath;
 
-	Object *cy_loopfilter, *ch_partialcontent, *ch_webm, *ch_flv, *ch_ogg;
+	Object *cy_loopfilter, *ch_partialcontent, *ch_mp4, *ch_webm, *ch_flv, *ch_ogg;
 
 	cycles_init();
 
@@ -1019,6 +1020,12 @@ DEFNEW
 								End,
 
 								Child, ColGroup(3),
+									Child, ch_mp4 = (Object *) MakePrefsCheck(GSI(MSG_PREFSWINDOW_MEDIA_USE_MP4), TRUE, MAKE_ID('S','M','M','4')),
+									Child, LLabel(GSI(MSG_PREFSWINDOW_MEDIA_USE_MP4)),
+									Child, HSpace(0),
+								End,
+
+								Child, ColGroup(3),
 									Child, ch_webm = (Object *) MakePrefsCheck(GSI(MSG_PREFSWINDOW_MEDIA_USE_WEBM), TRUE, MAKE_ID('S','M','V','8')),
 									Child, LLabel(GSI(MSG_PREFSWINDOW_MEDIA_USE_WEBM)),
 									Child, HSpace(0),
@@ -1168,6 +1175,7 @@ DEFNEW
 
 		data->cy_loopfilter = cy_loopfilter;
 		data->ch_partialcontent = ch_partialcontent;
+		data->ch_mp4  = ch_mp4;
 		data->ch_webm = ch_webm;
 		data->ch_flv  = ch_flv;
 		data->ch_ogg  = ch_ogg;
@@ -1719,6 +1727,12 @@ DEFGET
 		case MA_OWBApp_LoopFilterMode:
 		{
 			*msg->opg_Storage = (ULONG) getv(data->cy_loopfilter, MUIA_Cycle_Active);
+		}
+		return TRUE;
+
+		case MA_OWBApp_EnableMP4:
+		{
+			*msg->opg_Storage = (ULONG) getv(data->ch_mp4, MUIA_Selected);
 		}
 		return TRUE;
 
