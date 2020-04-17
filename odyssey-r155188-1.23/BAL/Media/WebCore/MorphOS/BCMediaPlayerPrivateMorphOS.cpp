@@ -91,6 +91,7 @@
 #include "../../../../WebKit/OrigynWebBrowser/Api/MorphOS/gui.h"
 #include "../../../../WebKit/OrigynWebBrowser/Api/MorphOS/utils.h"
 
+//#define USE_AHI_LIBRARY_API
 
 extern "C" {
 #define HAVE_BIGENDIAN 1
@@ -101,11 +102,12 @@ extern "C" {
 #include "acinerella.h"
 
 struct Library *ffmpegSocketBase = NULL; // Not used, but defined in my ffmpeg build
+} // extern "C"
 
-}
-
+#ifdef USE_AHI_LIBRARY_API
 #ifdef __amigaos4__
 struct AHIIFace	*IAHI		= NULL;
+#endif
 #endif
 
 /* Custom extensions to allow returning an id for the jobs sent to main task, allowing to cancel them later */
@@ -121,7 +123,7 @@ extern void removeFromMainThreadFab(long long id);
 *  D(x)    - to disable debug
 *  D(x) x  - to enable debug
 */
-#define D(x)
+#define D(x)// x
 
 /* options */
 #define USE_WEBM 1                          /* WebM/VP8/VP9 support */
@@ -333,6 +335,17 @@ private:
 
 /* Audio Stream */
 
+#ifndef USE_AHI_LIBRARY_API
+
+static const int REQUEST_COUNT = 2;
+
+struct AhiRequestWrapper
+{
+	AHIRequest* request;
+	bool sent;
+};
+#endif
+
 typedef struct 
 {
 	int                     opened;
@@ -343,15 +356,31 @@ typedef struct
 
 	/* AHI */
 	BYTE                    AHIDevice;
-	struct Library*			localAHIBase;
 	struct MsgPort*         AHImp;
+
+#ifdef USE_AHI_LIBRARY_API
+	struct Library*         localAHIBase;
 	struct AHIRequest*      AHIio;
+
 	struct AHIAudioCtrl*    actrl;
 	struct AHISampleInfo    sample0;
 	struct AHISampleInfo    sample1;
+#else
+	AhiRequestWrapper       requests[REQUEST_COUNT];
+
+	char*                   buffer1;
+	char*                   buffer2;
+
+	float                   volume;
+
+	bool                    paused;
+	bool                    killed;
+	BYTE                    sigresume;
+#endif
+
 	ULONG                   samples_loaded;
 	ULONG                   sample_count;
-	LONG 		       		sample_len;
+	LONG                    sample_len;
 	ULONG                   dbflag;
 
 	/* IPC signals */
@@ -1380,6 +1409,7 @@ struct image *imgResize(struct image *image, int destwidth, int destheight, int 
 /**********************************************************************************************/
 
 /* Audio support */
+#ifdef USE_AHI_LIBRARY_API
 #ifdef __amigaos4__
 static ULONG SoundFunc(struct Hook *hook, struct AHIAudioCtrl * actrl, struct AHISoundMessage * smsg)
 {
@@ -1424,7 +1454,9 @@ struct Hook SoundHook =
 	NULL,
 };
 #endif
+#endif // USE_AHI_LIBRARY_API
 
+#ifdef USE_AHI_LIBRARY_API
 bool MediaPlayerPrivate::audioOpen()
 {
 	_Stream *stream = (_Stream *) malloc(sizeof(_Stream));
@@ -1469,12 +1501,15 @@ bool MediaPlayerPrivate::audioOpen()
 
 			if(stream->sigsound != -1 && stream->sigkill != -1)
 			{
-				if((stream->AHImp = CreateMsgPort()))
+				if((stream->AHImp = (MsgPort *)AllocSysObjectTags(ASOT_PORT, TAG_DONE)))
 				{
-					if((stream->AHIio = (struct AHIRequest *) CreateIORequest(stream->AHImp, sizeof(struct AHIRequest))))
+					if((stream->AHIio = (AHIRequest *) AllocSysObjectTags(ASOT_IOREQUEST,
+									ASOIOR_ReplyPort, stream->AHImp,
+									ASOIOR_Size, sizeof(struct AHIRequest),
+									TAG_DONE)))
 					{
 						stream->AHIio->ahir_Version = 4;  // Open at least version 4 of 'ahi.device'.
-						if(!(stream->AHIDevice = OpenDevice(AHINAME, AHI_NO_UNIT, (struct IORequest *)stream->AHIio, NULL)))
+						if(!(stream->AHIDevice = OpenDevice(AHINAME, AHI_NO_UNIT, (struct IORequest *)stream->AHIio, 0)))
 						{
 							stream->localAHIBase = (struct Library *) stream->AHIio->ahir_Std.io_Device;
 							#ifdef __amigaos4__
@@ -1492,9 +1527,9 @@ bool MediaPlayerPrivate::audioOpen()
 							{
 								ULONG samples_count;
 
-							    AHI_GetAudioAttrs(AHI_INVALID_ID,
+								AHI_GetAudioAttrs(AHI_INVALID_ID,
 									              stream->actrl,
-												  AHIDB_MaxPlaySamples, (ULONG) &samples_count,
+									              AHIDB_MaxPlaySamples, (ULONG) &samples_count,
 									              TAG_DONE);
 
 								stream->sample_count = samples_count * 3;
@@ -1512,6 +1547,8 @@ bool MediaPlayerPrivate::audioOpen()
 
 								stream->buffer_len = stream->sample_len * 32;
 								stream->buffer     = (char *) malloc(stream->buffer_len*2);
+
+								D(bug("sample_count %u, sample_len %u, buffer_len %u\n", stream->sample_count, stream->sample_len, stream->buffer_len));
 
 								if(stream->sample0.ahisi_Address && stream->sample1.ahisi_Address && stream->buffer)
 								{
@@ -1588,6 +1625,190 @@ bool MediaPlayerPrivate::audioOpen()
 	audioClose();
 	return false;
 }
+#else
+
+enum AudioAction
+{
+        AudioAction_Pause,
+        AudioAction_Resume
+};
+
+struct AudioActionMessage
+{
+	struct Message;
+	AudioAction action;
+};
+
+bool MediaPlayerPrivate::audioOpen()
+{
+        _Stream *stream = (_Stream *) malloc(sizeof(_Stream));
+
+        m_ctx->audio_output_mutex->lock();
+
+        m_ctx->audio_stream = NULL;
+
+        if(stream)
+        {
+                m_ctx->audio_stream = stream;
+
+                memset(stream, 0, sizeof(_Stream));
+
+                stream->opened           = 0;
+                stream->dbflag           = TRUE;
+                stream->callertask       = FindTask(NULL);
+                stream->sample_channels  = m_ctx->sample_channels;
+                stream->sample_rate      = m_ctx->sample_rate;
+                stream->sample_bits      = m_ctx->sample_bits;
+                stream->AHImp            = NULL;
+                stream->AHIDevice        = 1;
+                stream->sigcaller        = AllocSignal(-1);
+                InitSemaphore(&stream->sembuffer);
+
+                if(stream->sigcaller == -1)
+                {
+                        D(bug("Failed to allocate caller signal\n"));
+                        m_ctx->audio_output_mutex->unlock();
+                        audioClose();
+                        return false;
+                }
+
+                m_lock.lock();
+                m_ctx->audiooutput_thread         = createThread(MediaPlayerPrivate::audioOutputStart, this, "[OWB] Audio Output");
+                m_ctx->audiooutput_thread_running = m_ctx->audiooutput_thread;
+                m_lock.unlock();
+
+                if(m_ctx->audiooutput_thread_running)
+                {
+                        // Wait for task initialization
+                        Wait(1L<<stream->sigcaller);
+
+                        if (stream->opened)
+			{
+				D(bug("Audio output thread is running\n"));
+				// Child thread shall open/close the AHI device
+				m_ctx->audio_output_mutex->unlock();
+				return true;
+			}
+			else
+			{
+				D(bug("Failed to initialize audio output thread\n"));
+			}
+		}
+		else
+		{
+			D(bug("Audio output thread is not running\n"));
+		}
+	}
+	else
+	{
+		D(bug("Failed to allocate _Stream\n"));
+	}
+
+	m_ctx->audio_output_mutex->unlock();
+
+	return false;
+}
+
+static bool openAhiDevice(_Stream *stream)
+{
+	// NOTE: parent process is holding the audio_output_mutex lock
+
+	D(bug("Create message port\n"));
+
+	if(!(stream->AHImp = (MsgPort *)AllocSysObjectTags(ASOT_PORT, TAG_DONE)))
+	{
+		D(bug("Failed to create message port\n"));
+		return false;
+	}
+
+	D(bug("Create AHI request\n"));
+
+	if(!(stream->requests[0].request = (AHIRequest *)AllocSysObjectTags(ASOT_IOREQUEST,
+			ASOIOR_ReplyPort, stream->AHImp,
+			ASOIOR_Size, sizeof(AHIRequest),
+			TAG_DONE)))
+	{
+		D(bug("Failed to create AHI request\n"));
+		return false;
+	}
+
+	stream->requests[0].sent = false;
+	stream->requests[0].request->ahir_Version = 4;
+
+	D(bug("Open AHI.device\n"));
+
+	if((stream->AHIDevice = OpenDevice(AHINAME, AHI_DEFAULT_UNIT, (IORequest *)stream->requests[0].request, 0)))
+	{
+		D(bug("Failed to open AHI.device\n"));
+		return false;
+	}
+
+	D(bug("Create duplicated AHI request\n"));
+
+	if (!(stream->requests[1].request = (AHIRequest *)AllocSysObjectTags(ASOT_IOREQUEST,
+		ASOIOR_Duplicate, stream->requests[0].request,
+		TAG_DONE)))
+	{
+		D(bug("[MediaPlayer Thread] Failed to duplicate IO request\n"));
+		return false;
+	}
+
+	stream->requests[1].sent = false;
+
+	stream->buffer_put = 0;
+	stream->buffer_get = 0;
+	stream->written_len = 0;
+
+	stream->sample_len = 2 * 4096;
+
+	stream->buffer1 = (char *)malloc(stream->sample_len);
+	stream->buffer2 = (char *)malloc(stream->sample_len);
+
+	stream->buffer_len = stream->sample_len * 32; // TODO
+	stream->buffer = (char *)malloc(stream->buffer_len);
+
+	D(bug("sample_len %u, buffer_len %u\n", stream->sample_len, stream->buffer_len));
+
+	if (!(stream->buffer1 && stream->buffer2))
+	{
+		D(bug("Failed to allocate playback buffers\n"));
+		return false;
+	}
+
+	stream->volume = 1.0f;
+
+	stream->opened = TRUE;
+	return true;
+}
+
+static void closeAhiDevice(_Stream *stream)
+{
+	D(bug("Closing AHI device\n"));
+
+	if(stream->AHIDevice == 0)
+	{
+		CloseDevice((IORequest *)stream->requests[0].request);
+		stream->AHIDevice = 1;
+	}
+
+	for (int i = 0; i < REQUEST_COUNT; i++)
+	{
+		FreeSysObject(ASOT_IOREQUEST, stream->requests[i].request);
+		stream->requests[i].request = NULL;
+	}
+	free(stream->buffer1);
+	stream->buffer1 = NULL;
+
+	free(stream->buffer2);
+	stream->buffer2 = NULL;
+
+	if(stream->AHImp)
+	{
+		FreeSysObject(ASOT_PORT, stream->AHImp);
+		stream->AHImp = NULL;
+	}
+}
+#endif
 
 void MediaPlayerPrivate::audioClose()
 {
@@ -1602,13 +1823,24 @@ void MediaPlayerPrivate::audioClose()
 		if(m_ctx->audiooutput_thread_running)
 		{
 			D(bug("[MediaPlayer Thread] Wait for audio output thread end\n"));
+#ifdef USE_AHI_LIBRARY_API
 			Signal(stream->audiotask, 1L<<stream->sigkill);
+#else
+			stream->killed = true;
+			if (stream->paused)
+			{
+				Signal(stream->audiotask, 1L << stream->sigresume); // TODO: this is a hack for pause-kill combo
+			}
+#endif
 			waitForThreadCompletion(m_ctx->audiooutput_thread);
 		}
 
+		FreeSignal(stream->sigcaller);
+
+#ifdef USE_AHI_LIBRARY_API // NOTE: device API specific resources are free'd in closeAhiDevice()
 		D(bug("[MediaPlayer Thread] Free AHI objects\n"));
 
-		FreeSignal(stream->sigcaller);
+		free(stream->buffer);
 
 		if(stream->samples_loaded)
 		{
@@ -1618,7 +1850,6 @@ void MediaPlayerPrivate::audioClose()
 
 		free(stream->sample0.ahisi_Address);
 		free(stream->sample1.ahisi_Address);
-		free(stream->buffer);
 
 		if(stream->actrl)
 		{
@@ -1627,19 +1858,23 @@ void MediaPlayerPrivate::audioClose()
 
 		if(stream->AHIDevice == 0)
 		{
-			CloseDevice((struct IORequest *)stream->AHIio);
 			#ifdef __amigaos4__
 			if (IAHI) DropInterface((struct Interface*) IAHI);
 			#endif
+
+			CloseDevice((struct IORequest *)stream->AHIio);
 		}
 
-		DeleteIORequest((struct IORequest *)stream->AHIio);
+		if(stream->AHIio)
+		{
+			FreeSysObject(ASOT_IOREQUEST, stream->AHIio);
+		}
 
 		if(stream->AHImp)
 		{
-			DeleteMsgPort(stream->AHImp);
+			FreeSysObject(ASOT_PORT, stream->AHImp);
 		}
-
+#endif
 		free(stream);
 
 		m_ctx->audio_stream = NULL;
@@ -1659,9 +1894,13 @@ void MediaPlayerPrivate::audioPause()
 		_Stream *stream = m_ctx->audio_stream;
 
 		D(bug("[MediaPlayer Thread] Pause audio\n"));
+#ifdef USE_AHI_LIBRARY_API
 		AHI_ControlAudio(stream->actrl,
 						 AHIC_Play, FALSE,
 						 TAG_DONE);
+#else
+		stream->paused = true;
+#endif
 	}
 
 	m_ctx->audio_output_mutex->unlock();
@@ -1676,9 +1915,13 @@ void MediaPlayerPrivate::audioResume()
 		_Stream *stream = m_ctx->audio_stream;
 
 		D(bug("[MediaPlayer Thread] Resume audio\n"));
+#ifdef USE_AHI_LIBRARY_API
 		AHI_ControlAudio(stream->actrl,
 						 AHIC_Play, TRUE,
 						 TAG_DONE);
+#else
+		Signal(stream->audiotask, 1L << stream->sigresume);
+#endif
 	}
 
 	m_ctx->audio_output_mutex->unlock();
@@ -1694,11 +1937,12 @@ void MediaPlayerPrivate::audioReset()
 
 		D(bug("[MediaPlayer Thread] Reset audio buffers\n"));
 
+#ifdef USE_AHI_LIBRARY_API
 		AHI_ControlAudio(stream->actrl,
 						 AHIC_Play, FALSE,
 						 TAG_DONE);
 
-        ObtainSemaphore(&stream->sembuffer);
+		ObtainSemaphore(&stream->sembuffer);
 
 		memset(stream->buffer, 0, stream->buffer_len);
 		memset(stream->sample0.ahisi_Address, 0, stream->sample_len);
@@ -1712,6 +1956,22 @@ void MediaPlayerPrivate::audioReset()
 		AHI_ControlAudio(stream->actrl,
 						 AHIC_Play, TRUE,
 						 TAG_DONE);
+#else
+		audioPause();
+
+		ObtainSemaphore(&stream->sembuffer);
+
+		memset(stream->buffer, 0, stream->buffer_len);
+		memset(stream->buffer1, 0, stream->sample_len);
+		memset(stream->buffer2, 0, stream->sample_len);
+		stream->buffer_get  = 0;
+		stream->buffer_put  = 0;
+		stream->written_len = 0;
+
+		ReleaseSemaphore(&stream->sembuffer);
+
+		audioResume();
+#endif
 	}
 
 	m_ctx->audio_output_mutex->unlock();
@@ -1739,8 +1999,12 @@ void MediaPlayerPrivate::audioSetVolume(float volume)
 		_Stream *stream = m_ctx->audio_stream;
 
 		D(bug("[MediaPlayer Thread] Set volume %f\n", volume));
-		
+
+#ifdef USE_AHI_LIBRARY_API
 		AHI_SetVol(0, (LONG) ((double) 0x10000L*volume), 0x8000L, stream->actrl, AHISF_IMM);
+#else
+		stream->volume = volume;
+#endif
 	}
 
 	m_ctx->audio_output_mutex->unlock();
@@ -2102,7 +2366,7 @@ bool MediaPlayerPrivate::commandInQueue()
 {
 	int size = 0;
 
-    m_lock.lock();
+	m_lock.lock();
 	//D(bug("[MediaPlayer Thread] Commands in queue %d\n", m_commandQueue.size()));
 	size = m_commandQueue.size();
 	m_lock.unlock();
@@ -2817,6 +3081,81 @@ void MediaPlayerPrivate::audioDecoder()
 	m_ctx->audio_thread_running = false;
 }
 
+#ifdef USE_AHI_LIBRARY_API
+void MediaPlayerPrivate::audioOutput()
+{
+        m_lock.lock();
+        m_lock.unlock();
+
+        D(bug("[Audio Output Thread] Hello\n"));
+
+        SetTaskPri(FindTask(NULL), 5);
+
+        _Stream *stream = (_Stream *) m_ctx->audio_stream;
+
+        stream->audiotask    = FindTask(NULL);
+        stream->sigsound     = AllocSignal(-1);
+        stream->sigkill      = AllocSignal(-1);
+
+        // Signal we're ready (or not)
+        Signal(stream->callertask, 1L<<stream->sigcaller);
+
+        if(stream->sigsound != -1 && stream->sigkill != -1)
+        {
+                while(m_ctx->running)
+                {
+                        ULONG signals = Wait( (1L<<stream->sigsound) | (1L<<stream->sigkill));
+
+                        if(signals & (1L<<stream->sigkill))
+                        {
+                                D(bug("[Audio Output Thread] sigkill received\n"));
+                                break;
+                        }
+                        else if(signals & (1L<<stream->sigsound))
+                        {
+                                ObtainSemaphore(&stream->sembuffer);
+
+                                char *dst = stream->dbflag ? (char *) stream->sample1.ahisi_Address : (char *) stream->sample0.ahisi_Address;
+
+				if(stream->written_len < stream->sample_len)
+                                {
+                                        memset(dst, 0, stream->sample_len);
+                                        ReleaseSemaphore(&stream->sembuffer);
+                                        continue;
+                                }
+
+                                //D(bug("[Audio Output Thread] [%f] Reading %ld at offset %ld\n", WTF::currentTime(), stream->sample_len, stream->buffer_get));
+                                memcpy(dst, stream->buffer + stream->buffer_get, stream->sample_len);
+
+                                stream->written_len -= stream->sample_len;
+                                if(stream->written_len < 0) stream->written_len = 0;
+                                stream->buffer_get  += stream->sample_len;
+                                stream->buffer_get  %= stream->buffer_len;
+
+                                //D(bug("[Audio Output Thread] [%f] buffer_put %ld buffer_get %ld written_len %d\n", WTF::currentTime(), stream->buffer_put, stream->buffer_get, stream->written_len));
+
+                                ReleaseSemaphore(&stream->sembuffer);
+                        }
+                }
+
+                FreeSignal(stream->sigkill);
+                FreeSignal(stream->sigsound);
+        }
+
+        D(bug("[Audio Output Thread] Bye\n"));
+
+        m_ctx->audiooutput_thread_running = false;
+}
+#else
+static void waitAhiRequest(AhiRequestWrapper* req)
+{
+	if (req && req->sent)
+	{
+		WaitIO((IORequest *)req->request);
+		req->sent = false;
+	}
+}
+
 void MediaPlayerPrivate::audioOutput()
 {
 	m_lock.lock();
@@ -2828,37 +3167,60 @@ void MediaPlayerPrivate::audioOutput()
 
 	_Stream *stream = (_Stream *) m_ctx->audio_stream;
 
-	stream->audiotask    = FindTask(NULL);
-	stream->sigsound     = AllocSignal(-1);
-	stream->sigkill      = AllocSignal(-1);
+	stream->audiotask = FindTask(NULL);
+	stream->sigresume = AllocSignal(-1);
 
-	// Signal we're ready (or not)
-	Signal(stream->callertask, 1L<<stream->sigcaller);
+	bool deviceOpen = openAhiDevice(stream);
 
-	if(stream->sigsound != -1 && stream->sigkill != -1)
+	Signal(stream->callertask, 1L << stream->sigcaller);
+
+	AhiRequestWrapper* previous = NULL;
+	AhiRequestWrapper* oldest = NULL;
+
+	if(deviceOpen && stream->sigresume != -1)
 	{
 		while(m_ctx->running)
 		{
-			ULONG signals = Wait( (1L<<stream->sigsound) | (1L<<stream->sigkill) );
+			waitAhiRequest(oldest);
 
-			if(signals & (1L<<stream->sigkill))
+			if (stream->killed)
 			{
-				D(bug("[Audio Output Thread] sigkill received\n"));
+				D(bug("Got kill signal\n"));
 				break;
 			}
-			else if(signals & (1L<<stream->sigsound))
-			{
-				ObtainSemaphore(&stream->sembuffer);
 
-				char *dst = stream->dbflag ? (char *) stream->sample1.ahisi_Address : (char *) stream->sample0.ahisi_Address;
-				
-				if(stream->written_len < stream->sample_len)
+			if (stream->paused)
+			{
+				D(bug("Got pause signal - wait\n"));
+
+				waitAhiRequest(oldest);
+				waitAhiRequest(previous);
+
+				Wait(1L << stream->sigresume);
+
+				D(bug("Resumed\n"));
+
+				if (stream->killed)
 				{
-					memset(dst, 0, stream->sample_len);
-					ReleaseSemaphore(&stream->sembuffer);
-					continue;
+					D(bug("Killed during pause\n"));
+					break;
 				}
 
+				oldest = previous = NULL;
+				stream->paused = false;
+			}
+
+			ObtainSemaphore(&stream->sembuffer);
+
+			char *dst = stream->dbflag ? stream->buffer2 : stream->buffer1;
+
+			if(stream->written_len < stream->sample_len)
+			{
+				memset(dst, 0, stream->sample_len);
+				//D(bug("Not enough data, written_len %u\n", stream->written_len));
+			}
+			else
+			{
 				//D(bug("[Audio Output Thread] [%f] Reading %ld at offset %ld\n", WTF::currentTime(), stream->sample_len, stream->buffer_get));
 				memcpy(dst, stream->buffer + stream->buffer_get, stream->sample_len);
 
@@ -2868,19 +3230,47 @@ void MediaPlayerPrivate::audioOutput()
 				stream->buffer_get  %= stream->buffer_len;
 
 				//D(bug("[Audio Output Thread] [%f] buffer_put %ld buffer_get %ld written_len %d\n", WTF::currentTime(), stream->buffer_put, stream->buffer_get, stream->written_len));
-
-				ReleaseSemaphore(&stream->sembuffer);
 			}
-		}
 
-		FreeSignal(stream->sigkill);
-		FreeSignal(stream->sigsound);
+			ReleaseSemaphore(&stream->sembuffer);
+
+			AHIRequest *req = stream->requests[stream->dbflag].request;
+			AHIRequest *prev = previous ? previous->request : NULL;
+
+			req->ahir_Std.io_Command = CMD_WRITE;
+			req->ahir_Std.io_Flags = 0;
+			req->ahir_Std.io_Data = dst;
+			req->ahir_Std.io_Length = stream->sample_len;
+			req->ahir_Std.io_Offset = 0;
+			req->ahir_Frequency = stream->sample_rate;
+			req->ahir_Type = stream->sample_channels == 2 ? AHIST_S16S : AHIST_M16S;
+			req->ahir_Volume = stream->volume * 0x10000;
+			req->ahir_Position = 0x8000;
+			req->ahir_Link = prev;
+
+			D(bug("Send AHI req %p, len %u, prev %p\n", req, stream->sample_len, prev));
+
+			SendIO((IORequest *)req);
+			stream->requests[stream->dbflag].sent = true;
+
+			oldest = previous;
+			previous = &stream->requests[stream->dbflag];
+			stream->dbflag = !stream->dbflag;
+		} // while
+
+		waitAhiRequest(oldest);
+		waitAhiRequest(previous);
+
+		FreeSignal(stream->sigresume);
 	}
+
+	closeAhiDevice(stream);
 
 	D(bug("[Audio Output Thread] Bye\n"));
 
 	m_ctx->audiooutput_thread_running = false;
 }
+#endif
 
 void MediaPlayerPrivate::playerLoop()
 {
@@ -3569,8 +3959,8 @@ bool MediaPlayerPrivate::seeking() const
 // Returns the size of the video
 IntSize MediaPlayerPrivate::naturalSize() const
 {
-    if (!hasVideo())
-        return IntSize();
+	if (!hasVideo())
+		return IntSize();
 
 	int width = m_ctx->width, height = m_ctx->height;
 	/*
@@ -3691,7 +4081,7 @@ unsigned MediaPlayerPrivate::bytesLoaded() const
 {
 	long res;
 
-    if (m_errorOccured)
+	if (m_errorOccured)
 	{
 		return 0;
 	}
@@ -3718,8 +4108,8 @@ void MediaPlayerPrivate::cancelLoad()
 {
 	D(bug("[MediaPlayer] cancelLoad()\n"));
 
-    if (m_networkState < MediaPlayer::Loading || m_networkState == MediaPlayer::Loaded)
-        return;
+	if (m_networkState < MediaPlayer::Loading || m_networkState == MediaPlayer::Loaded)
+		return;
 
 	/* Cancel ResourceHandle */
 	cancelFetch();
@@ -3748,8 +4138,8 @@ void MediaPlayerPrivate::callTimeChanged(void *c)
 
 void MediaPlayerPrivate::updateStates(MediaPlayer::NetworkState networkState, MediaPlayer::ReadyState readyState)
 {
-    if (m_errorOccured || !m_ctx->running)
-        return;
+	if (m_errorOccured || !m_ctx->running)
+		return;
 
 	if(m_player)
 	{  
@@ -3853,11 +4243,11 @@ void MediaPlayerPrivate::repaint()
 
 void MediaPlayerPrivate::paint(GraphicsContext* context, const IntRect& rect)
 {
-    if (context->paintingDisabled())
-        return;
+	if (context->paintingDisabled())
+		return;
 
-    if (!m_visible)
-        return;
+	if (!m_visible)
+		return;
 
 	Object *browser = NULL;
 	FrameView* frameView = player()->frameView();
@@ -4099,4 +4489,3 @@ void MediaPlayerPrivate::setOutputPixelFormat(int pixfmt)
 }
 
 #endif
-
