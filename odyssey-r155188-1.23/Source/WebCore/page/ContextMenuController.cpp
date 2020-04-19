@@ -905,7 +905,7 @@ void ContextMenuController::populate()
     ContextMenuItem CopyMediaLinkItem(ActionType, ContextMenuItemTagCopyMediaLinkToClipboard, String());
     ContextMenuItem MediaPlayPause(ActionType, ContextMenuItemTagMediaPlayPause, 
         contextMenuItemTagMediaPlay());
-    ContextMenuItem MediaMute(ActionType, ContextMenuItemTagMediaMute, 
+    ContextMenuItem MediaMute(CheckableActionType, ContextMenuItemTagMediaMute,
         contextMenuItemTagMediaMute());
 #if SUPPORTS_TOGGLE_SHOW_HIDE_MEDIA_CONTROLS
     ContextMenuItem ToggleMediaControls(ActionType, ContextMenuItemTagToggleMediaControls,
