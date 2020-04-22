@@ -3730,7 +3730,7 @@ DEFMMETHOD(Backfill)
 	struct Rectangle b1, b2;
 	struct Rectangle bounds = { left, top, right, bottom };
 
-//	  D(bug("backfill %d %d %d %d x_offset %d y_offset %d\n", left, top, right, bottom, mygui->x_offset, mygui->y_offset));
+//	D(bug("backfill %d %d %d %d x_offset %d y_offset %d\n", left, top, right, bottom, mygui->x_offset, mygui->y_offset));
 
 	data->rect.MinX = left + data->video_x_offset;
 	data->rect.MinY = top + data->video_y_offset;
@@ -3771,33 +3771,24 @@ DEFMMETHOD(Backfill)
 
 		AndRectRect(&b1, &bounds);
 		AndRectRect(&b2, &bounds);
-	}
 
-	/* draw rects, if visible */
-	if (data->video_x_offset || data->video_y_offset)
-	{
+		/* draw rects, if visible */
 		if (IsValidRect(&b1))
 		{
-			RectFillColor(_rp(obj), b1.MinX, b1.MinY,
-							b1.MaxX + 1, b1.MaxY + 1,
-							0xFF000000);
+			RectFillColor(_rp(obj), b1.MinX-1, b1.MinY, b1.MaxX+1, b1.MaxY+1, 0xFF000000);
 		}
 
 		if (IsValidRect(&b2))
 		{
-			RectFillColor(_rp(obj), b2.MinX, b2.MinY,
-							b2.MaxX + 1, b2.MaxY + 1,
-							0xFF000000);
+			RectFillColor(_rp(obj), b2.MinX-1, b2.MinY, b2.MaxX+1, b2.MaxY+1, 0xFF000000);
 		}
 	}
 
 	if (IsValidRect(&data->rect))
 	{
-			RectFillColor(_rp(obj), data->rect.MinX, data->rect.MinY,
-						data->rect.MaxX + 1, data->rect.MaxY + 1,
-						0xFF000000); // we don't need color key for compositing
-						
-			//printf("after FillPixelArray k.MinX = %d, k.MinY = %d, k.MaxY = %d, k.MaxX = %d\n", k.MinX, k.MinY,k.MaxY, k.MaxX);
+			RectFillColor(_rp(obj), data->rect.MinX-1, data->rect.MinY,
+						data->rect.MaxX+1, data->rect.MaxY+1,
+						0xFF000000);
 	}
 
 	return (TRUE);
