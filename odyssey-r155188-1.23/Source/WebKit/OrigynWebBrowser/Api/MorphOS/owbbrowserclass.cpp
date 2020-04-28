@@ -209,6 +209,32 @@ Object *create_browser(char * url, ULONG is_frame, Object *title, APTR sourcevie
 						TAG_DONE);
 }
 
+#if ENABLE(VIDEO)
+/* hide/show cursor in fullscreen*/
+unsigned long microseconds1 = 0, microseconds2 = 0, seconds1 = 0, seconds2 = 0;
+bool mouse_hidden = false;
+static UWORD *EmptyPointer = NULL;
+
+void ShowMouse(Window *window, unsigned long enable)
+{
+	if(enable)
+	{
+		ClearPointer(window);
+		if(EmptyPointer) {
+			FreeVec(EmptyPointer);
+			EmptyPointer = NULL;
+		}
+	}
+	else
+	{
+		EmptyPointer = (UWORD *)AllocVec(12,MEMF_CLEAR);
+		if(EmptyPointer) SetPointer(window, EmptyPointer, 1, 16, 0, 0);
+	}
+	mouse_hidden = !enable;
+}
+#endif
+
+
 /**/
 
 static void autoscroll_add(Object *obj, struct Data *data, IntuiMessage *im);
@@ -1984,7 +2010,7 @@ DEFMMETHOD(HandleEvent)
 		/* FullScreen Video mode events */
 		if(data->video_fullscreen && data->video_element && _isinobject(obj, MouseX, MouseY))
 		{
-            mouse_inside = 0;
+			mouse_inside = 0;
 
 			switch(Class)
 			{
@@ -2002,8 +2028,14 @@ DEFMMETHOD(HandleEvent)
 					break;
 				}
 
-	            case IDCMP_MOUSEBUTTONS:
+				case IDCMP_MOUSEBUTTONS:
 				{
+
+					if (mouse_hidden)
+					{
+						ShowMouse(_window(obj), true);
+					}
+
 					switch(Code & ~IECODE_UP_PREFIX)
 					{
 						case IECODE_LBUTTON:
@@ -2013,7 +2045,7 @@ DEFMMETHOD(HandleEvent)
 								double now = currentTime();
 								if(DoubleClick((ULONG) data->video_lastclick, (ULONG) ((data->video_lastclick - floor(data->video_lastclick)) * 1000000), (ULONG) now, (ULONG) ((now - floor(now)) * 1000000)))
 								{
-		                            data->video_element->exitFullscreen();
+									data->video_element->exitFullscreen();
 								}
 
 								data->video_lastclick = currentTime();
@@ -2047,6 +2079,15 @@ DEFMMETHOD(HandleEvent)
 					}
 					break;
 				}
+
+				case IDCMP_MOUSEMOVE:
+				{
+					if (mouse_hidden)
+					{
+						ShowMouse(_window(obj), true);
+					}
+				}
+				break;
 
 				case IDCMP_RAWKEY:
 				{
@@ -2146,6 +2187,12 @@ DEFMMETHOD(HandleEvent)
 
             case IDCMP_MOUSEBUTTONS:
 			{
+#if ENABLE(VIDEO)
+				if (mouse_hidden)
+				{
+					ShowMouse(_window(obj), true);
+				}
+#endif
 				mouse_inside = 0;
 
 				if (_isinobject(obj, MouseX, MouseY))
@@ -2268,6 +2315,12 @@ DEFMMETHOD(HandleEvent)
 
 	        case IDCMP_MOUSEMOVE:
 			{
+#if ENABLE(VIDEO)
+				if (mouse_hidden)
+				{
+					ShowMouse(_window(obj), true);
+				}
+#endif
 				if(data->is_scrolling)
 				{
 					// Act depending on scrolling mode
@@ -3959,6 +4012,24 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 	{
 		int w = msg->width & -8;
 		int h = msg->height & -2;
+
+		if (!mouse_hidden)
+		{
+			if (!seconds1 && !microseconds1)
+			{
+				CurrentTime(&seconds1, &microseconds1);
+			}
+			else
+			{
+				CurrentTime(&seconds2, &microseconds2);
+				if (seconds2-seconds1>=2)
+				{
+					// Ok, hide cursor
+					ShowMouse(window, false);
+					seconds1=seconds2=microseconds1=microseconds2=0;
+				}
+			}
+		}
 
 		switch(data->video_mode)
 		{
