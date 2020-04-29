@@ -772,7 +772,9 @@ char *rexx_result(void)
 
 int send_external_notification(struct external_notification *notification)
 {
+#ifndef __amigaos4__
 	struct MsgPort *replyport, *port;
+#endif
 	ULONG result = 20; /* no port then tell user */
 
 #ifdef __amigaos4__
@@ -791,18 +793,18 @@ int send_external_notification(struct external_notification *notification)
 
 	// send ringhio notification as well
 			Notify(appID,
-               APPNOTIFY_Title, notification->type,
-               APPNOTIFY_Text, notification->message,
-               APPNOTIFY_ImageFile, (STRPTR)iconname,
-               APPNOTIFY_PubScreenName, "FRONT",
-               TAG_END);
+				APPNOTIFY_Title, notification->type,
+				APPNOTIFY_Text, notification->message,
+				APPNOTIFY_ImageFile, (STRPTR)iconname,
+				APPNOTIFY_PubScreenName, "FRONT",
+			TAG_END);
 
-	if (iconname) FreeVec(iconname);	
-	
+	if (iconname) FreeVec(iconname);
+
 	result = 0;
 
-#else	
-		
+#else
+
 	if( ( replyport = CreateMsgPort() ) )
 	{
 		struct MagicBeaconNotificationMessage mbnm;
@@ -916,11 +918,11 @@ Vector<String> get_available_dictionaries()
 {
 	Vector<String> dictionaries;
 
-    DIR* dir = opendir("LOCALE:Dictionaries");
+	DIR* dir = opendir("LOCALE:Dictionaries");
 
 	if(dir)
 	{
-	    struct dirent* file;
+		struct dirent* file;
 
 		while ((file = readdir(dir)))
 		{
@@ -931,9 +933,9 @@ Vector<String> get_available_dictionaries()
 				dictionaries.append(String::fromUTF8(entry));
 				free(entry);
 			}
-	    }
+		}
 
-	    closedir(dir);
+		closedir(dir);
 	}
 
 	return dictionaries;
@@ -943,17 +945,44 @@ bool dictionary_can_learn()
 {
 #ifndef __amigaos4__
 	return (SpellCheckerBase->lib_Version > 50 || (SpellCheckerBase->lib_Version == 50 && SpellCheckerBase->lib_Revision >= 1));
-#endif	
+#endif
 }
 
 
 /* Blanker support */
 
+#ifdef __amigaos4__
+
+#include <proto/application.h>
+
+extern uint32 appID;
+
+void enable_blanker(struct Screen *screen, ULONG enable)
+{
+			if(enable)
+			{
+					// enable screenblanker
+					SetApplicationAttrs(appID,
+								APPATTR_AllowsBlanker, TRUE,
+								APPATTR_NeedsGameMode, FALSE,
+					TAG_END);
+			}
+			else
+			{
+					// disable screenblanker
+					SetApplicationAttrs(appID,
+								APPATTR_AllowsBlanker, FALSE,
+								APPATTR_NeedsGameMode, TRUE,
+					TAG_END); 
+			}
+}
+
+#else // MorphOS
+
 static int blanker_count = 0; /* not too useful, but it should be 0 at the end */
 
 void enable_blanker(struct Screen *screen, ULONG enable)
 {
-#ifndef __amigaos4__
 	struct Library * ibase = (struct Library *) IntuitionBase;
 	if(ibase)
 	{
@@ -971,7 +1000,7 @@ void enable_blanker(struct Screen *screen, ULONG enable)
 			if(!screen)
 			{
 				screen = LockPubScreen (NULL);
-                UnlockPubScreen(NULL, screen);
+				UnlockPubScreen(NULL, screen);
 			}
 
 			if(screen)
@@ -981,8 +1010,8 @@ void enable_blanker(struct Screen *screen, ULONG enable)
 			}
 		}
 	}
-#endif		
 }
+#endif
 
 /* Memory guards */
 
