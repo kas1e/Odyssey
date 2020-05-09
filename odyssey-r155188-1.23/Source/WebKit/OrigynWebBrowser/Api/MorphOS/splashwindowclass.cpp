@@ -208,7 +208,7 @@ DEFNEW
 			WindowContents, VGroup,
 					Child, HGroup,
 						Child, HSpace(50),
-						Child, MUI_NewObject(MUIC_Dtpic, MUIA_Dtpic_Name, "PROGDIR:resource/about.png"),
+						Child, MUI_NewObject(MUIC_Dtpic, MUIA_Dtpic_Name, "PROGDIR:resource/about.png",TAG_DONE),
 						Child, HSpace(50),
 						End,
 
