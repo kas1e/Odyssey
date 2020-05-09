@@ -17,7 +17,10 @@ int stccpy(char *p, const char *q, int n)
    return p - t;
 }
 
-
+// old realisation with calling DoSuperMethod which internally do call DoSuperMethodA.
+// that mean one unnecessary step and more stack used in compare with calling DoSuperMethodA directly
+// keeping here for reference.
+/*
 Object * VARARGS68K DoSuperNew(struct IClass *cl, Object *obj, ...)
 {
 Object *rc;
@@ -29,7 +32,23 @@ va_end(args);
 
 return rc;
 }
+*/
 
+Object * STDARGS VARARGS68K DoSuperNew(struct IClass *cl, Object * obj, ...)
+{
+        Object *rc;
+        va_list args;
+        struct opSet msg;
+
+        va_start(args, obj);
+        msg.MethodID = OM_NEW;
+        msg.ops_AttrList = va_getlinearva(args, struct TagItem *);
+        msg.ops_GInfo = NULL;
+        rc = (Object *)DoSuperMethodA(cl, obj, (Msg)&msg);
+        va_end(args);
+
+        return rc;
+}
 
 #define AllocVecShared(size, flags)  AllocVecTags((size), AVT_Type, MEMF_SHARED, AVT_Lock, FALSE, ((flags)&MEMF_CLEAR) ? AVT_ClearWithValue : TAG_IGNORE, 0, TAG_DONE)
 
