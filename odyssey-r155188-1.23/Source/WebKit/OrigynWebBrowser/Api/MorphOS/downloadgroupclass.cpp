@@ -561,12 +561,13 @@ DEFSMETHOD(Download_Done)
 
 			// Notify
 			#ifdef __amigaos4__
-			struct external_notification notification = { "Download Completed", dl->filename };
+			stccpy(dl->status, GSI(MSG_NOTIFY_DL_COMPLETED), sizeof(dl->status));
+			struct external_notification notification = { dl->status, dl->filename };
+			//struct external_notification notification = { "Download Completed", dl->filename };
 			#else
 			struct external_notification notification = { "OWB.TRANSFERDONE", dl->filename };
 			#endif
-			send_external_notification(&notification);			
-			
+			send_external_notification(&notification);
 			break;
 		}
 
@@ -596,7 +597,9 @@ DEFSMETHOD(Download_Cancelled)
 
 			// Notify
 			#ifdef __amigaos4__
-			struct external_notification notification = { "Download Cancelled", dl->filename };
+			stccpy(dl->status, GSI(MSG_NOTIFY_DL_CANCELLED), sizeof(dl->status));
+			struct external_notification notification = { dl->status, dl->filename };
+			//struct external_notification notification = { "Download Cancelled", dl->filename };
 			#else
 			struct external_notification notification = { "OWB.TRANSFERCANCELLED", dl->filename };
 			#endif
@@ -647,12 +650,14 @@ DEFSMETHOD(Download_Error)
 
 				// Notify
 				#ifdef __amigaos4__
-				struct external_notification notification = { "Download Failed", dl->filename };
+				stccpy(dl->status, GSI(MSG_NOTIFY_DL_FAILED), sizeof(dl->status));
+				struct external_notification notification = { dl->status, dl->filename };
+				//struct external_notification notification = { "Download Failed", dl->filename };
 				#else
 				struct external_notification notification = { "OWB.TRANSFERFAILED", dl->filename };
 				#endif
 				send_external_notification(&notification);
-				
+
 				break;
 			}
 
@@ -756,12 +761,14 @@ DEFSMETHOD(Download_Cancel)
 
 			// Notify
 			#ifdef __amigaos4__
-			struct external_notification notification = { "Download Cancelled", dl->filename };
+			stccpy(dl->status, GSI(MSG_NOTIFY_DL_CANCELLED), sizeof(dl->status));
+			struct external_notification notification = { dl->status, dl->filename };
+			//struct external_notification notification = { "Download Cancelled", dl->filename };
 			#else
 			struct external_notification notification = { "OWB.TRANSFERCANCELLED", dl->filename };
 			#endif
 			send_external_notification(&notification);
-			
+
 			stccpy(dl->status, GSI(MSG_DOWNLOADGROUP_CANCELLED_BY_USER), sizeof(dl->status));
 
 			DoMethod(data->lv_downloads, MUIM_List_Remove, MUIV_List_Remove_Active);
