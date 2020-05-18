@@ -70,6 +70,8 @@ DEFCLASS(contextmenugroup);
 DEFCLASS(contextmenulist);
 DEFCLASS(mimetypegroup);
 DEFCLASS(mimetypelist);
+DEFCLASS(useragentgroup);
+DEFCLASS(useragentlist);
 DEFCLASS(choosetitlegroup);
 DEFCLASS(toolbutton_newtab);
 DEFCLASS(toolbutton_addbookmark);
@@ -627,6 +629,9 @@ enum {
 
 	/* Prefs Window */
 	MM_PrefsWindow_Fill,
+	MM_PrefsWindow_SaveUserAgents,
+	MM_PrefsWindow_UseUserAgents,
+	MM_PrefsWindow_CancelUserAgents,
 
 	/* ContextMenuGroup */
 	MM_ContextMenuGroup_Add,
@@ -790,6 +795,14 @@ enum {
 	MA_DateTimeChooserPopup_Controller,
 
 	MM_DateTimeChooserPopup_DidSelect,
+
+	/* UserAgentGroup */
+	MM_UserAgentGroup_Add,
+	MM_UserAgentGroup_Remove,
+	MM_UserAgentGroup_Refresh,
+	MM_UserAgentGroup_Change,
+	MM_UserAgentGroup_ShowInMenu,
+	MM_UserAgentGroup_Active,
 
 	MA_dummyend
 };

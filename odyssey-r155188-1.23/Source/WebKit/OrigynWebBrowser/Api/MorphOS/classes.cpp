@@ -128,6 +128,8 @@ static const struct classdesc cd[] = {
 	CLASSENT(autofillpopuplist),
 	CLASSENT(colorchooserpopup),
 	CLASSENT(datetimechooserpopup),
+	CLASSENT(useragentgroup),
+	CLASSENT(useragentlist),
 
 	{ 0, 0, 0 }
 };

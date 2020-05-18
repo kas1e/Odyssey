@@ -65,6 +65,8 @@ if(USE_GRAPHICS_MORPHOS)
     Api/MorphOS/contextmenulistclass.cpp
     Api/MorphOS/mimetypegroupclass.cpp
     Api/MorphOS/mimetypelistclass.cpp
+    Api/MorphOS/useragentgroupclass.cpp
+    Api/MorphOS/useragentlistclass.cpp
     Api/MorphOS/choosetitlegroupclass.cpp
     Api/MorphOS/toolbutton_newtabclass.cpp
     Api/MorphOS/toolbutton_addbookmarkclass.cpp

@@ -89,6 +89,10 @@
 */
 #define D(x)
 
+#ifndef get
+#define get(obj,attr,store) GetAttr(attr,obj,(ULONG *)store)
+#endif
+
 /******************************************************************
  * owbwindowclass
  *****************************************************************/
@@ -96,6 +100,7 @@
 extern ULONG get_user_agent_count();
 extern CONST_STRPTR * get_user_agent_labels();
 extern CONST_STRPTR * get_user_agent_strings();
+extern ULONG get_builtin_user_agents();
 
 using namespace WebCore;
 
@@ -2598,22 +2603,53 @@ DEFSMETHOD(OWBWindow_UpdateUserScript)
 	return 0;
 }
 
+//SpoofUserAgent
 DEFTMETHOD(OWBWindow_BuildSpoofMenu)
 {
-	ULONG i = 0;
-	Object *item;
+	Object *item, *SpoofAsDefaultItem = NULL, *tmp = NULL;
 	Object *strip = (Object *) getv(obj, MUIA_Window_Menustrip);
 	Object *menu  = (Object *) DoMethod(strip, MUIM_FindUData, MNA_SETTINGS_SPOOF_AS);
 	CONST_STRPTR * labels = get_user_agent_labels();
 	CONST_STRPTR * agents = get_user_agent_strings();
+	ULONG count, bits, i = 0, j = 0;
 
+	D(bug("OWBWindow_BuildSpoofMenu:\n"));
 	DoMethod(menu, MUIM_Menustrip_InitChange);
+
+	// Remove all items except "MNA_SETTINGS_SPOOF_AS_DEFAULT" ("cloned" from bookmarkgroupclass.cpp)
+	while( (item=(Object *)DoMethod(menu, MUIM_Family_GetChild, MUIV_Family_GetChild_Next, tmp)) )
+	{
+		get(item, MUIA_UserData, &i);
+		if(i == MNA_SETTINGS_SPOOF_AS_DEFAULT)
+		{
+			SpoofAsDefaultItem = item;
+			break;
+		}
+
+		if( j < get_builtin_user_agents() ) // keep BUILT-IN entry
+		{
+			//D(bug("spoof menuitem 0x%08x (built-in=%d)\n",item,j+1));
+			tmp = item;
+			++j;
+			++labels; ++agents; // skip built-in user-agents
+		}
+		else
+		{
+			//D(bug("spoof menuitem 0x%08x (removing)\n",item));
+			DoMethod(menu, OM_REMMEMBER, item);
+			DoMethod(item, OM_DISPOSE);
+		}
+	}
+
+	i = j; // skip built-in user-agents
+	//tmp = NULL;
 
 	while(*labels)
 	{
-		ULONG bits = 0;
-		ULONG count = get_user_agent_count() + 1; /* +1 for default entry */
-        struct menu_entry *menu_entry;
+		struct menu_entry *menu_entry;
+
+		bits = 0;
+		count = get_user_agent_count() + 1; /* +1 for default entry */
 
 		while(count--)
 		{
@@ -2641,7 +2677,17 @@ DEFTMETHOD(OWBWindow_BuildSpoofMenu)
 			if(item)
 			{
 				set(item, MUIA_Menuitem_Exclude, bits);
-				DoMethod(menu, MUIM_Family_AddTail, item);
+
+				if(tmp)
+				{
+					DoMethod(menu, MUIM_Family_Insert, item, tmp); // add after LAST "stored" item
+				}
+				else
+				{
+					DoMethod(menu, MUIM_Family_AddHead, item);
+					//DoMethod(menu, MUIM_Family_AddTail, item);
+				}
+				tmp = item; // "store" previous menuitem
 			}
 		}
 
@@ -2650,27 +2696,34 @@ DEFTMETHOD(OWBWindow_BuildSpoofMenu)
 		i++;
 	}
 
-	item = (Object *) NewObject(getmenuitemclass(), NULL,
-		MUIA_Menuitem_Title, strdup(GSI(MSG_MENU_DEFAULT)),
-		MUIA_UserData, MNA_SETTINGS_SPOOF_AS_DEFAULT,
-		MA_MenuItem_FreeUserData, FALSE, // Don't free that one, thanks. :)
-		MUIA_Menuitem_Checkit, TRUE,
-		MUIA_Menuitem_Checked, TRUE,
-		End;
+	bits = 0;
+	count = get_user_agent_count() + 1 - 1; // +1 for default entry, -1 to not exclude us
 
-	if(item)
+	while(count--)
 	{
-		ULONG bits = 0;
-		ULONG count = get_user_agent_count() + 1 - 1; /* +1 for default entry, -1 to not exclude us */
+		bits |= 1 << count;
+	}
 
-		while(count--)
+	if(!SpoofAsDefaultItem)
+	{
+		item = (Object *) NewObject(getmenuitemclass(), NULL,
+			MUIA_Menuitem_Title, strdup(GSI(MSG_MENU_DEFAULT)),
+			MUIA_UserData, MNA_SETTINGS_SPOOF_AS_DEFAULT,
+			MA_MenuItem_FreeUserData, FALSE, // Don't free that one, thanks. :)
+			MUIA_Menuitem_Checkit, TRUE,
+			MUIA_Menuitem_Checked, TRUE,
+			End;
+
+		if(item)
 		{
-			bits |= 1 << count;
+			set(item, MUIA_Menuitem_Exclude, bits);
+
+			DoMethod(menu, MUIM_Family_AddTail, item);
 		}
-
-        set(item, MUIA_Menuitem_Exclude, bits);
-
-		DoMethod(menu, MUIM_Family_AddTail, item);
+	}
+	else
+	{
+		set(SpoofAsDefaultItem, MUIA_Menuitem_Exclude, bits);
 	}
 
 	DoMethod(menu, MUIM_Menustrip_ExitChange);

@@ -159,6 +159,8 @@ struct MinList contextmenu_list;
 struct MinList mimetype_list;
 struct MinList urlsetting_list;
 struct MinList family_list;
+struct MinList useragent_list;
+struct MinList ua_list_bak;
 
 static const CONST_STRPTR classlist[] = {
 	"Lamp.mcc",
@@ -901,6 +903,8 @@ DEFNEW
 	NEWLIST(&mimetype_list);
 	NEWLIST(&urlsetting_list);
 	NEWLIST(&family_list);
+	NEWLIST(&useragent_list);
+	NEWLIST(&ua_list_bak);
 
 	#ifndef __amigaos4__
 	installClipboardMonitor();
@@ -2268,6 +2272,19 @@ void prefs_update(Object *obj, struct Data *data)
 	int activeconnections = (int) getv(data->prefswin, MA_OWBApp_ActiveConnections);
 	ResourceHandleManager::setMaxConnections(activeconnections);
 	stccpy(data->useragent, (char *) getv(data->prefswin, MA_OWBApp_UserAgent), sizeof(data->useragent));
+
+	FORCHILD(app, MUIA_Application_WindowList)
+	{
+		//D(bug("Search for main AppWindow\n"));
+		if(getv(child, MA_OWB_WindowType) == MV_OWB_Window_Browser)
+		{
+			//D(bug("Rebuild spoof menu\n"));
+			DoMethod((Object *) child, MM_OWBWindow_BuildSpoofMenu);
+			break;
+		}
+	}
+	NEXTCHILD
+
 	ResourceHandleManager *sharedResourceHandleManager = ResourceHandleManager::sharedInstance();
 	if(getv(data->prefswin, MA_OWBApp_ProxyEnabled))
 		sharedResourceHandleManager->setProxyInfo(
@@ -2393,8 +2410,15 @@ DEFSMETHOD(OWBApp_PrefsSave)
 
 	if (msg->SaveENVARC)
 	{
+		DoMethod(data->prefswin, MM_PrefsWindow_SaveUserAgents);
+
 		DoMethod(obj, MUIM_Application_Save, APPLICATION_ENVARC_PREFS);
 	}
+	else
+	{
+		DoMethod(data->prefswin, MM_PrefsWindow_UseUserAgents);
+	}
+
 	DoMethod(obj, MUIM_Application_Save, APPLICATION_ENV_PREFS);
 
 	prefs_update(obj, data);
@@ -2406,6 +2430,8 @@ DEFTMETHOD(OWBApp_PrefsCancel)
 {
 	GETDATA;
 
+	DoMethod(data->prefswin, MM_PrefsWindow_CancelUserAgents);
+	
 	DoMethod(obj, MUIM_Application_Load, APPLICATION_ENV_PREFS);
 
 	prefs_update(obj, data);

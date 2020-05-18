@@ -319,6 +319,15 @@ struct history_entry
 	APTR bookmarkimg;
 };
 
+struct useragentnode
+{
+	struct MinNode node;
+	int uan_flags;
+	char *uan_status; // human readable string of uan_flags
+	char *uan_label;
+	char *uan_string;
+};
+
 /* menu entries */
 enum { MENUTYPE_BOOKMARK, MENUTYPE_CLOSEDVIEW, MENUTYPE_HISTORY, MENUTYPE_SPOOF };
 
@@ -337,6 +346,8 @@ extern struct MinList contextmenu_list;
 extern struct MinList mimetype_list;
 extern struct MinList urlsetting_list;
 extern struct MinList family_list;
+extern struct MinList useragent_list;
+extern struct MinList ua_list_bak;
 
 extern struct NewMenu MenuData[];
 extern Object *app;

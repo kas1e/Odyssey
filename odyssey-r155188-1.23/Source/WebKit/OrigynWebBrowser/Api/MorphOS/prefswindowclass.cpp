@@ -40,7 +40,6 @@
 #include "gui.h"
 
 #include <exec/resident.h>
-#include "WebKitVersion.h"
 
 #define LABEL(x) (STRPTR)MSG_PREFSWINDOW_##x
 
@@ -57,6 +56,7 @@ STATIC STRPTR prefslist[] =
 	LABEL(CATEGORY_PRIVACY),
 	LABEL(CATEGORY_SECURITY),
 	LABEL(CATEGORY_MEDIA),
+	LABEL(CATEGORY_SPOOFING),
 	NULL
 };
 
@@ -236,153 +236,11 @@ STATIC CONST int proxy_values[] =
     NULL,
 };
 
-struct useragent_pair
-{
-	STRPTR label;
-	STRPTR string;
-};
-
-/* Keep the two arrays below in sync */
-STATIC STRPTR useragents_labels[] =
-{
-	"Odyssey Web Browser",
-
-	"Firefox 3.6 (Windows)",
-	"Firefox 25 (Windows)",
-	"Firefox 74 (Windows)",
-
-	"Internet Explorer 6",
-	"Internet Explorer 8",
-	"Internet Explorer 10",
-	"Internet Explorer 11",
-
-	"Edge 80 (Windows)",
-
-	"Opera 12.14 (Windows)",
-	"Opera 12.16 (Mac)",
-	"Opera 67 (Mac)",
-	
-	"Safari 6.0.2 (Mac)",
-	"Safari 13 (Mac)",
-	
-	"Chrome 32 (Windows)",
-	"Chrome 80 (Windows)",
-
-	"Nintendo WiiU",
-
-	"IPhone 6.0",
-	"IPhone 12.4",
-	"IPhone 13.0",
-	
-	"IPad 6.1",
-	"IPad 13.2.3",
-
-	NULL
-};
-
-#define xstringify(s) stringify(s)
-#define stringify(s) #s
-
-#define WEBKITVER xstringify(WEBKIT_MAJOR_VERSION) "." xstringify(WEBKIT_MINOR_VERSION)
-#ifdef __amigaos4__
-//const char verfmt[] = "Mozilla/5.0 (Amiga; PowerPC AmigaOS %u.%u; Odyssey Web Browser; rv:" VERSION ") AppleWebKit/" WEBKITVER " (KHTML, like Gecko) OWB/" VERSION " Safari/" WEBKITVER;
-// use macintosh to avoid switching to mobile, etc
-const char verfmt[] = "Mozilla/5.0 (Macintosh; PowerPC AmigaOS %u.%u; Odyssey Web Browser; rv:" VERSION ") AppleWebKit/" WEBKITVER " (KHTML, like Gecko) OWB/" VERSION " Safari/" WEBKITVER;
-STATIC char odysseyuseragent[sizeof(verfmt) + 2 * (10 - 2)];
-
-void init_useragent()
-{
-	ULONG version = 4, revision = 1; // Default OS4.1
-	struct Resident *res = FindResident("exec.library");
-	if (res)
-	{
-		if (res->rt_Version >= 60)
-		{
-			version = 5; // Oooo! Future proof :)
-			revision = 0;
-		} else if (res->rt_Version >= 54) {
-			revision = 2; // Just guessing...
-		}
-	}
-	sprintf(odysseyuseragent, verfmt, version, revision);
-}
-#else
-const char verfmt[] = "Mozilla/5.0 (Macintosh; PowerPC MorphOS %u.%u; Odyssey Web Browser; rv:" VERSION ") AppleWebKit/" WEBKITVER " (KHTML, like Gecko) OWB/" VERSION " Safari/" WEBKITVER;
-STATIC char odysseyuseragent[sizeof(verfmt) + 2 * (10 - 2)];
-
-void init_useragent()
-{
-	ULONG version = 0, revision = 0;
-	struct Resident *res = FindResident("MorphOS");
-	if (res)
-	{
-		version = res->rt_Version;		
-		if (res->rt_Flags & RTF_EXTENDED)
-		{
-			revision = res->rt_Revision;
-		}
-		else
-		{
-			char *p = index((char *)res->rt_IdString, '.');
-			if (p) revision = strtoul(p + 1, NULL, 10);
-		}
-	}
-
-	sprintf(odysseyuseragent, verfmt, version, revision);
-}
-#endif
-
-STATIC STRPTR useragents_strings[] =
-{
-	odysseyuseragent,
-	"Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0",
-	"Mozilla/5.0 (Windows NT 6.1; rv:1.9.2) Gecko/20100101 Firefox/3.6",
-	"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/74.0",
-
-	"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)",
-	"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)",
-	"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)",
-	"Mozilla/5.0 (compatible, MSIE 11, Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko",
-
-	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36 Edg/80.0.361.62",
-
-	"Opera/9.80 (Windows NT 5.1; U; en) Presto/2.12.388 Version/12.14",
-	"Opera/9.80 (Macintosh; Intel Mac OS X 10.14.1) Presto/2.12.388 Version/12.16",
-	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36 OPR/67.0.3575.53",
-
-
-	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/536.26.17 (KHTML, like Gecko) Version/6.0.2 Safari/536.26.17",
-	"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15",
-
-	"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36",
-	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
-
-	"Mozilla/5.0 (Nintendo WiiU) AppleWebKit/536.30 (KHTML, like Gecko) NX/3.0.4.2.13 NintendoBrowser/4.3.2.11274.US",
-
-	"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25",
-	"Mozilla/5.0 (iPhone; CPU iPhone OS 12_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile / 15E148 KAKAOTALK 8.7.8",
-	"Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/602.1.38 (KHTML, like Gecko) Version/66.6 Mobile/14A5297c Safari/602.1",
-	
-	"Mozilla/5.0 (iPad; U; CPU OS 6_1 like Mac OS X; en-us) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10B141 Safari/8536.25",
-	"Mozilla/5.0 (iPad; CPU OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
-
-	NULL
-}; 
-
-ULONG get_user_agent_count()
-{
-	return sizeof(useragents_labels)/sizeof(STRPTR) - 1 ;
-}
-
-STRPTR * get_user_agent_labels()
-{
-	return (STRPTR *) useragents_labels;
-}
-
-STRPTR * get_user_agent_strings()
-{
-	return (STRPTR *) useragents_strings;
-}
+extern void save_useragents(void);
+extern void use_useragents(void);
+extern void cancel_useragents(void);
+extern STRPTR * get_user_agent_strings();
+extern ULONG get_default_user_agent_idx();
 
 static void cycles_init(void)
 {
@@ -571,6 +429,9 @@ struct Data
 	Object *ch_webm;
 	Object *ch_flv;
 	Object *ch_ogg;
+
+	/**/
+	Object *gr_useragents;
 };
 
 DEFNEW
@@ -597,14 +458,16 @@ DEFNEW
 
 	Object *gr_mimetypes;
 
-	Object *sl_connections, *cy_useragent;
+	Object *sl_connections;
 	Object *ch_proxyenabled, *cy_proxytype, *str_proxyhost, *str_proxyport, *str_proxyusername, *str_proxypassword;
 
-	Object /**cy_temporarycookiespolicy, *cy_persistantcookiespolicy,*/*cy_cookiespolicy, *ch_savecookies, *ch_savehistory, *sl_historyitems, *sl_historymaxage, *ch_savesession, *ch_deletesessionatexit, *cy_sessionrestore, *ch_savecredentials, *ch_formautofill, *ch_enablelocalstorage;
+	Object /**cy_temporarycookiespolicy, *cy_persistantcookiespolicy,*/ *cy_cookiespolicy, *ch_savecookies, *ch_savehistory, *sl_historyitems, *sl_historymaxage, *ch_savesession, *ch_deletesessionatexit, *cy_sessionrestore, *ch_savecredentials, *ch_formautofill, *ch_enablelocalstorage;
 
 	Object *ch_ignoresslerrors, *str_certificatepath;
 
 	Object *cy_loopfilter, *ch_partialcontent, *ch_mp4, *ch_webm, *ch_flv, *ch_ogg;
+
+	Object *gr_useragents;
 
 	cycles_init();
 
@@ -861,10 +724,6 @@ DEFNEW
 								Child, HVSpace,
 
 								Child, VGroup,
-									Child, ColGroup(2),
-										Child, MakeLabel(GSI(MSG_PREFSWINDOW_NETWORK_SPOOF)),
-										Child, cy_useragent = (Object *) MakePrefsCycle(GSI(MSG_PREFSWINDOW_NETWORK_SPOOF), useragents_labels, MAKE_ID('S','N','U','A')),
-									End,
 
                                     Child, ColGroup(2),
 										Child, MakeLabel(GSI(MSG_PREFSWINDOW_NETWORK_ACTIVE_CONNECTIONS)),
@@ -1045,6 +904,8 @@ DEFNEW
 
 							End,
 
+							Child, gr_useragents = (Object *) NewObject(getuseragentgroupclass(), NULL, TAG_DONE),
+
 						End,
 					End,
 				End,
@@ -1146,7 +1007,6 @@ DEFNEW
 		data->sl_quicklinkrows = sl_quicklinkrows;
 
 		data->sl_connections = sl_connections;
-		data->cy_useragent = cy_useragent;
 		data->ch_proxyenabled = ch_proxyenabled;
 		data->cy_proxytype = cy_proxytype;
 		data->str_proxyhost = str_proxyhost;
@@ -1179,6 +1039,8 @@ DEFNEW
 		data->ch_webm = ch_webm;
 		data->ch_flv  = ch_flv;
 		data->ch_ogg  = ch_ogg;
+
+		data->gr_useragents   = gr_useragents;
 
 		/* Set defaults */
 		set(data->cy_completiontype, MUIA_Cycle_Active, 2);
@@ -1592,7 +1454,7 @@ DEFGET
 
 		case MA_OWBApp_UserAgent:
 		{
-			*msg->opg_Storage = (ULONG) useragents_strings[getv(data->cy_useragent, MUIA_Cycle_Active)];
+			*msg->opg_Storage = (ULONG) get_user_agent_strings()[get_default_user_agent_idx()];
 		}
 		return TRUE;
 
@@ -1785,10 +1647,34 @@ DEFTMETHOD(PrefsWindow_Fill)
 	return 0;
 }
 
+DEFTMETHOD(PrefsWindow_SaveUserAgents) //SpoofUserAgent
+{
+	save_useragents();
+
+	return 0;
+}
+
+DEFTMETHOD(PrefsWindow_UseUserAgents) //SpoofUserAgent
+{
+	use_useragents();
+
+	return 0;
+}
+
+DEFTMETHOD(PrefsWindow_CancelUserAgents) //SpoofUserAgent
+{
+	cancel_useragents();
+
+	return 0;
+}
+
 BEGINMTABLE
 DECNEW
 DECGET
 DECTMETHOD(PrefsWindow_Fill)
+DECTMETHOD(PrefsWindow_SaveUserAgents)
+DECTMETHOD(PrefsWindow_UseUserAgents)
+DECTMETHOD(PrefsWindow_CancelUserAgents)
 ENDMTABLE
 
 DECSUBCLASS_NC(MUIC_Window, prefswindowclass)

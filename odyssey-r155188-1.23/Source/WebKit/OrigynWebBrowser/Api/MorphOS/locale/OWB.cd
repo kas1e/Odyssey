@@ -1,8 +1,7 @@
-;
+; $VER: owb.cd 1.23 (09.05.2020)
 ;
 ;
 ; Pulldown Menu
-;
 ;
 MSG_MENU_PROJECT (//)
 Project
@@ -156,11 +155,13 @@ Passwords...
 ;
 MSG_MENU_COOKIES (//)
 Cookies...
+;
 MSG_MENU_BLOCK (//)
 Content Blocking...
 ;
 MSG_MENU_MESSAGES (//)
 Messages...
+;
 MSG_MENU_SEARCH_ENGINES (//)
 Search Engines...
 ;
@@ -208,7 +209,6 @@ MUI...
 ;
 ;
 ; App
-;
 ;
 MSG_REQUESTER_NORMAL_TITLE (//)
 OWB
@@ -261,9 +261,7 @@ MSG_OWBAPP_RESTORE_SESSION (//)
 A previous session has been found.
 ;
 ;
-;
 ; AddressBarGroup
-;
 ;
 MSG_ADDRESSBARGROUP_URL (//)
 URL:
@@ -271,13 +269,11 @@ URL:
 ;
 ; BCContextMenuMorphOS
 ;
-;
 MSG_CONTEXTMENU_TITLE (//)
 Menu
 ;
 ;
 ; BCLocalizedStrings (these ones need to be encoded in UTF8)
-;
 ;
 MSG_LOCALIZED_SUBMIT (//)
 Submit
@@ -495,7 +491,6 @@ Loop
 ;
 ; BookmarkGroup
 ;
-;
 MSG_BOOKMARKGROUP_ADD_GROUP (//)
 Add Group
 ;
@@ -525,7 +520,6 @@ MSG_BOOKMARKGROUP_UNTITLED (//)
 ;
 ;
 ; BookmarkListTree
-;
 ;
 MSG_BOOKMARKLISTTREE_SEPARATOR (//)
 ---------- Separator ----------
@@ -575,13 +569,11 @@ Unfold All Groups
 ;
 ; BookmarkWindow
 ;
-;
 MSG_BOOKMARKWINDOW_BOOKMARKS (//)
 Bookmarks
 ;
 ;
 ; ChooseTitleGroup
-;
 ;
 MSG_CHOOSETITLEGROUP_TITLE (//)
 Title:
@@ -601,7 +593,6 @@ _Cancel
 ;
 ; ConsoleList
 ;
-;
 MSG_CONSOLELIST_TIME (//)
 Time
 ;
@@ -614,7 +605,6 @@ Copy
 ;
 ; ConsoleWindow
 ;
-;
 MSG_CONSOLEWINDOW_MESSAGES (//)
 Messages
 ;
@@ -623,7 +613,6 @@ _Clear
 ;
 ;
 ; ContextMenuGroup
-;
 ;
 MSG_CONTEXTMENUGROUP_LINK (//)
 Link
@@ -656,9 +645,7 @@ MSG_CONTEXTMENUGROUP_DEFAULT_LABEL (//)
 Menu Label
 ;
 ;
-;
 ; ContextMenuList
-;
 ;
 MSG_CONTEXTMENULIST_LINK (//)
 Link
@@ -685,9 +672,7 @@ MSG_CONTEXTMENULIST_TYPE (//)
 Type
 ;
 ;
-;
 ; CookieManagerGroup
-;
 ;
 MSG_COOKIEMANAGERGROUP_REMOVE (//)
 _Remove
@@ -714,9 +699,7 @@ MSG_COOKIEMANAGERGROUP_EXPIRATION (//)
 Expiration:
 ;
 ;
-;
 ; CookieManagerList
-;
 ;
 MSG_COOKIEMANAGERLIST_DOMAIN (//)
 Domain
@@ -745,20 +728,17 @@ Unfold All Domains
 ;
 ; CookieManagerWindow
 ;
-;
 MSG_COOKIEMANAGERWINDOW_COOKIES (//)
 Cookies
 ;
 ;
 ; DefaultPolicyDelegate
 ;
-;
 MSG_DEFAULTPOLICYDELEGATE_MESSAGE (//)
 The page you're trying to open already includes POST data.\nIf you proceed, POST data will be sent again.\nDo you want to continue?
 ;
 ;
 ; DownloadDelegate
-;
 ;
 MSG_DOWNLOADDELEGATE_OVERWRITE_OR_RESUME (//)
 File '%s' already exists.\nDo you want to replace it?\n\n\033bNew Size:\033n %llu bytes\n\033bOld Size:\033n %ld bytes\n\033bOld Date:\033n %s %s
@@ -768,7 +748,6 @@ MSG_DOWNLOADDELEGATE_OVERWRITE_OR_RESUME_ACTIONS (//)
 ;
 ;
 ; DownloadGroup
-;
 ;
 MSG_DOWNLOADGROUP_IN_PROGRESS (//)
 In Progress
@@ -802,7 +781,6 @@ Interrupted
 ;
 ;
 ; DownloadList
-;
 ;
 MSG_DOWNLOADLIST_NAME (//)
 Name
@@ -849,13 +827,11 @@ Unknown
 ;
 ; DownloadWindow
 ;
-;
 MSG_DOWNLOADWINDOW_DOWNLOADS (//)
 Downloads
 ;
 ;
 ; FindText
-;
 ;
 MSG_FINDTEXT_PREV (//)
 Previous
@@ -875,7 +851,6 @@ Not found
 ;
 ; HistoryButton
 ;
-;
 MSG_HISTORYBUTTON_MENU_TITLE (//)
 History
 ;
@@ -884,7 +859,6 @@ MSG_HISTORYBUTTON_NO_TITLE (//)
 ;
 ;
 ; HistoryList
-;
 ;
 MSG_HISTORYLIST_NO_URL (//)
 (No URL)
@@ -906,7 +880,6 @@ Open in New Window...
 ;
 ;
 ; HistoryListTree
-;
 ;
 MSG_HISTORYLISTTREE_NO_TITLE (//)
 (No Title)
@@ -935,13 +908,11 @@ Open in New Window...
 ;
 ; HistoryPanelGroup
 ;
-;
 MSG_HISTORYPANELGROUP_HISTORY (//)
 History
 ;
 ;
 ; LinkList
-;
 ;
 MSG_LINKLIST_NO_NAME (//)
 (No name)
@@ -951,7 +922,6 @@ Quick Link
 ;
 ;
 ; LoginWindow
-;
 ;
 MSG_LOGINWINDOW_MESSAGE (//)
 Enter username and password to access %s on %s.
@@ -976,7 +946,6 @@ _Cancel
 ;
 ;
 ; MimetypeGroup
-;
 ;
 MSG_MIMETYPEGROUP_EXTERNAL_VIEWER (//)
 External Viewer
@@ -1023,7 +992,6 @@ Viewer:
 ;
 ; MimetypeList
 ;
-;
 MSG_MIMETYPELIST_EXTERNAL_VIEWER (//)
 External viewer
 ;
@@ -1063,7 +1031,6 @@ Viewer
 ;
 ; NavigationGroup
 ;
-;
 MSG_NAVIGATIONGROUP_BACK (//)
 Back
 ;
@@ -1084,7 +1051,6 @@ Inspect
 ;
 ;
 ; NetworkWindow
-;
 ;
 MSG_NETWORKWINDOW_TITLE (//)
 Network Activity
@@ -1115,7 +1081,6 @@ Connecting
 ;
 ;
 ; OWBWindow
-;
 ;
 MSG_OWBWINDOW_PENDING_DOWNLOADS (//)
 Some files are currently being downloaded.\nDo you really want to quit?
@@ -1165,7 +1130,6 @@ MSG_OWBWINDOW_RUNNING_USERSCRIPTS (//)
 ;
 ; PasswordManagerGroup
 ;
-;
 MSG_PASSWORDMANAGERGROUP_REMOVE (//)
 _Remove
 ;
@@ -1174,7 +1138,6 @@ Remove _All
 ;
 ;
 ; PasswordManagerList
-;
 ;
 MSG_PASSWORDMANAGERLIST_HOST (//)
 Host
@@ -1202,7 +1165,6 @@ Ignore
 ;
 ;
 ; PasswordManagerWindow
-;
 ;
 MSG_PASSWORDMANAGERWINDOW_TITLE (//)
 Passwords
@@ -1243,13 +1205,11 @@ Allow
 ;
 ; SearchManagerWindow
 ;
-;
 MSG_SEARCHMANAGERWINDOW_TITLE (//)
 Search Engines
 ;
 ;
 ; SearchManagerGroup
-;
 ;
 MSG_SEARCHMANAGERGROUP_ADD (//)
 _Add
@@ -1269,7 +1229,6 @@ Shortcut:
 ;
 ; SearchManagerList
 ;
-;
 MSG_SEARCHMANAGERLIST_TITLE (//)
 Title
 ;
@@ -1282,13 +1241,11 @@ Shortcut
 ;
 ; ScriptManagerWindow
 ;
-;
 MSG_SCRIPTMANAGERWINDOW_TITLE (//)
 Scripts
 ;
 ;
 ; ScriptManagerGroup
-;
 ;
 MSG_SCRIPTMANAGERGROUP_SCRIPT_SELECT (//)
 Select User Script...
@@ -1367,7 +1324,6 @@ Cookie Name _Filter:
 ;
 ; PrinterWindow
 ;
-;
 MSG_PRINTERWINDOW_TITLE (//)
 Print...
 ;
@@ -1406,7 +1362,6 @@ Failed to initialize output device.
 ;
 ;
 ; PrefsWindow
-;
 ;
 MSG_PREFSWINDOW_TITLE (//)
 Settings
@@ -1561,6 +1516,7 @@ Ask
 MSG_PREFSWINDOW_PRIVACY_SESSION_RESTORATION_ON (//)
 Automatically
 ;
+;
 ; General
 ;
 MSG_PREFSWINDOW_GENERAL_HOME_PAGE (//)
@@ -1655,6 +1611,7 @@ La_yout:
 MSG_PREFSWINDOW_INTERFACE_MAXIMUM_ROWS (//)
 Ma_ximum Rows:
 ;
+;
 ; Content
 ;
 MSG_PREFSWINDOW_CONTENT_CACHE_MODEL (//)
@@ -1686,6 +1643,7 @@ Allow plu_gins
 ;
 MSG_PREFSWINDOW_CONTENT_INSPECTOR (//)
 WebInspector
+;
 ;
 ; Fonts
 ;
@@ -1725,6 +1683,7 @@ Cursive Font Family:
 MSG_PREFSWINDOW_FONTS_FANTASY_FAMILY (//)
 Fantasy Font Family:
 ;
+;
 ; Downloads
 ;
 MSG_PREFSWINDOW_DOWNLOADS_PATH (//)
@@ -1738,6 +1697,7 @@ _Remember downloaded files
 ;
 MSG_PREFSWINDOW_DOWNLOADS_START_AUTOMATICALLY (//)
 Start downloads _automatically
+;
 ;
 ; Network
 ;
@@ -1773,6 +1733,7 @@ Type:
 ;
 MSG_PREFSWINDOW_NETWORK_PROXY_USE (//)
 Use proxy
+;
 ;
 ; Privacy
 ;
@@ -1812,6 +1773,7 @@ History Entries:
 MSG_PREFSWINDOW_PRIVACY_HISTORY_AGE (//)
 History Age in Days:
 ;
+;
 ; Security
 ;
 MSG_PREFSWINDOW_SECURITY_IGNORE_SSL_ERRORS (//)
@@ -1819,6 +1781,7 @@ _Ignore SSL errors
 ;
 MSG_PREFSWINDOW_SECURITY_CERTIFICATE_PATH (//)
 Certificate _Path:
+;
 ;
 ; Media
 ;
@@ -1849,6 +1812,7 @@ FL_V (H.263/H.264) support
 MSG_PREFSWINDOW_MEDIA_USE_OGG (//)
 _Ogg (Theora/Vorbis) support
 ;
+;
 ; Prefs validation
 ;
 MSG_PREFSWINDOW_SAVE (//)
@@ -1862,7 +1826,6 @@ _Cancel
 ;
 ;
 ; QuickLinkButtonGroup
-;
 ;
 MSG_QUICKLINKBUTTONGROUP_NO_NAME (//)
 (No name)
@@ -1884,7 +1847,6 @@ Open All Bookmarks
 ;
 ;
 ; SplashWindow
-;
 ;
 MSG_SPLASHWINDOW_INITIALIZING (//)
 Initializing Fonts...
@@ -1913,7 +1875,6 @@ Close All Other Tabs
 ;
 ; ToolButton_AddBookmark
 ;
-;
 MSG_TOOLBUTTON_ADDBOOKMARK_ADD (//)
 Add
 ;
@@ -1923,13 +1884,11 @@ MSG_TOOLBUTTON_ADDBOOKMARK_NO_TITLE (//)
 ;
 ; ToolButton_NewTab
 ;
-;
 MSG_TOOLBUTTON_NEWTAB_LABEL (//)
 New Tab
 ;
 ;
 ; Utils
-;
 ;
 MSG_CAPACITY_BYTE (//)
 B
@@ -1994,7 +1953,63 @@ Javascript Alert
 ;
 ; Additional strings since 1.23
 ;
-;
 MSG_PREFSWINDOW_MEDIA_USE_MP4 (//)
 _MP4 (H.264) support
+;
+;
+;Notifications "title" strings
+;
+MSG_NOTIFY_DL_COMPLETED (//60)
+Download Completed
+;
+MSG_NOTIFY_DL_CANCELLED (//60)
+Download Cancelled
+;
+MSG_NOTIFY_DL_FAILED (//60)
+Download Failed
+;
+;
+;SpoofUserAgent
+;
+MSG_PREFSWINDOW_CATEGORY_SPOOFING (//)
+Spoofing
+;
+MSG_USERAGENTGROUP_ADD (//)
+Add
+;
+MSG_USERAGENTGROUP_REMOVE (//)
+Remove
+;
+MSG_USERAGENTGROUP_MAKE_DEFAULT (//)
+Make default
+;
+MSG_USERAGENTGROUP_NAME (//)
+Name:
+;
+MSG_USERAGENTGROUP_SHOW_IN_MENU (//)
+Show in menu
+;
+MSG_USERAGENTGROUP_USERAGENT (//)
+User-Agent:
+;
+MSG_USERAGENTLIST_STATUS (//)
+Status
+;
+MSG_USERAGENTLIST_NAME (//)
+Name
+;
+MSG_USERAGENTLIST_USERAGENT (//)
+User-Agent
+;
+MSG_USERAGENTLIST_STATUS_DEFAULT (//)
+\033bdefault\033n
+;
+MSG_USERAGENTLIST_STATUS_ENABLED (//)
+enabled
+;
+MSG_USERAGENTLIST_STATUS_DISABLED (//)
+disabled
+;
+MSG_USERAGENTLIST_INFO (//60)
+NOTE: max. 64 entries; max. in menu 32
 ;
