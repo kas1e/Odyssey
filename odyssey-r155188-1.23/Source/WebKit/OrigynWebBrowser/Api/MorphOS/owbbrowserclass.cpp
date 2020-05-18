@@ -2256,7 +2256,7 @@ DEFMMETHOD(HandleEvent)
 										// And that we doubleclicked, switch to second scrolling mode
 										if((currentTime() - data->lastMMBClickTime) < 0.5)
 										{
-                                            autoscroll_add(obj, data, &im);										   
+                                            autoscroll_add(obj, data, &im);
 										}
 										// Else don't trigger the button up, it's not desired, especially over a link
 									}
@@ -2280,10 +2280,25 @@ DEFMMETHOD(HandleEvent)
 									}
 								}
 							}
+							break;
 
-	                 	    break;
-                    }
-                }
+						case IECODE_4TH_BUTTON:
+
+							if(!(Code & IECODE_UP_PREFIX))
+							{
+								DoMethod(_win(obj), MM_OWBWindow_Back);
+							}
+							break;
+
+						case IECODE_5TH_BUTTON:
+
+							if(!(Code & IECODE_UP_PREFIX))
+							{
+								DoMethod(_win(obj), MM_OWBWindow_Forward);
+							}
+							break;
+					}
+				}
 				else
 				{
 					// Abort scrolling when mouse is outside
@@ -2294,14 +2309,14 @@ DEFMMETHOD(HandleEvent)
 					}
 
 					if(data->is_active)
-		    	    {
+					{
 						if(Code & IECODE_UP_PREFIX)
 						{
 							data->view->webView->onMouseButtonUp(im);
 						}
 
 						switch(Code & ~IECODE_UP_PREFIX)
-	                    {
+						{
 							case IECODE_LBUTTON:
 								set(obj, MA_OWBBrowser_Active, FALSE);
 								break;
