@@ -4028,7 +4028,8 @@ DEFSMETHOD(OWBBrowser_VideoBlit)
 		int w = msg->width & -8;
 		int h = msg->height & -2;
 
-		if (!mouse_hidden)
+		// hide mouse pointer only when we in compositing mode and when a mouse pointer is inside of video element
+		if (!mouse_hidden && _isinobject(obj, window->MouseX, window->MouseY))
 		{
 			if (!seconds1 && !microseconds1)
 			{
