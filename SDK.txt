@@ -16,19 +16,19 @@ expat       - expat.library 53.1, from http://os4depot.net
 Z           - libz 1.2.11, from http://os4depot.net
 
 
-icu         - v49.1.2 (libicui18n.a, libicuuc.a and libicudata.a). 
-fontconfig  - v2.8.0 (PROGDIR: changes, get rid of HARDLINK usage, Amiga-specific callback code for fontconfig_progress on running)
+icu         - v49.1.2   libicui18n.a, libicuuc.a and libicudata.a. 
+fontconfig  - v2.8.0    PROGDIR: changes, get rid of HARDLINK usage, Amiga-specific callback code for fontconfig_progress on running
 freetype    - v2.10.1
-cairo       - v1.12.16 (pthreads changed on amiga-semaphores)
-pixman-1    - v0.32.4
-curl        - v7.68.0 (added amigaos4 native threading resolver, fixed file:// part)
+cairo       - v1.12.16  pthreads changed on amiga-semaphores
+pixman-1    - v0.36.0   Salas00's amiga shared library implementation: https://github.com/salass00/pixman_lib
+curl        - v7.68.0   added amigaos4 native threading resolver, fixed file:// part
 rtmp        - v2.4
 png         - v1.6.37
 sqlite3     - v3.7.5
 xml2        - v2.9.10
 xslt        - v1.1.34
 jpeg        - v9b
-openssl     - v1.1.1c (libssl, libcrypto)
-ffmpeg      - v2.2.16 Frank's amiga shared libraries implementation: https://sourceforge.net/projects/ffmpeg-amigasharedlibraries/
+openssl     - v1.1.1c   libssl, libcrypto
+ffmpeg      - v2.2.16   Frank's amiga shared libraries implementation: https://sourceforge.net/projects/ffmpeg-amigasharedlibraries/
 webp        - v1.1.0
 bz2         - v1.0.5
