@@ -7,6 +7,8 @@ SET(CMAKE_SYSTEM_VERSION 1)
 SET(CMAKE_C_COMPILER ppc-amigaos-gcc)
 SET(CMAKE_CXX_COMPILER ppc-amigaos-g++)
 
+# SET(CMAKE_EXTRA_SDK_PATH ${ODYSSEY_INC})
+
 # options
 SET(CMAKE_CXX_FLAGS)
 SET(CMAKE_CXX_FLAGS_DEBUG)
@@ -17,7 +19,7 @@ SET(CMAKE_C_FLAGS_DEBUG)
 SET(CMAKE_MODULE_LINKER_FLAGS)
 
 # where is the target environment
-SET(CMAKE_FIND_ROOT_PATH  /usr/local/amiga/ppc-amigaos/)
+SET(CMAKE_FIND_ROOT_PATH  /opt/ppc-amigaos/)
 
 # search for programs in the build host directories
 SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
