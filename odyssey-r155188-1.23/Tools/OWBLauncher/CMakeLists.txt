@@ -33,7 +33,7 @@ endif(USE_GRAPHICS_MORPHOS)
 
 target_link_libraries(Odyssey
     webkit-owb
-    -static -athread=single -L../../lib -Llib webkit-owb webcore jsc wtf -lcairo -lpixman-1 -lfontconfig -lfreetype -lcurl -lrtmp -ljpeg -lpng -lwebp -lsqlite3 -lxslt -lavdevice2 -lavformat -lavcodec2 -lavutil2 -lswscale2 -lswresample2 -lxml2 -lexpat -lbz2 -lssl -lcrypto -licui18n -licuuc -licudata -lpthread -lz
+    -static -athread=single -L${CMAKE_EXTRA_SDK_PATH}/local/newlib/lib -L../../lib -Llib webkit-owb webcore jsc wtf -lcairo -lpixman-1 -lfontconfig -lfreetype -lcurl -lrtmp -ljpeg -lpng -lwebp -lsqlite3 -lxslt -lavdevice2 -lavformat -lavcodec2 -lavutil2 -lswscale2 -lswresample2 -lxml2 -lexpat -lbz2 -lssl -lcrypto -licui18n -licuuc -licudata -lpthread -lz
 #    ${EXTERNAL_DEPS_LIBRARIES}
 )
 
