@@ -1,5 +1,5 @@
 if(USE_FONTS STREQUAL "AMIGAOS4")
-    set(FONTS_INCLUDE_DIRS /usr/local/amiga/ppc-amigaos/SDK/local/newlib/include/fontconfig /usr/local/amiga/ppc-amigaos/SDK/local/newlib/include/freetype)
+    set(FONTS_INCLUDE_DIRS ${CMAKE_EXTRA_SDK_PATH}/local/common/include/fontconfig ${CMAKE_EXTRA_SDK_PATH}/local/common/include/freetype)
     set(FONTS_LIBRARIES /usr/local/amiga/ppc-amigaos/SDK/local/newlib/lib/libfontconfig.so /usr/local/amiga/ppc-amigaos/SDK/local/newlib/lib/libfreetype.so)
 
     set(USE_FONTS_AMIGAOS4 TRUE)

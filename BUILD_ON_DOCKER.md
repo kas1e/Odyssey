@@ -1,5 +1,12 @@
+To create the container you can use the following command at your terminal
+
 ```bash
 docker run -it --rm --name odysseyondocker -v "$PWD"/code:/opt/code -w /opt/code -e ODYSSEY_INC="/opt/code/Odyssey/odyssey-r155188-1.23_SDK/SDK" walkero/odysseyondocker:latest /bin/bash
+```
+With the above command you will be inside the container, in the folder `/opt/code`. Now you need to clone the repo and build Odyssey
+
+```bash
+git clone https://github.com/walkero-gr/Odyssey.git
 cd /opt/code/Odyssey/odyssey-r155188-1.23/
 mkdir build
 cd build
@@ -51,4 +58,27 @@ cmake .. \
     -DENABLE_YARR:BOOL=ON
 
 make Odyssey -j4
+```
+
+If in any case you have the following error, disable the `#include "BCRefPtrWTF.h` at the file `odyssey-r155188-1.23\BAL\Types\WTF\BCPlatformRefPtrWTF.h`
+```
+    [ 30%] Building CXX object Source/WebCore/CMakeFiles/webcore.dir/__/__/BAL/Graphics/WebCore/Cairo/BCPlatformPathCairo.cpp.obj
+    [ 30%] Building CXX object Source/WebCore/CMakeFiles/webcore.dir/__/__/BAL/Graphics/WebCore/Cairo/BCPlatformPathCairoCairo.cpp.obj
+    [ 30%] Building CXX object Source/WebCore/CMakeFiles/webcore.dir/__/__/BAL/Graphics/WebCore/Cairo/BCPlatformRefPtrCairoCairo.cpp.obj
+    [ 30%] Building CXX object Source/WebCore/CMakeFiles/webcore.dir/__/__/BAL/Graphics/WebCore/Cairo/BCRefPtrCairoCairo.cpp.obj
+    In file included from /opt/code/Odyssey/odyssey-r155188-1.23/build/generated_link/BAL/PlatformRefPtrCairo.h:23,
+                     from /opt/code/Odyssey/odyssey-r155188-1.23/BAL/Graphics/WebCore/Cairo/BCPlatformRefPtrCairoCairo.cpp:20:
+    /opt/code/Odyssey/odyssey-r155188-1.23/build/generated_link/BAL/wtf/PlatformRefPtr.h:29:10: fatal error: BCRefPtrWTF.h: No such file or directory
+     #include "BCRefPtrWTF.h"
+              ^~~~~~~~~~~~~~~
+    compilation terminated.
+    Source/WebCore/CMakeFiles/webcore.dir/build.make:14061: recipe for target 'Source/WebCore/CMakeFiles/webcore.dir/__/__/BAL/Graphics/WebCore/Cairo/BCPlatformRefPtrCairoCairo.cpp.obj' failed
+    make[3]: *** [Source/WebCore/CMakeFiles/webcore.dir/__/__/BAL/Graphics/WebCore/Cairo/BCPlatformRefPtrCairoCairo.cpp.obj] Error 1
+    make[3]: *** Waiting for unfinished jobs....
+    CMakeFiles/Makefile2:302: recipe for target 'Source/WebCore/CMakeFiles/webcore.dir/all' failed
+    make[2]: *** [Source/WebCore/CMakeFiles/webcore.dir/all] Error 2
+    CMakeFiles/Makefile2:424: recipe for target 'Tools/OWBLauncher/CMakeFiles/Odyssey.dir/rule' failed
+    make[1]: *** [Tools/OWBLauncher/CMakeFiles/Odyssey.dir/rule] Error 2
+    Makefile:277: recipe for target 'Odyssey' failed
+    make: *** [Odyssey] Error 2
 ```
