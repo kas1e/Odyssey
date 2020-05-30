@@ -1,7 +1,7 @@
 if(USE_GRAPHICS STREQUAL "AMIGAOS4")
     set(USE_GRAPHICS_AMIGAOS4 TRUE)
     mark_as_advanced(USE_GRAPHICS_AMIGAOS4)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/amiga/ppc-amigaos/SDK/local/common/include/cairo")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${CMAKE_EXTRA_SDK_PATH}/local/common/include/cairo")
 endif(USE_GRAPHICS STREQUAL "AMIGAOS4")
                                           
 if(USE_GRAPHICS STREQUAL "MORPHOS")       
