@@ -343,8 +343,12 @@ table-cell
 table-caption
 -webkit-box
 -webkit-inline-box
+flex // andresiegel
+inline-flex // andresiegel
 -webkit-flex
 -webkit-inline-flex
+grid // andresiegel
+inline-grid // andresiegel
 -webkit-grid
 -webkit-inline-grid
 //none
