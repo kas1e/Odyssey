@@ -211,6 +211,59 @@ word-break
 word-spacing
 word-wrap
 z-index
+
+// andresiegel : extended list of property aliases
+align-content = -webkit-align-content
+align-items = -webkit-align-items
+align-self = -webkit-align-self
+alt = -webkit-alt
+animation = -webkit-animation
+animation-delay = -webkit-animation-delay
+animation-direction = -webkit-animation-direction
+animation-duration = -webkit-animation-duration
+animation-fill-mode = -webkit-animation-fill-mode
+animation-iteration-count = -webkit-animation-iteration-count
+animation-name = -webkit-animation-name
+animation-play-state = -webkit-animation-play-state
+animation-timing-function = -webkit-animation-timing-function
+column-count = -webkit-column-count
+column-gap = -webkit-column-gap
+column-rule-color = -webkit-column-rule-color
+column-progression = -webkit-column-progression
+column-rule-style = -webkit-column-rule-style
+column-rule-width = -webkit-column-rule-width
+column-span = -webkit-column-span
+column-width = -webkit-column-width
+columns = -webkit-columns
+flex = -webkit-flex
+flex-basis = -webkit-flex-basis
+flex-direction = -webkit-flex-direction
+flex-flow = -webkit-flex-flow
+flex-grow = -webkit-flex-grow
+flex-shrink = -webkit-flex-shrink
+flex-wrap = -webkit-flex-wrap
+font-variant-ligatures = -webkit-font-variant-ligatures
+grid-area = -webkit-grid-area
+grid-auto-columns = -webkit-grid-auto-columns
+grid-auto-flow = -webkit-grid-auto-flow
+grid-auto-rows = -webkit-grid-auto-rows
+grid-column = -webkit-grid-column
+grid-column-end = -webkit-grid-column-end
+grid-column-start = -webkit-grid-column-start
+grid-definition-columns = -webkit-grid-definition-columns
+grid-definition-rows = -webkit-grid-definition-rows
+grid-row = -webkit-grid-row
+grid-row-end = -webkit-grid-row-end
+grid-row-start = -webkit-grid-row-start
+grid-template = -webkit-grid-template
+justify-content = -webkit-justify-content
+line-break = -webkit-line-break
+order = -webkit-order
+transform = -webkit-transform
+transform-origin = -webkit-transform-origin
+transform-style = -webkit-transform-style
+// andresiegel : end of extended list
+
 -webkit-animation
 -webkit-animation-delay
 -webkit-animation-direction
@@ -224,6 +277,9 @@ z-index
 -webkit-aspect-ratio
 -webkit-backface-visibility
 -webkit-background-blend-mode
+
+background-blend-mode = -webkit-background-blend-mode // andresiegel	
+
 -webkit-background-clip
 -webkit-background-composite
 -webkit-background-origin
@@ -285,6 +341,9 @@ z-index
 #endif
 #if defined(ENABLE_CSS_COMPOSITING) && ENABLE_CSS_COMPOSITING
 -webkit-blend-mode
+
+mix-blend-mode = -webkit-blend-mode // andresiegel
+
 #endif
 #if defined(ENABLE_CSS_FILTERS) && ENABLE_CSS_FILTERS
 -webkit-filter
@@ -429,6 +488,10 @@ z-index
 -webkit-shape-outside
 -webkit-shape-margin
 -webkit-shape-padding
+
+shape-outside = -webkit-shape-outside // andresiegel
+shape-margin = -webkit-shape-margin // andresiegel		
+
 #endif
 #if defined(ENABLE_CSS_EXCLUSIONS) && ENABLE_CSS_EXCLUSIONS
 -webkit-wrap-flow
