@@ -1344,24 +1344,12 @@ template<> inline CSSPrimitiveValue::CSSPrimitiveValue(EDisplay e)
     case INLINE_FLEX:
         m_value.valueID = CSSValueWebkitInlineFlex;
         break;
-    case WEBKIT_FLEX: // andresiegel
-        m_value.valueID = CSSValueWebkitFlex;
-        break;
-    case WEBKIT_INLINE_FLEX: // andresiegel
-        m_value.valueID = CSSValueWebkitInlineFlex;
-        break;
-    case WEBKIT_GRID: // andresiegel
-        m_value.valueID = CSSValueWebkitGrid;
-        break;
     case GRID:
         m_value.valueID = CSSValueWebkitGrid;
         break;
     case INLINE_GRID:
         m_value.valueID = CSSValueWebkitInlineGrid;
-        break;
-    case WEBKIT_INLINE_GRID: // andresiegel
-        m_value.valueID = CSSValueWebkitInlineGrid;
-        break;   
+        break; 
     case NONE:
         m_value.valueID = CSSValueNone;
         break;
@@ -1377,9 +1365,9 @@ template<> inline CSSPrimitiveValue::operator EDisplay() const
 
     EDisplay display = static_cast<EDisplay>(m_value.valueID - CSSValueInline);
     ASSERT(display >= INLINE && display <= NONE);
-    if (display == WEBKIT_FLEX || display == FLEX) // andresiegel
+    if (display == FLEX)
         return FLEX;
-    if (display == WEBKIT_INLINE_FLEX || display == INLINE_FLEX) // andresiegel
+    if (display == INLINE_FLEX)
         return INLINE_FLEX;	
     return display;
 }
