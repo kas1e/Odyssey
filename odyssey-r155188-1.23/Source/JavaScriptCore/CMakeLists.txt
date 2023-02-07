@@ -61,7 +61,7 @@ set_source_files_properties(${JSC_SRC}
     PROPERTIES COMPILE_FLAGS "-fno-exceptions"
 )
 add_library(jsc STATIC ${JSC_SRC})
-add_dependencies(jsc wtf wtfurl)
+add_dependencies(jsc wtf)
 
 #GENERATOR: "KeywordLookup.h": keyword decision tree used by the lexer
 ADD_CUSTOM_COMMAND(
