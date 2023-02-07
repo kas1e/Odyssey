@@ -71,24 +71,26 @@ ULONG asl_run_multiple(STRPTR p, struct TagItem *tags, char *** files, ULONG rem
 
 			if(l)
 			{
-				struct FileInfoBlock fi;
+                struct ExamineData *lockData;
 
-				if(Examine(l, &fi))
-				{
-
-					if(fi.fib_DirEntryType > 0)
-					{
-						len = strlen(p) + 1;
+                lockData = ExamineObjectTags(EX_LockInput, l, TAG_END);
+                if( lockData )
+                {
+                    if( EXD_IS_FILE(lockData) )
+                    {
+                        file = (char *)FilePart(p);
+                        len = file - p + 1;
                         stccpy(dir, p, len);
-						file = NULL;
-					}
-					else
-					{
-						file = (char *)FilePart(p);
-						len = file - p + 1;
-						stccpy(dir, p, len);
-					}
-				}
+                    }
+                    else if ( EXD_IS_DIRECTORY(lockData) )
+                    {
+                        len = strlen(p) + 1;
+                        stccpy(dir, p, len);
+                        file = NULL;
+                    }
+
+                    FreeDosObject(DOS_EXAMINEDATA, lockData);
+                }
 				UnLock(l);
 			}
 			else
@@ -195,24 +197,26 @@ char * asl_run(STRPTR p, struct TagItem *tags, ULONG remember_path)
 
 			if(l)
 			{
-				struct FileInfoBlock fi;
+                struct ExamineData *lockData;
 
-				if(Examine(l, &fi))
-				{
-
-					if(fi.fib_DirEntryType > 0)
-					{
-						len = strlen(p) + 1;
+                lockData = ExamineObjectTags(EX_LockInput, l, TAG_END);
+                if( lockData )
+                {
+                    if( EXD_IS_FILE(lockData) )
+                    {
+                        file = (char *)FilePart(p);
+                        len = file - p + 1;
                         stccpy(dir, p, len);
-						file = NULL;
-					}
-					else
-					{
-						file = (char *)FilePart(p);
-						len = file - p + 1;
-						stccpy(dir, p, len);
-					}
-				}
+                    }
+                    else if ( EXD_IS_DIRECTORY(lockData) )
+                    {
+                        len = strlen(p) + 1;
+                        stccpy(dir, p, len);
+                        file = NULL;
+                    }
+
+                    FreeDosObject(DOS_EXAMINEDATA, lockData);
+                }
 				UnLock(l);
 			}
 			else
